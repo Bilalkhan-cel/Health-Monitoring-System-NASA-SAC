@@ -1,0 +1,245 @@
+/* AstroVital design system: "Cinematic Minimal".
+   Tokens, type and the handful of components every page shares.
+   Colour is reserved for the four status colours plus one cyan glow for 3D. */
+
+@font-face {
+  font-family: "Geist";
+  src: url("../vendor/fonts/geist-latin-wght-normal.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("../vendor/fonts/geist-mono-latin-wght-normal.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("../vendor/fonts/instrument-serif-latin-400-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --bg: #000000;
+  --surface: rgba(255, 255, 255, .03);
+  --surface-2: #07090D;
+  --line: rgba(255, 255, 255, .08);
+  --line-strong: rgba(255, 255, 255, .16);
+  --text: #F2F4F7;
+  --text-2: #A3ABB8;
+  --text-3: #8E97A6;
+  --primary-bg: #F2F4F7;
+  --primary-fg: #050608;
+  --glow: #7CF3FF;
+  --good: #2EE59D;
+  --okay: #3B9EFF;
+  --watch: #FFC53D;
+  --alert: #FF4D6D;
+  --radius-pill: 999px;
+  --radius-card: 24px;
+  --radius-stage: 32px;
+
+  /* System fallbacks keep the app readable if a font file is missing. */
+  --font-sans: "Geist", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+
+  --size-hero: clamp(3rem, 7.2vw, 6.5rem);      /* 104px at 1440 */
+  --size-title: clamp(2.25rem, 3.9vw, 3.5rem);  /* 48–56px */
+  --size-reading: clamp(6rem, 11vw, 12.5rem);   /* 96–200px */
+  --size-body: 1rem;                            /* 16px */
+  --size-small: .875rem;
+  --size-caption: .75rem;
+
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --ease-calm: cubic-bezier(.22, .61, .36, 1);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--size-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+main { flex: 1 0 auto; display: flex; flex-direction: column; }
+
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; }
+img, svg, canvas { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: .625rem 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary-bg);
+  color: var(--primary-fg);
+  text-decoration: none;
+  font-weight: 500;
+}
+.skip-link:focus { top: 1rem; }
+
+/* ── Type ─────────────────────────────────────────────── */
+.headline {
+  font-weight: 500;
+  font-size: var(--size-title);
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+.headline--hero { font-size: var(--size-hero); line-height: .96; }
+.headline__second {
+  display: block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -.02em;
+  color: var(--text-3);
+}
+.lede { max-width: 34rem; color: var(--text-2); font-size: 1.0625rem; }
+.caption {
+  font-family: var(--font-mono);
+  font-size: var(--size-caption);
+  letter-spacing: .02em;
+  color: var(--text-3);
+}
+.reading {
+  font-size: var(--size-reading);
+  font-weight: 200;
+  line-height: .9;
+  letter-spacing: -.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Pills and buttons ────────────────────────────────── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.75rem;
+  padding: .625rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: .9375rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .25s var(--ease-calm), border-color .25s var(--ease-calm), color .25s var(--ease-calm);
+}
+.pill--primary { background: var(--primary-bg); color: var(--primary-fg); }
+.pill--primary:hover { background: #FFFFFF; }
+.pill--ghost { border-color: var(--line-strong); color: var(--text); background: transparent; }
+.pill--ghost:hover { border-color: var(--text-2); background: var(--surface); }
+.pill[disabled], .pill[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .375rem .875rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  font-size: var(--size-small);
+  color: var(--text-2);
+}
+.tag__dot { width: .375rem; height: .375rem; border-radius: 50%; background: var(--text-2); }
+
+/* ── Status (always colour + icon + word) ─────────────── */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: .4375rem;
+  padding: .3125rem .75rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--size-small);
+  font-weight: 500;
+  color: var(--status-color, var(--text-2));
+  background: color-mix(in srgb, var(--status-color, var(--text-2)) 12%, transparent);
+}
+.status svg { width: .9375rem; height: .9375rem; }
+.is-good  { --status-color: var(--good); }
+.is-okay  { --status-color: var(--okay); }
+.is-watch { --status-color: var(--watch); }
+.is-alert { --status-color: var(--alert); }
+.verdict { color: var(--status-color, var(--text-2)); font-weight: 500; }
+
+/* ── Surfaces and rows ────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+}
+.stage {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-stage);
+}
+.rows { list-style: none; margin: 0; padding: 0; }
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .875rem 0;
+  border-top: 1px solid var(--line);
+}
+.row:last-child { border-bottom: 1px solid var(--line); }
+.row__label { color: var(--text-2); }
+.row__value { font-variant-numeric: tabular-nums; }
+
+.hairline { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+/* ── Footer line shown on every page ──────────────────── */
+.site-foot {
+  flex-shrink: 0;
+  padding: 1.25rem var(--gutter);
+  border-top: 1px solid var(--line);
+  font-size: var(--size-small);
+  color: var(--text-3);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

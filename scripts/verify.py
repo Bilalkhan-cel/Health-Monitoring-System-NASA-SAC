@@ -1,0 +1,641 @@
+"""The Monitor step of the build loop: phase gates, budgets and smoke tests.
+
+    python scripts/verify.py --quick      setup sanity (used by scripts/setup.py)
+    python scripts/verify.py --phase N    cumulative gate for phases 0..N
+    python scripts/verify.py --full       every defined phase plus the performance budgets
+
+Exits non-zero when a check fails and writes the result table to
+``docs/verify_last.md`` (``--quick`` only prints).
+"""
+
+from __future__ import annotations
+
+import argparse
+import http.client
+import importlib.util
+import os
+import re
+import shutil
+import socket
+import subprocess
+import sys
+import tempfile
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Callable, Iterable
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _bootstrap_env import ROOT, ensure_environment  # noqa: E402
+
+ensure_environment()
+sys.path.insert(0, str(ROOT))
+
+PASS, FAIL, SKIP, INFO = "PASS", "FAIL", "SKIP", "INFO"
+
+APP_DIR = ROOT / "app"
+STATIC_DIR = APP_DIR / "static"
+TEMPLATE_DIR = APP_DIR / "templates"
+VENDOR_DIR = STATIC_DIR / "vendor"
+
+# Budgets (Section 0.1 of PROMPT.md)
+JS_MODULE_MAX_BYTES = 400 * 1024
+LANDING_JS_CSS_MAX_BYTES = int(1.5 * 1024 * 1024)
+FIRST_BYTE_MAX_MS = 500
+BOOT_TIMEOUT_S = 40
+
+CORE_PACKAGES = ("flask", "flask_sqlalchemy", "flask_migrate", "flask_wtf", "flask_limiter", "flask_sock",
+                 "dotenv", "yaml", "requests", "websocket", "reportlab", "PIL")
+ML_PACKAGES = ("torch", "transformers", "faster_whisper", "numpy", "scipy")
+
+PHASE0_FILES = (
+    "run.py", "config.py", "requirements.txt", "requirements-core.txt", "requirements-ml.txt",
+    "requirements-dev.txt", ".env.example", ".gitignore", "README.md", "PROMPT.md",
+    "app/__init__.py", "app/extensions.py", "app/bootstrap.py", "app/landing/routes.py",
+    "app/templates/base.html", "app/templates/landing.html", "app/static/css/theme.css",
+    "scripts/setup.py", "scripts/verify.py", "scripts/fetch_assets.py", "scripts/download_models.py",
+    "scripts/assets_manifest.json",
+    "docs/PROGRESS.md", "docs/DECISIONS.md", "docs/HARDWARE_FACTS.md",
+)
+
+ENV_KEYS = (
+    "FLASK_SECRET_KEY", "FLASK_DEBUG", "DATABASE_URL", "PUBLIC_BASE_URL", "TRUSTED_HOSTS", "BIND_HOST",
+    "REGISTERED_ASTRONAUTS", "FLIGHT_SURGEON_IDS", "MISSION_NAME", "MISSION_START_DATE", "MISSION_DAY_OVERRIDE",
+    "DEFAULT_ENVIRONMENT", "OPENHOME_API_KEY", "OPENHOME_AGENT_ID", "OPENHOME_VOICE_WS", "OPENHOME_BRIDGE_TOKEN",
+    "OPENHOME_ENABLED", "OPENHOME_MOCK", "FALLBACK_LLM_API_KEY", "FALLBACK_LLM_BASE_URL", "FALLBACK_LLM_MODEL",
+    "WHISPER_MODEL_SIZE", "WHISPER_MODEL_PATH", "WHISPER_COMPUTE_TYPE", "NLP_SENTIMENT_PATH", "NLP_EMOTION_PATH",
+    "POSE_BACKEND", "POSE_MODEL_PATH", "MENTAL_SESSION_TARGET_MIN", "MENTAL_SESSION_MIN_SECONDS",
+    "MENTAL_SESSION_MAX_MIN", "CARDIO_SESSION_SECONDS", "STORE_TRANSCRIPTS", "DEVICE_ENABLED", "DEVICE_TOKEN",
+    "DEVICE_ID", "DEVICE_WEARER_ID", "DEVICE_AUTO_REGISTER", "DEVICE_HOSTS", "DEVICE_LAN_IP", "DEVICE_RATE_LIMIT",
+    "SENSOR_MODE", "ZEROCONF_ENABLED", "LIVE_STALE_S", "DEVICE_OFFLINE_S", "BACKLOG_LIVE_MAX_S", "FINGER_SETTLE_S",
+    "MIN_SIGNAL_QUALITY", "AGG_WINDOW_S", "AGG_MIN_VALID", "RAW_RETENTION_DAYS", "TEMP_SITE", "TEMP_OFFSET_C",
+    "TEMP_CONTACT_MIN_C", "TEMP_SETTLE_MIN_RAW_C", "TEMP_SETTLE_SLOPE_C_PER_MIN", "SIM_RECORD_INTERVAL_MIN",
+    "MEAL_TIMES", "DEMO_MODE", "SEED_DAYS", "SEED_ON_FIRST_RUN",
+)
+
+# Routes that exist so far: (path, expected status for an anonymous visitor).
+PUBLIC_ROUTES = (("/", 200), ("/healthz", 200))
+
+
+@dataclass(frozen=True)
+class Check:
+    """Outcome of one verification step."""
+
+    name: str
+    status: str
+    detail: str = ""
+
+
+# ── text scanners (pure functions, unit-tested) ───────────
+
+_REMOTE_URL = re.compile(r"""(?:https?:)?//[A-Za-z0-9.-]+\.[A-Za-z]{2,}[^\s"'<>)]*""")
+_ALLOWED_URL_PREFIXES = ("http://www.w3.org/",)
+_SAFE_FILTER = re.compile(r"\|\s*safe\b")
+_CONSOLE_LOG = re.compile(r"\bconsole\.(log|debug)\s*\(")
+_PRINT_CALL = re.compile(r"(?<![\w.])print\s*\(")
+_SECRET_SHAPES = (
+    re.compile(r"\bsk-[A-Za-z0-9_-]{20,}"),
+    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
+    re.compile(r"-----BEGIN (?:RSA |EC )?PRIVATE KEY-----"),
+)
+_SOURCE_TAGS = re.compile(r"\b(SENSOR|DERIVED|SIMULATED|SIM)\b")
+_SOURCE_WORDS = re.compile(r"\b(simulated|demo data)\b", re.IGNORECASE)
+_SOURCE_KEY_JS = re.compile(r"""(?:\.source\b|["']source["']\s*:|\bsource\s*:)""")
+# Only these may mention generated data in words (Settings → About and the Demo panel).
+LABEL_EXEMPT_FILES = ("settings.html", "settings_about.html", "settings_demo.html")
+
+
+def scan_forbidden(text: str, kind: str) -> list[str]:
+    """Return forbidden patterns found in one file. ``kind`` is html | css | js | py."""
+    problems: list[str] = []
+    if kind in ("html", "css", "js"):
+        for match in _REMOTE_URL.finditer(text):
+            if not match.group(0).startswith(_ALLOWED_URL_PREFIXES):
+                problems.append(f"remote URL {match.group(0)[:60]}")
+    if kind == "html" and _SAFE_FILTER.search(text):
+        problems.append("|safe filter")
+    if kind == "js" and _CONSOLE_LOG.search(text):
+        problems.append("console.log left in")
+    if kind == "py" and _PRINT_CALL.search(text):
+        problems.append("print( in app code")
+    for shape in _SECRET_SHAPES:
+        if shape.search(text):
+            problems.append("something shaped like a secret")
+    return problems
+
+
+def scan_source_labels(text: str, *, exempt_words: bool = False, is_js: bool = False) -> list[str]:
+    """Return source labels found in browser-facing text (Section 0 rule 3)."""
+    problems = [f"source tag '{match.group(1)}'" for match in _SOURCE_TAGS.finditer(text)]
+    if not exempt_words:
+        problems += [f"word '{match.group(1).lower()}'" for match in _SOURCE_WORDS.finditer(text)]
+    if is_js and _SOURCE_KEY_JS.search(text):
+        problems.append("a 'source' key")
+    return problems
+
+
+def find_source_keys(payload: object, path: str = "$") -> list[str]:
+    """Return the JSON paths of every ``source`` key in a decoded payload."""
+    found: list[str] = []
+    if isinstance(payload, dict):
+        for key, value in payload.items():
+            if key == "source":
+                found.append(f"{path}.source")
+            found += find_source_keys(value, f"{path}.{key}")
+    elif isinstance(payload, list):
+        for index, value in enumerate(payload):
+            found += find_source_keys(value, f"{path}[{index}]")
+    return found
+
+
+_LOG_LINE = re.compile(r"^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d,\d+ (WARNING|ERROR|CRITICAL) (\S+) (.*)$")
+
+
+def scan_log(text: str, allowed: Iterable[str] = ()) -> list[str]:
+    """Return tracebacks and unexpected WARNING/ERROR lines from captured output."""
+    problems: list[str] = []
+    allowed = tuple(allowed)
+    for line in text.splitlines():
+        if "Traceback (most recent call last)" in line:
+            problems.append("traceback")
+            continue
+        match = _LOG_LINE.match(line)
+        if match and not any(fragment in line for fragment in allowed):
+            problems.append(f"{match.group(1)} {match.group(2)}: {match.group(3)[:80]}")
+    return problems
+
+
+def unpinned_requirements(text: str) -> list[str]:
+    """Return requirement lines that are not pinned with ``==``."""
+    loose = []
+    for raw in text.splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if line and not line.startswith("-") and "==" not in line:
+            loose.append(line)
+    return loose
+
+
+# ── helpers ───────────────────────────────────────────────
+
+def _app_files(suffixes: tuple[str, ...]) -> list[Path]:
+    files = []
+    for path in APP_DIR.rglob("*"):
+        if path.is_file() and path.suffix in suffixes and VENDOR_DIR not in path.parents \
+                and "__pycache__" not in path.parts:
+            files.append(path)
+    return sorted(files)
+
+
+def _rel(path: Path) -> str:
+    return path.relative_to(ROOT).as_posix()
+
+
+def _free_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.bind(("127.0.0.1", 0))
+        return probe.getsockname()[1]
+
+
+def _throwaway_env(instance_dir: Path, port: int | None = None) -> dict[str, str]:
+    """Environment for a clean boot: no .env, no keys, empty database, loopback only."""
+    env = dict(os.environ)
+    env.update({
+        "ASTROVITAL_ENV_FILE": str(instance_dir / "no-such.env"),
+        "ASTROVITAL_INSTANCE_DIR": str(instance_dir),
+        "BIND_HOST": "127.0.0.1",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1",
+    })
+    for key in ENV_KEYS:
+        if key not in ("BIND_HOST",):
+            env.pop(key, None)
+    if port is not None:
+        env["PORT"] = str(port)
+    return env
+
+
+def _make_test_client(instance_dir: Path):
+    from app import create_app
+    from config import load_config
+
+    values = {"ASTROVITAL_INSTANCE_DIR": str(instance_dir), "FLASK_SECRET_KEY": "verify-only", "BIND_HOST": "127.0.0.1"}
+    app = create_app(load_config(values), testing=True)
+    return app.test_client()
+
+
+def _first_byte_ms(port: int, path: str) -> float:
+    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+    try:
+        started = time.perf_counter()
+        connection.request("GET", path)
+        response = connection.getresponse()
+        response.read(1)
+        elapsed = (time.perf_counter() - started) * 1000
+        response.read()
+        return elapsed
+    finally:
+        connection.close()
+
+
+# ── quick checks ──────────────────────────────────────────
+
+def check_python() -> Check:
+    version = sys.version_info
+    label = f"{version.major}.{version.minor}.{version.micro}"
+    if (3, 10) <= version[:2] <= (3, 13):
+        return Check("Python version", PASS, label)
+    return Check("Python version", FAIL, f"{label} is outside 3.10 to 3.13")
+
+
+def check_packages() -> list[Check]:
+    def missing(names: Iterable[str]) -> list[str]:
+        return [name for name in names if importlib.util.find_spec(name) is None]
+
+    core, ml = missing(CORE_PACKAGES), missing(ML_PACKAGES)
+    return [
+        Check("Core packages", FAIL if core else PASS, "missing: " + ", ".join(core) if core else "all importable"),
+        Check("ML packages", INFO if ml else PASS,
+              "missing (fallbacks in use): " + ", ".join(ml) if ml else "all importable"),
+    ]
+
+
+def check_env_file() -> Check:
+    from config import clean_env_value, read_env
+
+    env_path = ROOT / ".env"
+    if not env_path.exists():
+        return Check(".env", FAIL, "missing: run python scripts/setup.py")
+    values = read_env(env_path, overrides={})
+    empty = [key for key in ("FLASK_SECRET_KEY", "DEVICE_TOKEN") if not clean_env_value(values.get(key))]
+    if empty:
+        return Check(".env", FAIL, "empty: " + ", ".join(empty) + " (run python scripts/setup.py)")
+    return Check(".env", PASS, "present, secrets generated")
+
+
+def check_config() -> list[Check]:
+    from config import fonts_present, hf_model_found, load_config, whisper_model_found, FONT_FILES
+
+    try:
+        config = load_config()
+    except Exception as error:  # noqa: BLE001 (config must never raise; report if it does)
+        return [Check("Config loads", FAIL, f"{type(error).__name__}: {error}")]
+    checks = [Check("Config loads", PASS, f"{len(config.astronauts)} astronauts, {len(config.surgeons)} flight surgeon")]
+    if config.warnings:
+        checks.append(Check("Config warnings", INFO, "; ".join(config.warnings)))
+    fonts = fonts_present(config)
+    checks.append(Check("Fonts", PASS if len(fonts) == len(FONT_FILES) else INFO,
+                        f"{len(fonts)}/{len(FONT_FILES)} present" +
+                        ("" if len(fonts) == len(FONT_FILES) else " (system fonts in use)")))
+    models = {
+        "whisper": whisper_model_found(config),
+        "sentiment": hf_model_found(config.nlp_sentiment_path),
+        "emotion": hf_model_found(config.nlp_emotion_path),
+    }
+    absent = [name for name, found in models.items() if not found]
+    checks.append(Check("ML models", INFO if absent else PASS,
+                        "missing (fallbacks in use): " + ", ".join(absent) if absent else "all present"))
+    return checks
+
+
+def check_app_healthz() -> Check:
+    with tempfile.TemporaryDirectory(prefix="astrovital-verify-") as temp:
+        try:
+            response = _make_test_client(Path(temp)).get("/healthz")
+        except Exception as error:  # noqa: BLE001
+            return Check("App starts", FAIL, f"{type(error).__name__}: {error}")
+    ok = response.status_code == 200 and response.get_json().get("ok") is True
+    return Check("App starts", PASS if ok else FAIL, f"/healthz answered {response.status_code}")
+
+
+def quick_checks() -> list[Check]:
+    checks = [check_python(), *check_packages()]
+    if any(check.status == FAIL for check in checks):
+        return checks
+    return [*checks, check_env_file(), *check_config(), check_app_healthz()]
+
+
+# ── phase 0 checks ────────────────────────────────────────
+
+def check_layout() -> Check:
+    missing = [name for name in PHASE0_FILES if not (ROOT / name).exists()]
+    return Check("Project layout", FAIL if missing else PASS,
+                 "missing: " + ", ".join(missing) if missing else f"{len(PHASE0_FILES)} required files present")
+
+
+def check_env_example() -> Check:
+    text = (ROOT / ".env.example").read_text(encoding="utf-8")
+    present = set(re.findall(r"^([A-Z0-9_]+)=", text, flags=re.MULTILINE))
+    missing = [key for key in ENV_KEYS if key not in present]
+    return Check(".env.example keys", FAIL if missing else PASS,
+                 "missing: " + ", ".join(missing) if missing else f"{len(ENV_KEYS)} keys present")
+
+
+def check_requirements_pinned() -> Check:
+    loose: list[str] = []
+    for name in ("requirements-core.txt", "requirements-ml.txt"):
+        loose += unpinned_requirements((ROOT / name).read_text(encoding="utf-8"))
+    return Check("Requirements pinned", FAIL if loose else PASS,
+                 "not pinned: " + ", ".join(loose) if loose else "every package uses ==")
+
+
+def check_gitignore() -> Check:
+    targets = [".env", "firmware/include/secrets.h", "instance/astrovital.db", "ml_models/whisper/base/model.bin"]
+    git = shutil.which("git")
+    if not git or not (ROOT / ".git").exists():
+        return Check("Secrets git-ignored", SKIP, "git not available")
+    exposed = [target for target in targets
+               if subprocess.call([git, "check-ignore", "-q", target], cwd=ROOT) != 0]
+    tracked = subprocess.run([git, "ls-files", ".env"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+    if tracked:
+        exposed.append(".env is tracked by git")
+    return Check("Secrets git-ignored", FAIL if exposed else PASS,
+                 "not ignored: " + ", ".join(exposed) if exposed else ", ".join(targets[:2]) + " and local data")
+
+
+def check_pytest() -> Check:
+    result = subprocess.run([sys.executable, "-m", "pytest"], cwd=ROOT, capture_output=True, text=True)
+    lines = [line for line in result.stdout.strip().splitlines() if line.strip()]
+    summary = lines[-1] if lines else "no output"
+    if result.returncode == 0:
+        return Check("pytest", PASS, summary)
+    failures = [line for line in lines if line.startswith(("FAILED", "ERROR"))][:5]
+    return Check("pytest", FAIL, "; ".join(failures) or summary)
+
+
+def check_boot() -> list[Check]:
+    """Start ``run.py`` as a real process on a clean database and probe it."""
+    checks: list[Check] = []
+    temp = Path(tempfile.mkdtemp(prefix="astrovital-boot-"))
+    port = _free_port()
+    log_path = temp / "boot.log"
+    with log_path.open("w", encoding="utf-8") as log_file:
+        process = subprocess.Popen([sys.executable, str(ROOT / "run.py")], cwd=ROOT,
+                                   env=_throwaway_env(temp, port), stdout=log_file, stderr=subprocess.STDOUT)
+        try:
+            started, booted = time.monotonic(), False
+            while time.monotonic() - started < BOOT_TIMEOUT_S and process.poll() is None:
+                try:
+                    _first_byte_ms(port, "/healthz")
+                    booted = True
+                    break
+                except OSError:
+                    time.sleep(0.25)
+            boot_seconds = time.monotonic() - started
+            if not booted:
+                checks.append(Check("App boots (clean database, no keys)", FAIL,
+                                    f"no answer on /healthz within {BOOT_TIMEOUT_S} s"))
+            else:
+                checks.append(Check("App boots (clean database, no keys)", PASS,
+                                    f"/healthz answered after {boot_seconds:.1f} s"))
+                timings = {path: max(_first_byte_ms(port, path) for _ in range(5)) for path, _ in PUBLIC_ROUTES}
+                slow = {path: ms for path, ms in timings.items() if ms > FIRST_BYTE_MAX_MS}
+                detail = ", ".join(f"{path} {ms:.0f} ms" for path, ms in timings.items())
+                checks.append(Check(f"First byte under {FIRST_BYTE_MAX_MS} ms", FAIL if slow else PASS,
+                                    f"worst of 5: {detail}"))
+        finally:
+            process.terminate()
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+    output = log_path.read_text(encoding="utf-8", errors="replace")
+    problems = scan_log(output)
+    checks.append(Check("Boot log clean", FAIL if problems else PASS,
+                        "; ".join(problems[:4]) if problems else "no traceback, no unexpected warning"))
+    has_checklist = "Database ready" in output and "Listening on 127.0.0.1" in output
+    checks.append(Check("Boot checklist printed", PASS if has_checklist else FAIL,
+                        "database and listening lines present" if has_checklist else "checklist lines not found"))
+    db_file = temp / "astrovital.db"
+    checks.append(Check("Database file created", PASS if db_file.exists() else FAIL,
+                        "created in the instance folder" if db_file.exists() else "astrovital.db not found"))
+    shutil.rmtree(temp, ignore_errors=True)
+    return checks
+
+
+def check_route_smoke() -> list[Check]:
+    """Anonymous smoke test of every route that exists so far, plus the 404 page."""
+    with tempfile.TemporaryDirectory(prefix="astrovital-smoke-") as temp:
+        client = _make_test_client(Path(temp))
+        wrong, label_hits = [], []
+        for path, expected in PUBLIC_ROUTES:
+            response = client.get(path)
+            if response.status_code != expected:
+                wrong.append(f"{path} gave {response.status_code}, expected {expected}")
+            if response.is_json:
+                label_hits += [f"{path} {hit}" for hit in find_source_keys(response.get_json())]
+            else:
+                label_hits += [f"{path}: {hit}" for hit in scan_source_labels(response.get_data(as_text=True))]
+        missing_page = client.get("/no-such-page")
+        if missing_page.status_code != 404 or b"Traceback" in missing_page.data:
+            wrong.append(f"/no-such-page gave {missing_page.status_code}")
+    return [
+        Check("Route smoke test (anonymous)", FAIL if wrong else PASS,
+              "; ".join(wrong) if wrong else f"{len(PUBLIC_ROUTES)} routes and the 404 page behave"),
+        Check("Label scan: rendered pages and JSON", FAIL if label_hits else PASS,
+              "; ".join(label_hits[:4]) if label_hits else "no source label or source key"),
+    ]
+
+
+def check_forbidden_patterns() -> Check:
+    kinds = {".html": "html", ".css": "css", ".js": "js", ".py": "py"}
+    problems = []
+    for path in _app_files(tuple(kinds)):
+        for problem in scan_forbidden(path.read_text(encoding="utf-8"), kinds[path.suffix]):
+            problems.append(f"{_rel(path)}: {problem}")
+    return Check("Forbidden patterns", FAIL if problems else PASS,
+                 "; ".join(problems[:5]) if problems else "no CDN URL, |safe, console.log, print( or secret")
+
+
+def check_secrets_not_in_source() -> Check:
+    """No real secret from the local .env may appear in a file that git would track."""
+    from config import clean_env_value, read_env
+
+    env_path = ROOT / ".env"
+    if not env_path.exists():
+        return Check("Secrets stay in .env", SKIP, "no .env on this machine")
+    values = read_env(env_path, overrides={})
+    secret_names = ("FLASK_SECRET_KEY", "OPENHOME_API_KEY", "OPENHOME_BRIDGE_TOKEN", "FALLBACK_LLM_API_KEY",
+                    "DEVICE_TOKEN")
+    secrets_found = {name: clean_env_value(values.get(name)) for name in secret_names}
+    secrets_found = {name: value for name, value in secrets_found.items() if len(value) >= 12}
+    leaks = []
+    for folder in ("app", "scripts", "tests", "docs", "config", "openhome_ability", "firmware"):
+        base = ROOT / folder
+        if not base.exists():
+            continue
+        for path in base.rglob("*"):
+            if not path.is_file() or path.suffix in (".woff2", ".glb", ".pyc", ".png", ".jpg", ".webp", ".task"):
+                continue
+            if path.name == "secrets.h":
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            leaks += [f"{name} in {_rel(path)}" for name, value in secrets_found.items() if value in text]
+    return Check("Secrets stay in .env", FAIL if leaks else PASS,
+                 "; ".join(leaks[:4]) if leaks else f"{len(secrets_found)} secret value(s) checked against the source tree")
+
+
+def check_label_scan_files() -> Check:
+    """Templates, scripts and styles must not carry a source label (Section 0 rule 3)."""
+    problems = []
+    for path in _app_files((".html", ".js", ".css")):
+        exempt = path.name in LABEL_EXEMPT_FILES
+        hits = scan_source_labels(path.read_text(encoding="utf-8"), exempt_words=exempt, is_js=path.suffix == ".js")
+        problems += [f"{_rel(path)}: {hit}" for hit in hits]
+    return Check("Label scan: templates, scripts, styles", FAIL if problems else PASS,
+                 "; ".join(problems[:5]) if problems else "no source label")
+
+
+def check_budgets() -> list[Check]:
+    scripts = [path for path in _app_files((".js",))]
+    heavy = [f"{_rel(path)} {path.stat().st_size // 1024} KB" for path in scripts
+             if path.stat().st_size > JS_MODULE_MAX_BYTES]
+    largest = max((path.stat().st_size for path in scripts), default=0)
+    landing_files = [STATIC_DIR / "css" / "theme.css", STATIC_DIR / "css" / "landing.css"]
+    landing_files += [path for path in scripts if path.name in ("astro3d.js", "landing.js") or "3d" in path.parts]
+    landing_bytes = sum(path.stat().st_size for path in landing_files if path.exists())
+    return [
+        Check("JS module size (400 KB each)", FAIL if heavy else PASS,
+              "; ".join(heavy) if heavy else f"{len(scripts)} module(s), largest {largest // 1024} KB"),
+        Check("Landing JS + CSS (1.5 MB)", FAIL if landing_bytes > LANDING_JS_CSS_MAX_BYTES else PASS,
+              f"{landing_bytes / 1024:.0f} KB"),
+    ]
+
+
+def check_assets() -> Check:
+    import fetch_assets
+
+    assets = fetch_assets.load_manifest()
+    stale = [asset.dest for asset in assets if not fetch_assets.is_current(asset)]
+    return Check("Vendored assets match the manifest", FAIL if stale else PASS,
+                 "missing or changed: " + ", ".join(stale) if stale else f"{len(assets)} files, checksums match")
+
+
+def check_node_syntax() -> Check:
+    node = shutil.which("node")
+    scripts = _app_files((".js",))
+    if not node:
+        return Check("node --check", SKIP, "Node.js not installed")
+    if not scripts:
+        return Check("node --check", PASS, "no JS modules yet")
+    broken = []
+    for path in scripts:
+        result = subprocess.run([node, "--check", str(path)], capture_output=True, text=True)
+        if result.returncode != 0:
+            broken.append(_rel(path))
+    return Check("node --check", FAIL if broken else PASS,
+                 "syntax errors: " + ", ".join(broken) if broken else f"{len(scripts)} module(s) parse")
+
+
+def check_hardware_facts() -> Check:
+    path = ROOT / "docs" / "HARDWARE_FACTS.md"
+    if not path.exists():
+        return Check("Hardware facts register", FAIL, "docs/HARDWARE_FACTS.md is missing")
+    rows = [line for line in path.read_text(encoding="utf-8").splitlines() if re.match(r"^\|\s*\d+\s*\|", line)]
+    claimed = [row.split("|")[1].strip() for row in rows if re.search(r"\|\s*\**verified", row, re.IGNORECASE)]
+    if len(rows) != 23:
+        return Check("Hardware facts register", FAIL, f"expected 23 rows, found {len(rows)}")
+    return Check("Hardware facts register", FAIL if claimed else PASS,
+                 "rows marked verified without a test: " + ", ".join(claimed) if claimed
+                 else "23 rows, none marked verified")
+
+
+PHASES: dict[int, list[Callable[[], Check | list[Check]]]] = {
+    0: [
+        check_python, check_packages, check_layout, check_env_example, check_requirements_pinned,
+        check_gitignore, check_assets, check_hardware_facts, check_pytest, check_boot, check_route_smoke,
+        check_forbidden_patterns, check_secrets_not_in_source, check_label_scan_files, check_budgets,
+        check_node_syntax,
+    ],
+}
+
+
+def run_checks(functions: Iterable[Callable[[], Check | list[Check]]]) -> list[Check]:
+    results: list[Check] = []
+    for function in functions:
+        try:
+            outcome = function()
+        except Exception as error:  # noqa: BLE001 (a crashing check is a failed check)
+            outcome = Check(function.__name__, FAIL, f"check crashed: {type(error).__name__}: {error}")
+        results += outcome if isinstance(outcome, list) else [outcome]
+    return results
+
+
+def phase_checks(up_to: int) -> list[Check]:
+    results: list[Check] = []
+    for phase in range(up_to + 1):
+        if phase not in PHASES:
+            results.append(Check(f"Phase {phase} gate", FAIL, "this phase has no gate yet (not built)"))
+            continue
+        results += run_checks(PHASES[phase])
+    return results
+
+
+# ── reporting ─────────────────────────────────────────────
+
+def _git_commit() -> str:
+    git = shutil.which("git")
+    if not git:
+        return "unknown"
+    result = subprocess.run([git, "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True)
+    return result.stdout.strip() or "unknown"
+
+
+def summarise(checks: list[Check]) -> str:
+    counts = {status: sum(check.status == status for check in checks) for status in (PASS, FAIL, SKIP, INFO)}
+    verdict = "GREEN" if counts[FAIL] == 0 else "RED"
+    return (f"{verdict}: {counts[PASS]} passed, {counts[FAIL]} failed, "
+            f"{counts[SKIP]} skipped, {counts[INFO]} informational")
+
+
+def write_report(mode: str, checks: list[Check]) -> Path:
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    lines = [
+        "# Last verify result",
+        "",
+        f"- Mode: `{mode}`",
+        f"- When: {now}",
+        f"- Python: {sys.version.split()[0]} · commit `{_git_commit()}`",
+        f"- Result: **{summarise(checks)}**",
+        "",
+        "| # | Check | Result | Detail |",
+        "|---|---|---|---|",
+    ]
+    for index, check in enumerate(checks, start=1):
+        lines.append(f"| {index} | {check.name} | {check.status} | {check.detail.replace('|', '/')} |")
+    path = ROOT / "docs" / "verify_last.md"
+    path.parent.mkdir(exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+def print_checks(checks: list[Check]) -> None:
+    for check in checks:
+        sys.stdout.write(f"  {check.status:4}  {check.name}" + (f": {check.detail}" if check.detail else "") + "\n")
+    sys.stdout.write(f"\n  {summarise(checks)}\n")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Verify the AstroVital build.")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--quick", action="store_true", help="setup sanity check")
+    group.add_argument("--phase", type=int, metavar="N", help="cumulative gate for phases 0..N")
+    group.add_argument("--full", action="store_true", help="every defined phase plus performance budgets")
+    args = parser.parse_args(argv)
+
+    if args.phase is not None:
+        mode, checks = f"--phase {args.phase}", phase_checks(args.phase)
+    elif args.full:
+        mode, checks = "--full", phase_checks(max(PHASES))
+    else:
+        mode, checks = "--quick", run_checks([quick_checks])
+
+    sys.stdout.write(f"AstroVital verify {mode}\n")
+    print_checks(checks)
+    if mode != "--quick":
+        sys.stdout.write(f"  Report written to {_rel(write_report(mode, checks))}\n")
+    return 1 if any(check.status == FAIL for check in checks) else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

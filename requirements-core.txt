@@ -1,0 +1,15 @@
+# Core web app. Required: the app cannot start without these.
+Flask==3.1.3
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.1.0
+Flask-WTF==1.3.0
+Flask-Limiter==4.1.1
+flask-sock==0.7.0
+python-dotenv==1.2.4
+PyYAML==6.0.3
+requests==2.34.2
+websocket-client==1.9.2
+reportlab==5.1.0
+pillow==13.0.0
+zeroconf==0.154.0
+pytest==9.2.0

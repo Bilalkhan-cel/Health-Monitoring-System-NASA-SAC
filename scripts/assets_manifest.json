@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "font-geist",
+      "url": "https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@5.3.0/files/geist-latin-wght-normal.woff2",
+      "dest": "app/static/vendor/fonts/geist-latin-wght-normal.woff2",
+      "sha256": "19f9c92546aa300c312235e3125af1b81394d8db9a4bc4a425cd5b641d2d54e1",
+      "bytes": 29400,
+      "license": "OFL-1.1"
+    },
+    {
+      "id": "font-geist-mono",
+      "url": "https://cdn.jsdelivr.net/npm/@fontsource-variable/geist-mono@5.3.0/files/geist-mono-latin-wght-normal.woff2",
+      "dest": "app/static/vendor/fonts/geist-mono-latin-wght-normal.woff2",
+      "sha256": "684ad5b531f81d43c1e8c7038262d5db7cdc1f68006e04d6c7769efa8d33c8cc",
+      "bytes": 23128,
+      "license": "OFL-1.1"
+    },
+    {
+      "id": "font-instrument-serif-italic",
+      "url": "https://cdn.jsdelivr.net/npm/@fontsource/instrument-serif@5.3.0/files/instrument-serif-latin-400-italic.woff2",
+      "dest": "app/static/vendor/fonts/instrument-serif-latin-400-italic.woff2",
+      "sha256": "5a51946dfffa82972bc98745359c46761515641fda557c25116459a9f83da4a7",
+      "bytes": 22128,
+      "license": "OFL-1.1"
+    },
+    {
+      "id": "license-geist",
+      "url": "https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@5.3.0/LICENSE",
+      "dest": "app/static/vendor/fonts/LICENSE-geist.txt",
+      "sha256": "71609cbb5c78b5870d712eab73a31d76622635c6ed034ab5cee3b9ecbda8685f",
+      "bytes": 4486,
+      "license": "OFL-1.1"
+    },
+    {
+      "id": "license-geist-mono",
+      "url": "https://cdn.jsdelivr.net/npm/@fontsource-variable/geist-mono@5.3.0/LICENSE",
+      "dest": "app/static/vendor/fonts/LICENSE-geist-mono.txt",
+      "sha256": "cc815ed4fc045f0e991abb10395b7932bd028c6a067deb13316d6002105074e6",
+      "bytes": 4498,
+      "license": "OFL-1.1"
+    },
+    {
+      "id": "license-instrument-serif",
+      "url": "https://cdn.jsdelivr.net/npm/@fontsource/instrument-serif@5.3.0/LICENSE",
+      "dest": "app/static/vendor/fonts/LICENSE-instrument-serif.txt",
+      "sha256": "b6106a757902d2d412e09d94dc4a226fe3da80485208a98003969f1b8b6b1d74",
+      "bytes": 4532,
+      "license": "OFL-1.1"
+    }
+  ]
+}

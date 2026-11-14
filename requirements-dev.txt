@@ -1,0 +1,3 @@
+# Developer tools. Not needed to run the app.
+# PlatformIO builds and flashes the ESP32 wearable firmware (pinned when the firmware is added).
+platformio

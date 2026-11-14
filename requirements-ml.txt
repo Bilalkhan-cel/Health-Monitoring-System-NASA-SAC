@@ -1,0 +1,8 @@
+# Local ML (speech to text, sentiment, emotion). Optional: without these the app
+# still runs, and the voice check-in and mood analysis use their fallbacks.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.15.0
+transformers==5.23.0
+faster-whisper==1.2.1
+numpy==2.5.4
+scipy==1.18.1

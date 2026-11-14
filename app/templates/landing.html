@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}AstroVital: crew health for long missions{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+{% block content %}
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__limb" aria-hidden="true"></div>
+  <p class="hero__wordmark">AstroVital</p>
+  <div class="hero__copy">
+    <p class="tag"><span class="tag__dot" aria-hidden="true"></span>Crew health system for long missions</p>
+    <h1 class="headline headline--hero" id="hero-title">
+      Beyond Earth.
+      <span class="headline__second">always in health.</span>
+    </h1>
+    <p class="lede">Check your heart, bones and mind in a few minutes a day, guided by an AI doctor that knows your data.</p>
+    <p class="caption hero__caption">Prototype build {{ app_version }}. Crew sign-in is not open yet.</p>
+  </div>
+</section>
+{% endblock %}
