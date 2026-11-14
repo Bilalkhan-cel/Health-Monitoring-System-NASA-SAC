@@ -285,7 +285,6 @@ class Config:
             "MAX_CONTENT_LENGTH": 4 * 1024 * 1024,
             "RATELIMIT_STORAGE_URI": "memory://",
             "RATELIMIT_HEADERS_ENABLED": True,
-            "JSON_SORT_KEYS": False,
         }
         if self.is_sqlite:
             mapping["SQLALCHEMY_ENGINE_OPTIONS"] = {

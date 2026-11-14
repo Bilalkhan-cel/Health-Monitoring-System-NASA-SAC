@@ -1,8 +1,8 @@
 # Last verify result
 
 - Mode: `--phase 0`
-- When: 2026-11-14 08:08 UTC
-- Python: 3.13.5 · commit `e10ec05`
+- When: 2026-11-14 08:11 UTC
+- Python: 3.13.5 · commit `4032e15`
 - Result: **GREEN: 23 passed, 0 failed, 0 skipped, 0 informational**
 
 | # | Check | Result | Detail |
@@ -17,8 +17,8 @@
 | 8 | Vendored assets match the manifest | PASS | 6 files, checksums match |
 | 9 | Hardware facts register | PASS | 23 rows, none marked verified |
 | 10 | pytest | PASS | 54 passed in 0.74s |
-| 11 | App boots (clean database, no keys) | PASS | /healthz answered after 2.3 s |
-| 12 | First byte under 500 ms | PASS | worst of 5: / 26 ms, /healthz 16 ms |
+| 11 | App boots (clean database, no keys) | PASS | /healthz answered after 2.8 s |
+| 12 | First byte under 500 ms | PASS | worst of 5: / 24 ms, /healthz 27 ms |
 | 13 | Boot log clean | PASS | no traceback, no unexpected warning |
 | 14 | Boot checklist printed | PASS | database and listening lines present |
 | 15 | Database file created | PASS | created in the instance folder |
