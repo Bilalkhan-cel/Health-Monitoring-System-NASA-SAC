@@ -30,7 +30,17 @@ def task_links() -> dict[str, str]:
             if endpoint in current_app.view_functions}
 
 
+def catch_up_generated() -> None:
+    """Keep the generated attributes current (rate-limited inside SimRecorder)."""
+    runtime = current_app.extensions.get("live")
+    if runtime is not None:
+        crew = current_crew()
+        hr_live = runtime.live.snapshot(crew.id, utcnow(), linked=True)["hr"]
+        runtime.sim.catch_up(crew, utcnow(), hr_live=hr_live)
+
+
 def current_summary() -> dict:
+    catch_up_generated()
     payload = summary.build_summary(current_crew(), _config(), task_links=task_links())
     for system, endpoint in SYSTEM_ENDPOINTS.items():
         if endpoint in current_app.view_functions:
@@ -65,6 +75,7 @@ def api_history():
     range_key = request.args.get("range", "30d")
     if range_key not in ("7d", "30d", "mission"):
         return jsonify(ok=False, error="bad_range"), 400
+    catch_up_generated()
     try:
         return jsonify(summary.build_history(current_crew(), _config(), metric, range_key))
     except KeyError:

@@ -7,6 +7,7 @@ Section 9.7. How many readings a CRITICAL needs depends on how the reading arriv
     manual, other    immediately
     ble / other      the first CRITICAL reading
     wearable HR      only a sustained, good-quality run inside a rest-verified session
+    session HR       the stored session average: CRITICAL only if such a run happened during it
     wearable SpO2    never (classify already caps it at CAUTION)
     wearable temp    two consecutive settled aggregates
     generated        two consecutive CRITICAL readings at least 5 s apart
@@ -46,6 +47,7 @@ class GateInput:
     rest_verified: bool = False
     settled: bool = True
     device_key: str = ""
+    run_passed: bool = False  # origin "wearable_session": a qualifying run happened during the session
 
 
 @dataclass(frozen=True)
@@ -106,6 +108,10 @@ class AlertGate:
             return self._manual_spo2(r)
         if r.origin == "wearable" and r.metric == "heart_rate":
             return self._wearable_heart_rate(r)
+        if r.origin == "wearable_session":
+            if r.status == "CRITICAL" and not r.run_passed:
+                return GateResult(self.unmet_status, False, "no sustained run during the session")
+            return GateResult(r.status)
         if r.status != "CRITICAL":
             self._runs.pop((r.origin, r.astronaut_id, r.metric, r.device_key), None)
             return GateResult(r.status)

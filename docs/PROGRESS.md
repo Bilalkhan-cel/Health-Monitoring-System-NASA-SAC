@@ -1,16 +1,16 @@
 # PROGRESS
 
-Current: P3 · loop 0/3 · step: PLAN
+Current: P7 · loop 0/3 · step: EXECUTE
 
 | Phase | Status | Loops | Gate |
 |---|---|---|---|
 | P0 Bootstrap & harness | done (2026-11-14) | 1 | green: 23 passed, 0 failed |
 | P1 Core domain + Today | done (2026-11-14) | 1 | green: 24 passed, 0 failed |
 | P2 Digital twin | done (2026-11-14) | 1 | green (FPS not measured: pane hidden) |
-| P3 Live data backbone | not started | | |
-| P4 Wearable firmware | not started | | |
-| P5 Cardio | not started | | |
-| P6 Bone & Muscle | not started | | |
+| P3 Live data backbone | done (2026-11-14) | 2 | green: ingest p95 33 ms, device→browser 33 ms worst, summary p95 16 ms with 604,800 raw frames |
+| P4 Wearable firmware | done (2026-11-14) | 1 | green: compiles (RAM 16 %, flash 76 %), 6 native tests pass; hardware: needs hardware |
+| P5 Cardio | done (2026-11-14) | 1 | green (pytest: session flow, 9.7 rows, coverage, symptoms) |
+| P6 Bone & Muscle | done (2026-11-14) | 1 | green (synthetic keypoints exact; live camera not testable here) |
 | P7 Mental | not started | | |
 | P8 Dr. NOVA | not started | | |
 | P9 Landing + login | not started | | |

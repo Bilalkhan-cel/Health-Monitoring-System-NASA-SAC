@@ -5,6 +5,7 @@
 import { api, emitDataUpdated } from './api.js';
 import { clear, h, icon, sparkline, statusPill, toast } from './dom.js';
 import { mountTwin } from '../astro3d.js';
+import { connectLive } from './live.js';
 
 const SYSTEMS = ['heart', 'mind', 'bones'];
 const RANK = { alert: 3, watch: 2, okay: 1, good: 0 };
@@ -192,6 +193,54 @@ function renderTwin(summary) {
   }
 }
 
+const LIVE_TEXT = {
+  no_device: 'No wearable linked. Connect your sensor to see live readings.',
+  device_offline: 'Sensor not connected',
+  no_finger: 'Place a finger on the sensor.',
+  settling: 'Hold still… reading in a few seconds.',
+  poor_signal: 'Weak signal. Keep your hand still.',
+};
+const TEMP_TEXT = {
+  missing: 'Temperature probe not found',
+  ambient: 'Place the probe under your arm',
+  warming: 'Measuring temperature… keep your arm down',
+};
+
+function renderLive(snapshot) {
+  const strip = $('[data-live-strip]');
+  if (!strip || !snapshot) return;
+  state.live = snapshot;
+  strip.hidden = false;
+  clear(strip);
+  const dot = h('span', { class: `pulse-dot${snapshot.hr ? ' is-beating' : ''}`, 'aria-hidden': 'true' });
+  if (snapshot.hr) dot.style.animationDuration = `${60 / snapshot.hr}s`;
+  if (snapshot.state === 'ok' || (snapshot.hr != null || snapshot.spo2 != null)) {
+    const parts = [];
+    if (snapshot.hr != null) parts.push(`Heart rate ${snapshot.hr} bpm`);
+    if (snapshot.spo2 != null) parts.push(`SpO₂ ${snapshot.spo2} %`);
+    if (snapshot.temp?.value_c != null) parts.push(`Temp ${snapshot.temp.value_c} °C`);
+    strip.append(dot, h('span', { class: 'live__values' }, parts.join(' · ') || LIVE_TEXT[snapshot.state] || ''));
+  } else {
+    let text = LIVE_TEXT[snapshot.state] || '';
+    if (snapshot.state === 'device_offline' && snapshot.last) {
+      text += `. Last reading ${snapshot.last.hr} bpm, ${Math.round(snapshot.last.age_s / 60)} min ago`;
+    }
+    strip.append(h('span', { class: 'live__state' }, text));
+  }
+  if (snapshot.state !== 'no_device' && snapshot.state !== 'device_offline' && TEMP_TEXT[snapshot.temp?.state]) {
+    strip.append(h('span', { class: 'live__temp' }, TEMP_TEXT[snapshot.temp.state]));
+  }
+  if (snapshot.notice) {
+    strip.append(h('p', { class: 'live__notice' }, statusPill({ key: 'watch', icon: 'triangle-alert',
+      label: 'Needs attention' }), ` ${snapshot.notice.text}`));
+  } else if (snapshot.hr != null) {
+    const restCheck = state.summary.systems.heart.start_url;
+    strip.append(h('p', { class: 'live__hint' }, 'Live · rest 5 min for a resting reading',
+      restCheck ? h('a', { class: 'pill pill--ghost pill--small', href: restCheck }, 'Start rest check') : null));
+  }
+  state.twin?.setHeartRate(snapshot.hr);
+}
+
 function render() {
   const { summary } = state;
   renderScores(summary);
@@ -271,6 +320,10 @@ async function init() {
   state.twin.select(state.selected);
   renderTwin(state.summary);
   window.addEventListener('astro:data-updated', refresh);
+  const live = connectLive();
+  live.on('snapshot', renderLive).on('device', renderLive).on('summary', refresh)
+    .on('vital', (vital) => renderLive({ ...(state.live || {}), ...vital,
+      device: { ...(state.live?.device || {}), online: true } }));
   window.setInterval(() => { if (!document.hidden) refresh(); }, 30000);
 }
 

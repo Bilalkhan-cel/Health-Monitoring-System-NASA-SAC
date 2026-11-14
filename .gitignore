@@ -234,3 +234,6 @@ uploads/*
 scripts/vendor_build/node_modules/
 scripts/vendor_build/three-entry.js
 build_sources/
+
+# PlatformIO build output
+firmware/.pio/

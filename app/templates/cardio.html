@@ -1,0 +1,177 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon, status_pill %}
+{% block title %}Heart · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/check.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="page-title">Heart check. <span class="headline__second">Seven quiet minutes.</span></h1>
+{% endblock %}
+{% block content %}
+<div class="check" data-cardio data-rest="{{ rest_seconds }}" data-duration="{{ session_seconds }}" data-demo="{{ 1 if demo else 0 }}" data-usual="{{ usual or '' }}">
+
+  <!-- Overview -->
+  <section class="step" data-step="overview">
+    <div class="overview">
+      <div class="overview__main">
+        <p class="lede">Rest for five minutes, then hold still for {{ session_seconds }} seconds while the wearable reads your pulse and oxygen. You'll get a plain answer and what to do next.</p>
+        <p class="wear-line" data-wear-line aria-live="polite">Checking the wearable…</p>
+        <div class="overview__actions">
+          <button class="pill pill--primary" type="button" data-go="precheck">{{ icon("play") }}Start assessment</button>
+          {% if last %}<p class="card__meta">Last check {{ last.ended_at.strftime("%b %d, %H:%M") }}</p>{% endif %}
+        </div>
+      </div>
+      <ul class="rows overview__latest" aria-label="Latest heart readings">
+        {% for item in latest %}
+        <li class="row">
+          <span class="row__label">{{ item.short }}</span>
+          <span class="row__right"><span class="row__value">{{ item.value or "–" }} {{ item.unit if item.value }}</span>
+            {% if item.status %}<span class="verdict is-{{ item.status.key }}">{{ item.status.verdict }}</span>{% else %}<span class="card__meta">No reading yet</span>{% endif %}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="card trend">
+      <div class="card__head">
+        <h2 class="card__title">Last 30 days</h2>
+        <div class="segmented" role="group" aria-label="Chart">
+          <button type="button" class="segmented__item" data-trend="heart_rate" aria-pressed="true">Heart rate</button>
+          <button type="button" class="segmented__item" data-trend="blood_pressure" aria-pressed="false">Blood pressure</button>
+          <button type="button" class="segmented__item" data-trend="spo2" aria-pressed="false">Oxygen</button>
+        </div>
+      </div>
+      <div class="trend__canvas"><canvas data-trend-canvas aria-describedby="trend-summary" role="img"></canvas></div>
+      <p class="visually-hidden" id="trend-summary" data-trend-summary></p>
+    </div>
+  </section>
+
+  <!-- Pre-check -->
+  <section class="step" data-step="precheck" hidden>
+    <div class="precheck">
+      <div class="card">
+        <h2 class="card__title">Before you start</h2>
+        <ol class="steps steps--roomy">
+          <li><strong>Sit still for five minutes.</strong> Feet anchored (in zero gravity, hook them under a rail), arm resting at heart level.</li>
+          <li><strong>Rest one fingertip lightly on the pulse sensor.</strong> Keep the hand still and relaxed. Pressing hard spoils the reading.</li>
+          <li><strong>Put the temperature probe under your arm</strong> and keep the arm down, ideally ten minutes before the check.</li>
+          <li><strong>Have a cuff or glucometer?</strong> You can type their readings during the check.</li>
+        </ol>
+        <p class="why"><strong>Why it matters in space.</strong> Without gravity, fluid shifts toward your head and the heart gets lazier. That shows up as a higher resting pulse, blood-pressure changes and dizziness on landing. Radiation also adds long-term heart risk.</p>
+      </div>
+      <form class="card" data-precheck-form>
+        <fieldset class="choice-list">
+          <legend class="card__title">When did you last eat?</legend>
+          <label class="choice"><input type="radio" name="glucose_context" value="fasting"><span>More than 8 hours ago</span></label>
+          <label class="choice"><input type="radio" name="glucose_context" value="post_meal"><span>About 2 hours ago</span></label>
+          <label class="choice"><input type="radio" name="glucose_context" value="random" checked><span>Something else / not sure</span></label>
+        </fieldset>
+        <fieldset class="choice-list symptoms">
+          <legend class="card__title">Do you have any of these right now?</legend>
+          {% for code, label in symptoms.items() %}
+          <label class="choice"><input type="checkbox" name="symptoms" value="{{ code }}"><span>{{ label[0]|upper }}{{ label[1:] }}</span></label>
+          {% endfor %}
+          <p class="card__meta">Any tick means "Get help now", whatever the numbers say.</p>
+        </fieldset>
+        <p class="form-error" data-precheck-error hidden></p>
+        <div class="panel__actions">
+          <button class="pill pill--ghost" type="button" data-go="overview">Back</button>
+          <button class="pill pill--primary" type="submit">Start the rest</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Rest countdown + handshake -->
+  <section class="step rest" data-step="rest" hidden>
+    <div class="ring" role="timer" aria-live="off">
+      <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring__track" cx="60" cy="60" r="54"/><circle class="ring__fill" data-ring cx="60" cy="60" r="54"/></svg>
+      <div class="ring__label"><span class="ring__time" data-rest-time>5:00</span><span class="card__meta">Rest and breathe normally</span></div>
+    </div>
+    <ul class="handshake" data-handshake aria-live="polite"></ul>
+    <div class="panel__actions">
+      <button class="pill pill--ghost" type="button" data-cancel>Cancel</button>
+      {% if demo %}<button class="pill pill--ghost" type="button" data-skip-rest>Skip the rest (demo)</button>{% endif %}
+      <button class="pill pill--primary" type="button" data-start-measure disabled>Start measuring</button>
+    </div>
+    <details class="strap">
+      <summary>Use a Bluetooth chest strap or type readings instead</summary>
+      <div class="strap__body">
+        <button class="pill pill--ghost pill--small" type="button" data-ble hidden>{{ icon("bluetooth") }}Connect chest strap</button>
+        <p class="card__meta" data-ble-note></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- Live session -->
+  <section class="step live" data-step="live" hidden>
+    <div class="live__head">
+      <p class="live__status"><span class="dot is-alert" aria-hidden="true"></span><span data-live-status>Heart check in progress</span></p>
+      <p class="live__left" data-time-left aria-live="off"></p>
+    </div>
+    <div class="bpm">
+      <svg class="bpm__heart" data-heart aria-hidden="true" viewBox="0 0 24 24"><use href="{{ url_for('static', filename='vendor/lucide/sprite.svg') }}#heart"></use></svg>
+      <p class="bpm__value"><span data-bpm>–</span><span class="bpm__unit">bpm</span></p>
+    </div>
+    <p class="bpm__verdict" data-bpm-verdict></p>
+    <p class="bpm__note" data-bpm-note>Stay still and breathe normally.</p>
+    <div class="wave" aria-label="Heartbeat waveform" role="img"><canvas data-wave></canvas></div>
+    <ul class="vitals" data-vitals></ul>
+    <form class="manual" data-manual-form>
+      <p class="card__meta">Have a cuff, glucometer or oximeter? Type a reading:</p>
+      <select class="field__input" name="metric" aria-label="Which reading">
+        <option value="blood_pressure">Blood pressure</option>
+        <option value="glucose">Blood sugar</option>
+        <option value="spo2">Oxygen</option>
+        <option value="temperature_c">Temperature</option>
+        <option value="heart_rate">Heart rate</option>
+        <option value="respiration">Breathing rate</option>
+      </select>
+      <input class="field__input" name="value" inputmode="decimal" aria-label="Value" placeholder="Value" required>
+      <input class="field__input" name="value2" inputmode="decimal" aria-label="Lower blood pressure number" placeholder="Lower number">
+      <button class="pill pill--ghost" type="submit">Save reading</button>
+      <p class="form-error" data-manual-message hidden></p>
+    </form>
+    <div class="panel__actions live__actions">
+      <button class="pill pill--ghost" type="button" data-pause>Pause</button>
+      <button class="pill pill--primary" type="button" data-finish>Finish check</button>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="step results" data-step="results" hidden>
+    <div class="results__head">
+      <span data-result-status></span>
+      <h2 class="headline" data-result-title></h2>
+      <p class="lede" data-result-text></p>
+      <p class="form-error" data-result-symptoms hidden></p>
+      <p class="card__meta" data-result-rest></p>
+    </div>
+    <div class="results__grid">
+      <div class="card">
+        <h3 class="card__title">Your numbers</h3>
+        <ul class="rows" data-result-rows></ul>
+        <ul class="notes" data-result-messages></ul>
+      </div>
+      <div class="card">
+        <h3 class="card__title">What to do</h3>
+        <ol class="steps steps--roomy" data-result-actions></ol>
+        <p class="card__meta" data-result-remeasure></p>
+        <div class="panel__actions">
+          <a class="pill pill--primary" href="{{ url_for('dashboard.index') }}">Back to Today</a>
+          {% if has_endpoint("doctor.index") %}<a class="pill pill--ghost" href="{{ url_for('doctor.index') }}">Ask Dr. NOVA</a>{% endif %}
+        </div>
+      </div>
+      <div class="card results__chart">
+        <h3 class="card__title">Compared with your last checks</h3>
+        <div class="trend__canvas"><canvas data-result-chart role="img" aria-describedby="result-chart-text"></canvas></div>
+        <p class="visually-hidden" id="result-chart-text" data-result-chart-text></p>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/chartjs/chartjs-plugin-annotation.min.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/app/cardio.js') }}"></script>
+{% endblock %}

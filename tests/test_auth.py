@@ -86,7 +86,7 @@ def test_each_astronaut_sees_only_their_own_data(app, client):
     values = {item["key"]: item["value"] for item in client.get("/api/summary").get_json()["metrics"]}
     assert values["heart_rate"] == "150"
     with app.app_context():
-        assert Measurement.query.count() == 2
+        assert Measurement.query.filter_by(source="manual").count() == 2
 
 
 def test_csrf_is_required_on_posts(env_values):

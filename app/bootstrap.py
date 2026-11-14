@@ -107,6 +107,22 @@ def upsert_device(config: Config) -> Device | None:
     return device
 
 
+def upsert_demo_device(config: Config) -> Device | None:
+    """The in-process demo wearable used only when the sensor mode is switched to Demo data."""
+    from .services.sensors.device_gateway import DEMO_DEVICE_ID
+
+    real = Device.query.filter_by(device_id=config.device_id).first()
+    if real is None:
+        return None
+    demo = Device.query.filter_by(device_id=DEMO_DEVICE_ID).first()
+    if demo is None:
+        demo = Device(device_id=DEMO_DEVICE_ID, astronaut_id=real.astronaut_id, label="Demo wearable",
+                      temp_site=config.temp_site, temp_offset_c=config.temp_offset_c)
+        db.session.add(demo)
+    demo.astronaut_id = real.astronaut_id
+    return demo
+
+
 def sweep_uploads(app: Flask) -> int:
     """Delete temporary audio left behind by an earlier run."""
     uploads: Path = get_config(app).uploads_dir
@@ -132,6 +148,8 @@ def prepare_data(app: Flask, *, seed: bool | None = None) -> tuple[int, int, Mis
     mission = upsert_mission(config)
     crew = upsert_crew(config, mission)
     upsert_device(config)
+    db.session.flush()
+    upsert_demo_device(config)
     db.session.commit()
     seeded = 0
     should_seed = config.seed_on_first_run if seed is None else seed
@@ -159,6 +177,12 @@ def run(app: Flask) -> BootReport:
         device = Device.query.filter_by(device_id=get_config(app).device_id).first()
         if device is not None and device.last_seen_at is not None:
             report["wearable_last_seen_s"] = (utcnow() - device.last_seen_at).total_seconds()
+        runtime = app.extensions.get("live")
+        if runtime is not None:
+            from .services.sensors.device_gateway import maybe_purge
+
+            maybe_purge(runtime, utcnow())
+            runtime.sim.catch_up_all(utcnow())
         for hook in _hooks(app):
             hook(app)
     swept = sweep_uploads(app)

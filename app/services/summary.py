@@ -150,6 +150,14 @@ def metric_view(astronaut_id: int, metric: str, as_of: datetime) -> MetricView:
     params = thresholds.baseline_params(metric, latest.context)
     daily = _daily_medians(rows, metric)
     view.baseline, view.baseline_days = thresholds.compute_baseline(daily, as_of.date())
+    if metric == "loading_index":
+        from .loading_index import days_since_exercise
+
+        limit = thresholds.load_rules()["loading_index"].get("force_caution_after_days_without_exercise")
+        idle = days_since_exercise(astronaut_id, as_of)
+        if limit and idle is not None and idle >= limit:
+            view.status = thresholds.worst([view.status, "CAUTION"])
+            view.direction = "low"
     comparable = _baseline_context(metric) in (None, latest.context)
     if view.baseline and params and comparable:
         view.notable = thresholds.is_notable(latest.value, view.baseline, params)
@@ -351,6 +359,16 @@ def build_summary(astronaut: Astronaut, config: Config, now: datetime | None = N
                             f"{view.direction or 'far from normal'} ({shown}). Tell your crew medical officer now. "
                             f"Messages to Earth take {mission['comms_delay_text']}.",
                 })
+
+    from ..cardio.services import SYMPTOMS, recent_symptom_alerts
+
+    for session in recent_symptom_alerts(astronaut.id, now):
+        names = [SYMPTOMS.get(code, code) for code in json.loads(session.symptom_flags_json or "[]")]
+        alerts.insert(0, {
+            "metric": "symptoms", "system": "heart",
+            "text": f"You reported {' and '.join(names)}. Tell your crew medical officer now. "
+                    f"Messages to Earth take {mission['comms_delay_text']}.",
+        })
 
     metrics.append({
         "key": "hydration_ml", "label": spec["metrics"]["hydration_ml"]["label"], "short": "Water", "system": "heart",

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import http.client
+import json
 import importlib.util
 import os
 import re
@@ -421,6 +422,7 @@ PUBLIC_ENDPOINTS = {"landing.index", "landing.healthz", "auth.login", "static"}
 SAMPLE_ARGS = {"system": "heart", "code": "hydration", "scenario": "mars_transit", "id": 1, "checkin_id": 1,
                "notification_id": 1, "astro_id": "AST-1002"}
 TOKEN_ROUTES = ("/api/device/", "/api/openhome/")
+STREAM_ENDPOINTS = {"devices.events", "cardio.stream"}  # Server-Sent Events: opened, never read to the end
 
 
 def _seeded_client(instance: Path):
@@ -477,7 +479,8 @@ def check_route_smoke() -> list[Check]:
         problems, label_hits, payloads = [], [], 0
         anonymous = app.test_client()
         for endpoint, path in routes:
-            response = anonymous.get(path)
+            response = anonymous.get(path, buffered=endpoint not in STREAM_ENDPOINTS)
+            response.close() if endpoint in STREAM_ENDPOINTS else None
             if response.status_code >= 500:
                 problems.append(f"anonymous {path} gave {response.status_code}")
             elif endpoint in PUBLIC_ENDPOINTS:
@@ -492,8 +495,14 @@ def check_route_smoke() -> list[Check]:
         for astro_id in crew_ids:
             client = app.test_client()
             client.post("/login", data={"astro_id": astro_id})
-            for _endpoint, path in routes:
+            for endpoint, path in routes:
                 if path.startswith(TOKEN_ROUTES):
+                    continue
+                if endpoint in STREAM_ENDPOINTS:
+                    response = client.get(path, buffered=False)
+                    if response.status_code >= 500:
+                        problems.append(f"{astro_id} {path} gave {response.status_code}")
+                    response.close()
                     continue
                 response = client.get(path)
                 if response.status_code >= 500 or b"Traceback" in response.data:
@@ -659,6 +668,236 @@ def check_iss_budget() -> Check:
     return Check("ISS model (15 MB)", PASS if size <= 15 * 1024 * 1024 else FAIL, f"{size / 1048576:.1f} MB")
 
 
+def _start_server(temp: Path, extra: dict[str, str]) -> tuple[subprocess.Popen, int, Path]:
+    port = _free_port()
+    env = _throwaway_env(temp, port)
+    env.update(extra)
+    log_path = temp / "server.log"
+    handle = log_path.open("w", encoding="utf-8")
+    process = subprocess.Popen([sys.executable, str(ROOT / "run.py")], cwd=ROOT, env=env, stdout=handle,
+                               stderr=subprocess.STDOUT)
+    started = time.monotonic()
+    while time.monotonic() - started < BOOT_TIMEOUT_S and process.poll() is None:
+        try:
+            _first_byte_ms(port, "/healthz")
+            break
+        except OSError:
+            time.sleep(0.25)
+    return process, port, log_path
+
+
+def _stop_server(process: subprocess.Popen) -> None:
+    process.terminate()
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        process.kill()
+
+
+def _login_session(base: str, astro_id: str):
+    import requests
+
+    browser = requests.Session()
+    page = browser.get(f"{base}/login", timeout=5).text
+    marker = 'name="csrf_token" value="'
+    token = page.split(marker)[1].split('"')[0]
+    browser.post(f"{base}/login", data={"astro_id": astro_id, "csrf_token": token}, timeout=5)
+    return browser
+
+
+def check_live_path() -> list[Check]:
+    """Phase 3: a real server, the device over HTTP, and an SSE client in the browser's place."""
+    import threading
+
+    import requests
+
+    from app.services.sensors.synthetic import SyntheticWearable
+
+    token = "verify-device-token-0123456789"
+    crew = "AST-1001:Cmdr. Sara Whitman:Commander:Falcon"
+    checks: list[Check] = []
+    with tempfile.TemporaryDirectory(prefix="astrovital-live-", ignore_cleanup_errors=True) as temp:
+        process, port, log_path = _start_server(Path(temp), {
+            "DEVICE_TOKEN": token, "REGISTERED_ASTRONAUTS": crew, "DEVICE_WEARER_ID": "AST-1001",
+            "SEED_ON_FIRST_RUN": "false", "FLASK_SECRET_KEY": "verify-only", "ZEROCONF_ENABLED": "false"})
+        base = f"http://127.0.0.1:{port}"
+        try:
+            browser = _login_session(base, "AST-1001")
+            received: list[tuple[float, str]] = []
+            stop = threading.Event()
+
+            def listen() -> None:
+                with browser.get(f"{base}/api/stream", stream=True, timeout=30) as response:
+                    for line in response.iter_lines(decode_unicode=True):
+                        if stop.is_set():
+                            return
+                        if line and line.startswith("event: "):
+                            received.append((time.perf_counter(), line[7:]))
+
+            threading.Thread(target=listen, daemon=True).start()
+            time.sleep(0.5)
+            wearable = SyntheticWearable(seed=4)
+            headers = {"X-Device-Token": token, "X-Device-Id": "AV-ESP32-01", "Content-Type": "application/json"}
+            device = requests.Session()
+            ingest_ms: list[float] = []
+            latencies: list[float] = []
+            for _ in range(60):
+                body = json.dumps(wearable.batch([wearable.frame()]))
+                before = sum(1 for _, name in received if name == "vital")
+                sent = time.perf_counter()
+                response = device.post(f"{base}/api/device/ingest", data=body, headers=headers, timeout=5)
+                ingest_ms.append((time.perf_counter() - sent) * 1000)
+                if response.status_code != 200:
+                    checks.append(Check("Device ingest over HTTP", FAIL, f"got {response.status_code}"))
+                    return checks
+                deadline = time.perf_counter() + 2
+                while time.perf_counter() < deadline:
+                    vitals = [at for at, name in received if name == "vital"]
+                    if len(vitals) > before:
+                        latencies.append((vitals[-1] - sent) * 1000)
+                        break
+                    time.sleep(0.005)
+            stop.set()
+            p95 = sorted(ingest_ms)[int(len(ingest_ms) * 0.95) - 1]
+            checks.append(Check("Ingest p95 under 50 ms", PASS if p95 < 50 else FAIL,
+                                f"p95 {p95:.1f} ms over {len(ingest_ms)} batches (real HTTP)"))
+            if len(latencies) < 50:
+                checks.append(Check("Device-to-browser under 1.5 s", FAIL,
+                                    f"only {len(latencies)} of 60 frames reached the SSE client"))
+            else:
+                worst = max(latencies)
+                median_ms = sorted(latencies)[len(latencies) // 2]
+                checks.append(Check("Device-to-browser under 1.5 s", PASS if worst < 1500 else FAIL,
+                                    f"worst {worst:.0f} ms, median {median_ms:.0f} ms"))
+        finally:
+            _stop_server(process)
+        problems = scan_log(log_path.read_text(encoding="utf-8", errors="replace"))
+        checks.append(Check("Live server log clean", FAIL if problems else PASS,
+                            "; ".join(problems[:3]) if problems else "no traceback, no unexpected warning"))
+    return checks
+
+
+def check_summary_with_raw_frames() -> Check:
+    """/api/summary p95 with 30 days of history plus 7 days of raw 1 Hz frames."""
+    from datetime import datetime, timedelta, timezone
+
+    from app.extensions import db
+    from app.models import Astronaut, Device, SensorSample
+
+    with tempfile.TemporaryDirectory(prefix="astrovital-raw-", ignore_cleanup_errors=True) as temp:
+        app = _seeded_client(Path(temp))
+        with app.app_context():
+            device = Device.query.filter_by(device_id="AV-ESP32-01").first()
+            astronaut = db.session.get(Astronaut, device.astronaut_id)
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
+            start = now - timedelta(days=7)
+            table = SensorSample.__table__
+            batch: list[dict] = []
+            for i in range(7 * 86400):
+                moment = start + timedelta(seconds=i)
+                batch.append({"astronaut_id": astronaut.id, "device_pk": device.id, "boot_id": "a0", "seq": i,
+                              "ts": moment, "received_at": moment, "buffered": False, "finger": True, "hr": 72.0,
+                              "spo2": 98.0, "temp_state": "settled", "quality": 90.0})
+                if len(batch) == 20000:
+                    db.session.execute(table.insert(), batch)
+                    batch = []
+            if batch:
+                db.session.execute(table.insert(), batch)
+            db.session.commit()
+            count = SensorSample.query.count()
+            astro_id = astronaut.astro_id
+        client = app.test_client()
+        client.post("/login", data={"astro_id": astro_id})
+        client.get("/api/summary")
+        timings = []
+        for _ in range(30):
+            started = time.perf_counter()
+            client.get("/api/summary")
+            timings.append((time.perf_counter() - started) * 1000)
+        _dispose(app)
+    p95 = sorted(timings)[int(len(timings) * 0.95) - 1]
+    return Check("/api/summary p95 with 7 days of raw frames", PASS if p95 < 300 else FAIL,
+                 f"p95 {p95:.0f} ms ({count:,} raw frames + 30 days of history)")
+
+
+def check_emulator_profiles() -> Check:
+    import device_emulator
+
+    expected = ("normal", "no_finger", "finger_flap", "weak_signal", "spike", "flatline", "probe_missing",
+                "probe_ambient", "probe_warming", "wifi_gap", "duplicate", "bad_token", "malformed", "flood",
+                "restart")
+    missing = [name for name in expected if name not in device_emulator.PROFILES]
+    return Check("Emulator profiles (10A.11)", FAIL if missing else PASS,
+                 "missing: " + ", ".join(missing) if missing else f"{len(device_emulator.PROFILES)} profiles")
+
+
+def _pio() -> tuple[str | None, dict[str, str]]:
+    """PlatformIO executable and environment (uses the project's build cache when present)."""
+    candidates = [ROOT / ".venv" / ("Scripts" if os.name == "nt" else "bin") / ("pio.exe" if os.name == "nt" else "pio")]
+    found = next((str(path) for path in candidates if path.exists()), None) or shutil.which("pio")
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")
+    cache = ROOT / "build_sources" / "platformio"
+    if cache.exists():
+        env["PLATFORMIO_CORE_DIR"] = str(cache)
+    msys = Path("C:/msys64/ucrt64/bin")
+    if msys.exists():
+        env["PATH"] = f"{msys}{os.pathsep}{env.get('PATH', '')}"
+    return found, env
+
+
+def check_firmware() -> list[Check]:
+    """Phase 4: the firmware compiles and its pure-logic tests pass (or the reason is recorded)."""
+    pio, env = _pio()
+    if pio is None:
+        return [Check("Firmware compiles", SKIP, "firmware not compiled: PlatformIO not installed "
+                                                 "(pip install -r requirements-dev.txt)")]
+    secrets = ROOT / "firmware" / "include" / "secrets.h"
+    temporary = not secrets.exists()
+    if temporary:
+        secrets.write_text((ROOT / "firmware" / "include" / "secrets.example.h").read_text(encoding="utf-8"),
+                           encoding="utf-8")
+    try:
+        build = subprocess.run([pio, "run", "-d", str(ROOT / "firmware"), "-e", "esp32dev"], capture_output=True,
+                               text=True, env=env, timeout=1200)
+    except subprocess.TimeoutExpired:
+        build = None
+    finally:
+        if temporary:
+            secrets.unlink(missing_ok=True)
+    checks = []
+    if build is None:
+        checks.append(Check("Firmware compiles", FAIL, "build timed out"))
+    else:
+        usage = [line.strip() for line in build.stdout.splitlines() if line.strip().startswith(("RAM:", "Flash:"))]
+        checks.append(Check("Firmware compiles", PASS if build.returncode == 0 else FAIL,
+                            "; ".join(usage) if build.returncode == 0 else build.stdout.strip().splitlines()[-1][:200]))
+    compiler = shutil.which("g++", path=env.get("PATH")) or shutil.which("clang++", path=env.get("PATH"))
+    if compiler is None:
+        checks.append(Check("Firmware logic tests (native)", SKIP, "no host C++ compiler on PATH"))
+    else:
+        tests = subprocess.run([pio, "test", "-d", str(ROOT / "firmware"), "-e", "native"], capture_output=True,
+                               text=True, env=env, timeout=600)
+        summary = next((line for line in reversed(tests.stdout.splitlines()) if "test cases" in line), "")
+        checks.append(Check("Firmware logic tests (native)", PASS if tests.returncode == 0 else FAIL,
+                            summary.strip("= ") or tests.stdout.strip().splitlines()[-1][:200]))
+    return checks
+
+
+def check_module_files(phase: int) -> Check:
+    needed = {
+        5: ["app/cardio/routes.py", "app/templates/cardio.html", "app/static/js/app/cardio.js",
+            "app/static/js/app/ecg_synth.js", "app/static/js/app/ble.js", "app/static/js/app/charts.js"],
+        6: ["app/musculoskeletal/routes.py", "app/services/pose_service.py", "app/services/loading_index.py",
+            "app/static/js/app/exercise.js", "app/static/js/app/pose_adapters.js",
+            "app/static/vendor/mediapipe/vision_bundle.mjs", "app/static/vendor/mediapipe/pose_landmarker_lite.task",
+            "app/static/vendor/mediapipe/wasm/vision_wasm_internal.wasm"],
+    }[phase]
+    missing = [name for name in needed if not (ROOT / name).exists()]
+    label = {5: "Heart check files", 6: "Bone & Muscle files (incl. MediaPipe)"}[phase]
+    return Check(label, FAIL if missing else PASS, "missing: " + ", ".join(missing) if missing
+                 else f"{len(needed)} files present")
+
+
 PHASES: dict[int, list[Callable[[], Check | list[Check]]]] = {
     0: [
         check_python, check_packages, check_layout, check_env_example, check_requirements_pinned,
@@ -668,6 +907,10 @@ PHASES: dict[int, list[Callable[[], Check | list[Check]]]] = {
     ],
     1: [check_summary_speed],
     2: [check_twin_assets],
+    3: [check_emulator_profiles, check_live_path, check_summary_with_raw_frames],
+    4: [check_firmware],
+    5: [lambda: check_module_files(5)],
+    6: [lambda: check_module_files(6)],
 }
 
 

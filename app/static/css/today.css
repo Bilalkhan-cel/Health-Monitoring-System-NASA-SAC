@@ -104,6 +104,11 @@ button.score:hover { border-color: var(--line-strong); }
 .panel__live { display: flex; flex-wrap: wrap; align-items: center; gap: .375rem .875rem; padding-bottom: .75rem;
   border-bottom: 1px solid var(--line); font-size: .875rem; color: var(--text-2); }
 .panel__live[hidden] { display: none; }
+.live__values { color: var(--text); font-variant-numeric: tabular-nums; }
+.live__notice, .live__hint { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.pulse-dot { width: .5rem; height: .5rem; border-radius: 50%; background: var(--text-3); flex: none; }
+.pulse-dot.is-beating { background: var(--alert); animation: beat 1s ease-out infinite; }
+@keyframes beat { 0% { transform: scale(1.5); opacity: 1; } 60% { transform: scale(1); opacity: .55; } 100% { opacity: .55; } }
 
 /* SVG twin (fallback and Phase 1 body) */
 .twin2d .body-shape { fill: rgba(124,243,255,.05); stroke: rgba(124,243,255,.55); stroke-width: 1.2; }

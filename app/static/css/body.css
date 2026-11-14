@@ -1,0 +1,43 @@
+/* Bone & Muscle (mockup page 9): camera stage with skeleton overlay, workout side panel. */
+
+.banner { display: flex; gap: .625rem; align-items: flex-start; padding: .875rem 1rem; border: 1px solid var(--line-strong);
+  border-radius: 16px; color: var(--text-2); font-size: .9375rem; }
+.banner .icon { margin-top: .15rem; color: var(--okay); }
+.load__value { font-size: 4rem; font-weight: 300; letter-spacing: -.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+.exercise-picker { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+.workout { grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); align-items: start; }
+.camera { position: relative; border-radius: var(--radius-stage); overflow: hidden; background: #050608;
+  aspect-ratio: 16 / 9; border: 1px solid var(--line); }
+.camera video, .camera canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+.camera__top { position: absolute; top: 1rem; left: 1rem; right: 1rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+.chip--dark { background: rgba(0,0,0,.6); border-color: rgba(255,255,255,.18); backdrop-filter: blur(6px); cursor: default; }
+.camera__bottom { position: absolute; left: 1.25rem; right: 1.25rem; bottom: 1.25rem; display: grid; gap: .5rem; }
+.reps { font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 300; line-height: 1; letter-spacing: -.05em; text-shadow: 0 2px 20px rgba(0,0,0,.8); }
+.reps__label { font-size: 1.25rem; color: var(--text-2); letter-spacing: 0; }
+.cue { font-size: 1.375rem; font-weight: 500; text-shadow: 0 2px 16px rgba(0,0,0,.9); }
+.confidence { display: grid; grid-template-columns: 8rem 1fr; gap: .75rem; align-items: center; }
+.confidence .meter { --status-color: var(--good); }
+.camera__message { position: absolute; inset: auto 1.25rem 50% 1.25rem; padding: .75rem 1rem; border-radius: 14px; background: rgba(0,0,0,.8); }
+.flash { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 6px var(--good); opacity: 0; }
+.flash.is-on { animation: flash .6s ease-out; }
+@keyframes flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+.workout__side { display: grid; gap: 1rem; }
+.workout__side .card { padding: 1.25rem 1.375rem; }
+.plan { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .5rem; }
+.plan__item { display: flex; justify-content: space-between; gap: .75rem; padding: .625rem .75rem; border-radius: 12px; border: 1px solid var(--line); }
+.plan__item.is-now { border-color: var(--text); background: var(--surface); }
+.hud { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.hud__value { font-size: 2.25rem; font-weight: 300; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.hud__small { font-size: 1.0625rem; font-variant-numeric: tabular-nums; }
+.toggle { display: flex; align-items: center; gap: .5rem; color: var(--text-2); }
+.toggle input { accent-color: #fff; width: 1.1rem; height: 1.1rem; }
+input[type="range"] { accent-color: #fff; width: 100%; }
+
+@media (max-width: 960px) {
+  .workout { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flash.is-on { animation: none; }
+}

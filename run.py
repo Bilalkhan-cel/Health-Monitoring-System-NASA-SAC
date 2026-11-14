@@ -69,9 +69,48 @@ def main(argv: list[str] | None = None) -> int:
 
     if not report.db_ready:
         return 1
-    # Single process, threaded, no reloader: the live stream hub lives in memory.
-    app.run(host=config.bind_host, port=config.port, threaded=True, use_reloader=False, debug=config.debug)
+    from app.services.live_monitor import LiveMonitor
+
+    monitor = LiveMonitor(app)
+    monitor.start()
+    advertiser = advertise(config)
+    try:
+        # Single process, threaded, no reloader: the live stream hub lives in memory.
+        app.run(host=config.bind_host, port=config.port, threaded=True, use_reloader=False, debug=config.debug)
+    finally:
+        monitor.stop()
+        if advertiser is not None:
+            advertiser()
     return 0
+
+
+def advertise(config):
+    """Announce _astrovital._tcp on the LAN so the wearable can find the server. Failure is harmless."""
+    if not (config.device_enabled and config.zeroconf_enabled) or config.bind_host.startswith("127."):
+        return None
+    try:
+        import socket
+
+        from zeroconf import ServiceInfo, Zeroconf
+
+        from config import detect_lan_ip
+
+        address = detect_lan_ip(config)
+        info = ServiceInfo("_astrovital._tcp.local.", "AstroVital._astrovital._tcp.local.",
+                           addresses=[socket.inet_aton(address)], port=config.port, properties={"path": "/"})
+        zc = Zeroconf()
+        zc.register_service(info)
+    except Exception:  # noqa: BLE001 (mDNS is optional; the server URL can always be set by hand)
+        return None
+
+    def close() -> None:
+        try:
+            zc.unregister_service(info)
+            zc.close()
+        except Exception:  # noqa: BLE001
+            pass
+
+    return close
 
 
 if __name__ == "__main__":

@@ -1,0 +1,126 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon %}
+{% block title %}Bones & muscle · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/check.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/body.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="page-title">Bones & muscle. <span class="headline__second">Load them every day.</span></h1>
+{% endblock %}
+{% block content %}
+<div class="check" data-body data-plan='{{ plan|tojson }}'
+     {% for key, name in names.items() %}data-name{{ key }}="{{ name }}" {% endfor %}>
+  <p class="banner">{{ icon("info") }}A camera can't measure bone density. This module tracks the loading exercise that protects your bones and muscles in reduced gravity.</p>
+
+  <section class="step" data-step="overview">
+    <div class="overview">
+      <div class="overview__main">
+        <div class="load">
+          <p class="card__meta">Exercise load, last 7 days</p>
+          <p class="load__value">{{ current if current is not none else "–" }}<span class="score__max">/100</span></p>
+          <p class="card__meta">{{ breakdown.minutes }} of {{ breakdown.target_minutes }} active minutes · {{ breakdown.days }} of {{ breakdown.target_days }} days{% if since is not none %} · last workout {{ "today" if since == 0 else (since|string + " day" + ("" if since == 1 else "s") + " ago") }}{% endif %}</p>
+        </div>
+        <p class="lede">In {{ environment }} ({{ env.gravity_g }} g) your bones lose strength fast without load. ISS crews exercise about two hours a day. Short sessions on most days work best.</p>
+        <div class="exercise-picker" role="group" aria-label="Choose an exercise">
+          {% for exercise in allowed if exercise != "device_log" %}
+          <button class="pill {{ 'pill--primary' if loop.first else 'pill--ghost' }}" type="button" data-exercise="{{ exercise }}">{{ icon("camera") }}{{ "Harnessed treadmill" if env.gravity_g == 0 and exercise == "run" else names[exercise] }}</button>
+          {% endfor %}
+        </div>
+        {% if env.gravity_g == 0 %}<p class="card__meta">Push-ups and pull-ups are hidden here: without gravity they don't load your bones. Log ARED and cycle sessions below.</p>{% endif %}
+        {% if "pullup" not in allowed and env.gravity_g %}<p class="card__meta">No pull-up bar in the rover, so pull-ups are hidden.</p>{% endif %}
+        <p class="form-error" data-no-camera hidden>This browser can't use a camera. Log a device session instead.</p>
+      </div>
+      <div class="card">
+        <h2 class="card__title">Set up the camera</h2>
+        <ol class="steps steps--roomy">
+          <li>Put the camera to your side, 2 to 3 metres away.</li>
+          <li>Make sure your whole body fits in the picture.</li>
+          <li>Clear the space around you and keep a hand-hold close in low gravity.</li>
+        </ol>
+        <p class="card__meta">{{ icon("lock") }} Video stays on this device. Only body points are analysed; nothing is recorded.</p>
+      </div>
+    </div>
+
+    <div class="results__grid">
+      <form class="card" data-log-form>
+        <h2 class="card__title">Log a device session</h2>
+        <label class="field"><span class="field__label">Machine</span>
+          <select class="field__input" name="device">{% for device in devices %}<option>{{ device }}</option>{% endfor %}</select></label>
+        <div class="field-row">
+          <label class="field"><span class="field__label">Minutes</span>
+            <input class="field__input" type="number" name="minutes" min="1" max="240" value="30" required></label>
+          <label class="field"><span class="field__label">Effort <span data-effort-value>6</span>/10</span>
+            <input type="range" name="effort" min="1" max="10" value="6" data-effort></label>
+        </div>
+        <p class="form-error" data-log-error hidden></p>
+        <button class="pill pill--primary" type="submit">Save session</button>
+      </form>
+      <div class="card">
+        <h2 class="card__title">Recent workouts</h2>
+        <ul class="rows">
+          {% for session in history %}
+          <li class="row"><span class="row__label">{{ session.started_at.strftime("%b %d") }}</span><span>{{ session.summary or "Workout" }}</span></li>
+          {% else %}
+          <li class="row"><span class="row__label">No workouts yet. Start one above.</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="step workout" data-step="session" hidden>
+    <div class="camera">
+      <video data-video playsinline muted aria-label="Your camera, mirrored"></video>
+      <canvas data-overlay aria-hidden="true"></canvas>
+      <div class="flash" data-flash aria-hidden="true"></div>
+      <div class="camera__top">
+        <span class="chip chip--dark" data-set-title>Exercise</span>
+        <span class="chip chip--dark">{{ icon("lock") }}Video stays on this device</span>
+        <span class="chip chip--dark" data-fps>– fps</span>
+      </div>
+      <div class="camera__bottom">
+        <p class="reps"><span data-reps>0</span> <span class="reps__label" data-reps-label>reps</span></p>
+        <p class="cue" data-cue aria-live="polite">Get into position.</p>
+        <div class="confidence"><span class="meter"><span class="meter__fill" data-confidence></span></span><span class="card__meta" data-confidence-label>Starting the camera…</span></div>
+      </div>
+      <p class="form-error camera__message" data-camera-message hidden></p>
+    </div>
+    <aside class="workout__side">
+      <div class="card">
+        <h2 class="card__title">Today's workout</h2>
+        <ul class="plan" data-plan></ul>
+      </div>
+      <div class="card hud">
+        <div><p class="card__meta">Form</p><p class="hud__value" data-form>–</p></div>
+        <div><p class="card__meta">Tempo</p><p class="hud__small" data-tempo>–</p></div>
+        <div><p class="card__meta">Set time</p><p class="hud__small" data-timer>0:00</p></div>
+        <div><p class="card__meta">Load after today</p><p class="hud__value" data-preview>{{ current if current is not none else "–" }}</p></div>
+      </div>
+      <label class="toggle"><input type="checkbox" data-voice checked> Spoken cues</label>
+      <div class="panel__actions">
+        <button class="pill pill--ghost" type="button" data-retry>Restart camera</button>
+        <button class="pill pill--ghost" type="button" data-next>Next set</button>
+        <button class="pill pill--primary" type="button" data-end>End workout</button>
+      </div>
+    </aside>
+  </section>
+
+  <section class="step results" data-step="results" hidden>
+    <div class="results__head">
+      <span data-result-status></span>
+      <h2 class="headline" data-result-title></h2>
+      <p class="card__meta" data-result-previous></p>
+    </div>
+    <div class="results__grid">
+      <div class="card"><h3 class="card__title">Sets</h3><ul class="rows" data-result-sets></ul></div>
+      <div class="card"><h3 class="card__title">Tips</h3><ul class="steps steps--roomy" data-result-tips></ul>
+        <div class="panel__actions"><a class="pill pill--primary" href="{{ url_for('dashboard.index') }}">Back to Today</a>
+          <button class="pill pill--ghost" type="button" data-back>Another workout</button></div></div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block page_scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/app/exercise.js') }}"></script>
+{% endblock %}

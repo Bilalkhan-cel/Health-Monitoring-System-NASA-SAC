@@ -166,6 +166,10 @@ def record(
 
     if live:
         _notify(astronaut_id, measurement, needs_remeasure)
+        if status is not None:
+            from .stream_hub import queue_event
+
+            queue_event(db.session, astronaut_id, "summary", {"metrics": [metric]})
         db.session.flush()
         from .summary import store_readiness  # local import: summary reads measurements
 

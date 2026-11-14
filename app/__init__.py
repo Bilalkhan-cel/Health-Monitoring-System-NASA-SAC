@@ -95,7 +95,7 @@ def _register_error_handlers(app: Flask) -> None:
 
 
 BLUEPRINTS = (
-    "landing", "auth", "dashboard", "settings",
+    "landing", "auth", "dashboard", "settings", "devices", "cardio", "musculoskeletal",
 )
 
 
@@ -148,6 +148,9 @@ def create_app(config: Config | None = None, *, testing: bool = False, rate_limi
     limiter.init_app(app)
     sock.init_app(app)
 
+    from .services.live import init_live
+
+    init_live(app, config)
     _install_guards(app, config)
     _register_blueprints(app)
     _register_error_handlers(app)
