@@ -33,6 +33,7 @@
   --okay: #3B9EFF;
   --watch: #FFC53D;
   --alert: #FF4D6D;
+  --alert-fill: #C8143A;   /* red behind white text: 5.8:1 (WCAG AA); --alert is for red text and dots on black */
   --radius-pill: 999px;
   --radius-card: 24px;
   --radius-stage: 32px;
@@ -252,4 +253,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
     transition-duration: .01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Settings → Reduce motion: the same calm mode as the OS setting, chosen in the app. */
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
+  scroll-behavior: auto !important;
 }

@@ -15,6 +15,7 @@ from config import Config
 
 from ..models import Astronaut, CardioSession, ExerciseSession, HealthProfile, MentalCheckin, Measurement, utcnow
 from . import thresholds
+from .mission import mission_day
 from .readiness import load_indicators
 from .summary import build_summary, iso, load_environments, metric_views, usual_text
 
@@ -121,7 +122,7 @@ def build(astronaut_id: int, config: Config, now: datetime | None = None, live: 
         "generated_at": iso(now),
         "profile": {"callsign": astronaut.callsign, "role": astronaut.role,
                     "age": profile.age if profile else None},
-        "mission": {"name": mission.name, "day": config.mission_day, "environment": mission.environment,
+        "mission": {"name": mission.name, "day": mission_day(config, mission), "environment": mission.environment,
                     "gravity_g": environment.get("gravity_g"), "comms_delay_one_way_s": delay},
         "units": {"temperature": "C", "glucose": "mg/dL"},
         "latest": latest,

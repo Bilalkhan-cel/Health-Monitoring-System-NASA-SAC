@@ -21,7 +21,8 @@ from config import BASE_DIR, Config
 from ..extensions import db
 from ..models import Astronaut, DailyTask, IntakeLog, Measurement, Mission, ReadinessDaily, SleepLog, utcnow
 from . import readiness as readiness_service
-from . import thresholds
+from . import thresholds, units
+from .mission import mission_day
 from .readiness import MetricState, Readiness
 
 LOOKBACK_DAYS = thresholds.BASELINE_WINDOW_DAYS + thresholds.BASELINE_EXCLUDE_DAYS
@@ -87,11 +88,16 @@ def number_text(metric: str, value: float, value2: float | None = None) -> str:
         return hours_text(value)
     if metric == "hydration_ml":
         return f"{value / 1000:.1f}"
-    decimals = readiness_service.load_indicators()["metrics"][metric]["decimals"]
-    return f"{value:.{decimals}f}"
+    shown, decimals, _ = units.display(metric, value)
+    if decimals is None:
+        decimals = readiness_service.load_indicators()["metrics"][metric]["decimals"]
+    return f"{shown:.{decimals}f}"
 
 
 def unit_text(metric: str) -> str:
+    _, _, unit = units.display(metric, 0.0)
+    if unit:
+        return unit
     unit = readiness_service.load_indicators()["metrics"][metric]["unit"]
     return "" if metric == "sleep_hours" else unit
 
@@ -251,7 +257,7 @@ def mission_json(mission: Mission, config: Config, now: datetime) -> dict:
     environment = load_environments().get(mission.environment, {})
     delay = mission.comms_delay_s if mission.comms_delay_s is not None else environment.get("comms_delay_one_way_s", 0)
     return {
-        "name": mission.name, "day": config.mission_day, "environment": mission.environment,
+        "name": mission.name, "day": mission_day(config, mission), "environment": mission.environment,
         "gravity_g": environment.get("gravity_g"), "comms_delay_s": delay, "comms_delay_text": duration_text(delay),
         "date_text": f"{now:%A}, {now.day} {now:%B}",
     }
@@ -274,7 +280,8 @@ def _metric_json(view: MetricView, spec: dict, system: str) -> dict:
         usual = usual_text(view)
         if view.notable:
             delta = latest.value - view.baseline.median
-            amount = hours_text(abs(delta)) if view.key == "sleep_hours" else f"{abs(delta):.{spec['decimals']}f}"
+            shown_delta = units.display(view.key, latest.value)[0] - units.display(view.key, view.baseline.median)[0]
+            amount = hours_text(abs(delta)) if view.key == "sleep_hours" else                 f"{abs(shown_delta):.{units.display(view.key, 0.0)[1] or spec['decimals']}f}"
             item["usual"] = f"{amount} {'above' if delta > 0 else 'below'} your usual ({usual})"
         else:
             item["usual"] = f"Close to your usual ({usual})"
@@ -416,7 +423,7 @@ def build_history(astronaut: Astronaut, config: Config, metric: str, range_key: 
     """Chart series for ``readiness`` or one metric over 7 d, 30 d or the whole mission."""
     now = now or utcnow()
     spec = readiness_service.load_indicators()["metrics"]
-    days = RANGES.get(range_key) or max(7, config.mission_day)
+    days = RANGES.get(range_key) or max(7, mission_day(config, astronaut.mission))
     start_day = now.date() - timedelta(days=days - 1)
     key_of = {name: meta["key"] for name, meta in thresholds.STATUS_META.items()}
     points, tiles, events = [], [], []
@@ -447,8 +454,10 @@ def build_history(astronaut: Astronaut, config: Config, metric: str, range_key: 
                                          Measurement.created_at <= now)
                 .order_by(Measurement.created_at).all())
         worst_by_day: dict[date, str | None] = {}
+        reference = [round(units.display(metric, bound)[0], 1) for bound in reference]
         for row in rows:
-            point = {"t": iso(row.created_at), "v": round(row.value, 2), "status": key_of.get(row.status)}
+            point = {"t": iso(row.created_at), "v": round(units.display(metric, row.value)[0], 2),
+                     "status": key_of.get(row.status)}
             if row.value2 is not None:
                 point["v2"] = round(row.value2, 2)
             points.append(point)

@@ -72,7 +72,7 @@
 .icon-button:hover { background: var(--surface); }
 .icon-button__badge {
   position: absolute; top: -4px; right: -4px; min-width: 1.15rem; height: 1.15rem; padding: 0 .3rem;
-  border-radius: var(--radius-pill); background: var(--alert); color: #fff;
+  border-radius: var(--radius-pill); background: var(--alert-fill); color: #fff;
   font-size: .6875rem; font-weight: 600; line-height: 1.15rem; text-align: center;
 }
 
@@ -106,7 +106,7 @@
 .alertbar {
   display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
   margin: .5rem var(--gutter) 0; padding: .875rem 1.125rem;
-  border-radius: 18px; background: var(--alert); color: #fff;
+  border-radius: 18px; background: var(--alert-fill); color: #fff;
 }
 .alertbar .icon { width: 1.5rem; height: 1.5rem; }
 .alertbar__text { flex: 1 1 22rem; font-weight: 500; }
@@ -130,6 +130,11 @@
 .steps li::marker { color: var(--text-3); font-variant-numeric: tabular-nums; }
 .dot { display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: var(--status-color, var(--text-3)); flex: none; }
 .verdict { font-size: .875rem; }
+
+/* ── Segmented control (shared) ── */
+.segmented { display: inline-flex; gap: .25rem; padding: .25rem; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); }
+.segmented__item { border: 0; background: none; color: var(--text-2); padding: .4rem .9rem; border-radius: var(--radius-pill); cursor: pointer; font-size: .875rem; }
+.segmented__item[aria-pressed="true"], .segmented__item[aria-current="page"] { background: var(--primary-bg); color: var(--primary-fg); }
 
 /* ── Dialogs ── */
 .dialog {
@@ -189,6 +194,7 @@
 
 /* ── Responsive shell ── */
 @media (max-width: 760px) {
+  html:has(body.app) { scroll-padding-bottom: 5rem; } /* the bottom bar never hides a focused element */
   .app { --rail-w: 0px; }
   .shell { flex-direction: column; }
   .rail {

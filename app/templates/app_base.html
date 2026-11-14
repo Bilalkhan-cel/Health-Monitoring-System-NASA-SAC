@@ -2,12 +2,13 @@
 {% from "partials/macros.html" import icon %}
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <meta name="astro-temp-unit" content="{{ display_units().temp }}">
   {% block page_head %}{% endblock %}
 {% endblock %}
 {% block body_class %}app{% endblock %}
 {% block body %}
 {% set chip = mission_chip() %}
-<div class="shell" data-sprite="{{ url_for('static', filename='vendor/lucide/sprite.svg') }}">
+<div class="shell" data-sprite="{{ url_for('static', filename='vendor/lucide/sprite.svg') }}"{% if crew.is_surgeon %} data-surgeon{% endif %}>
   <nav class="rail" id="rail" aria-label="Main">
     <button class="rail__item rail__toggle" type="button" aria-expanded="false" aria-controls="rail" data-rail-toggle>
       {{ icon("menu") }}<span class="rail__label">Collapse menu</span>
@@ -37,7 +38,7 @@
           {{ icon("orbit") }}<span>Day {{ chip.day }} · {{ chip.environment }}</span>
         </button>
         {% endif %}
-        {% if has_endpoint("notifications.index") %}
+        {% if has_endpoint("notifications.index") and not crew.is_surgeon %}
         <a class="icon-button" href="{{ url_for('notifications.index') }}" data-bell aria-label="Notifications">
           {{ icon("bell") }}<span class="icon-button__badge" data-bell-count hidden></span>
         </a>
@@ -49,8 +50,10 @@
           </summary>
           <div class="menu__panel">
             <p class="menu__who">{{ crew.role }} · {{ crew.callsign }}</p>
+            {% if not crew.is_surgeon %}
             {% if has_endpoint("settings.index") %}<a class="menu__item" href="{{ url_for('settings.index') }}">{{ icon("settings") }}Settings</a>{% endif %}
             {% if has_endpoint("notifications.index") %}<a class="menu__item" href="{{ url_for('notifications.index') }}">{{ icon("bell") }}Notifications</a>{% endif %}
+            {% endif %}
             <form method="post" action="{{ url_for('auth.logout') }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button class="menu__item" type="submit">{{ icon("log-out") }}Log out</button>

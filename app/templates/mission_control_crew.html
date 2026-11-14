@@ -1,0 +1,57 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon, status_pill %}
+{% block title %}{{ detail.name }} · Mission Control{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mission_control.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="page-title">{{ detail.name }}. <span class="headline__second">{{ detail.role }} · {{ detail.callsign }}</span></h1>
+{% endblock %}
+{% block content %}
+<div class="mc">
+  <a class="pill pill--ghost pill--small mc__back" href="{{ url_for('mission_control.index') }}">{{ icon("arrow-left") }}All crew</a>
+  <p class="mc__note">{{ icon("shield") }}<span>Read-only. Physiological metrics only. Mind:
+    {% if detail.mind_status %}<span class="dot is-{{ detail.mind_status.key }}" aria-hidden="true"></span> {{ detail.mind_status.label }}{% else %}no data{% endif %}.</span></p>
+
+  <section class="card" aria-labelledby="latest-title">
+    <h2 class="card__title" id="latest-title">Latest readings</h2>
+    <table class="mc-table">
+      <thead><tr><th scope="col">Measure</th><th scope="col">Latest</th><th scope="col">When</th><th scope="col">Status</th></tr></thead>
+      <tbody>
+        {% for row in detail.latest %}
+        <tr><td>{{ row.label }}</td><td>{{ row.value }}</td><td>{{ row.updated }}</td><td>{{ status_pill(row.status) if row.status else "—" }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <div class="mc__two">
+    <section class="card" aria-labelledby="flags-title">
+      <h2 class="card__title" id="flags-title">Flags, last {{ detail.days }} days</h2>
+      {% if detail.flags %}
+      <table class="mc-table">
+        <thead><tr><th scope="col">When (UTC)</th><th scope="col">Measure</th><th scope="col">Reading</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          {% for row in detail.flags %}
+          <tr><td>{{ row.when }}</td><td>{{ row.label }}</td><td>{{ row.value }}</td><td>{{ status_pill(row.status) }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="card__meta">Nothing needed attention.</p>{% endif %}
+    </section>
+    <section class="card" aria-labelledby="sessions-title">
+      <h2 class="card__title" id="sessions-title">Sessions, last {{ detail.days }} days</h2>
+      {% if detail.sessions %}
+      <table class="mc-table">
+        <thead><tr><th scope="col">When (UTC)</th><th scope="col">Session</th><th scope="col">Result</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          {% for row in detail.sessions %}
+          <tr><td>{{ row.when }}</td><td>{{ row.kind }}</td><td>{{ row.text }}</td><td>{{ status_pill(row.status) if row.status else "—" }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="card__meta">No heart checks or exercise sessions.</p>{% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

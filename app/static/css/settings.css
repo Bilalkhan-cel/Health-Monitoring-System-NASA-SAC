@@ -1,0 +1,77 @@
+/* Settings (Section 16): sections with a sticky index, switches, wearable, badges, Demo panel. */
+
+.settings { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 2rem; align-items: start; }
+.settings__toc { position: sticky; top: 5.5rem; display: grid; gap: .125rem; }
+.settings__toc a { padding: .5rem .75rem; border-radius: 12px; color: var(--text-2); text-decoration: none; font-size: .9375rem; }
+.settings__toc a:hover, .settings__toc a:focus-visible { background: var(--surface); color: var(--text); }
+.settings__body { display: grid; gap: 1.25rem; max-width: 48rem; }
+.set { display: grid; gap: 1rem; scroll-margin-top: 5.5rem; }
+.set__rows { display: grid; }
+.set__row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .875rem 0;
+  border-top: 1px solid var(--line); }
+.set__row:first-child { border-top: 0; padding-top: 0; }
+.set__label { display: block; font-weight: 500; }
+.set__hint { display: block; color: var(--text-3); font-size: .875rem; margin-top: .125rem; }
+.set__sub { font-size: 1rem; font-weight: 500; }
+.set__actions { display: flex; align-items: center; gap: 1rem; padding-top: .75rem; }
+.set__saved { min-height: 1.25rem; font-size: .875rem; color: var(--good); }
+.set__saved.is-error { color: var(--alert); }
+.field__input--time, .field__input--auto { width: auto; min-width: 8rem; }
+
+/* radio inputs inside the shared segmented control */
+.segmented__radio { position: relative; display: inline-flex; align-items: center; }
+.segmented__radio input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.segmented__radio:has(input:checked) { background: var(--primary-bg); color: var(--primary-fg); }
+.segmented__radio:has(input:focus-visible) { outline: 2px solid var(--text); outline-offset: 2px; }
+
+/* switches: a native checkbox restyled, still a checkbox for assistive tech */
+.switch { cursor: pointer; }
+.switch input[type="checkbox"] { appearance: none; flex: none; width: 2.75rem; height: 1.625rem; margin: 0;
+  border-radius: var(--radius-pill); background: rgba(255,255,255,.14); position: relative; cursor: pointer;
+  transition: background .2s var(--ease-calm); }
+.switch input[type="checkbox"]::after { content: ""; position: absolute; top: .1875rem; left: .1875rem; width: 1.25rem;
+  height: 1.25rem; border-radius: 50%; background: var(--text); transition: transform .2s var(--ease-calm); }
+.switch input[type="checkbox"]:checked { background: var(--good); }
+.switch input[type="checkbox"]:checked::after { transform: translateX(1.125rem); background: #04140C; }
+.switch input[type="checkbox"]:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+.calibrate { display: grid; gap: .625rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.calibrate__row { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; }
+.calibrate__row .field { flex: 0 1 14rem; }
+
+.danger { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1rem; border: 1px solid color-mix(in srgb, var(--alert) 40%, transparent); border-radius: 16px; }
+.danger > div { display: grid; gap: .25rem; max-width: 32rem; }
+.pill--danger { background: transparent; color: var(--alert); border-color: color-mix(in srgb, var(--alert) 60%, transparent); }
+.pill--danger:hover { background: color-mix(in srgb, var(--alert) 14%, transparent); }
+.dialog .pill--danger { background: var(--alert-fill); color: #fff; border-color: var(--alert-fill); }
+
+.badges { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: .75rem; }
+.badge { display: grid; gap: .25rem; padding: 1rem; border: 1px solid var(--line); border-radius: 16px; color: var(--text-3); }
+.badge.is-earned { color: var(--text); border-color: var(--line-strong); background: var(--surface); }
+.badge__icon { width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.06); }
+.badge.is-earned .badge__icon { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.badge__name { font-weight: 500; }
+.badge__rule, .badge__date { font-size: .8125rem; color: var(--text-3); }
+
+.about { font-size: 1.0625rem; line-height: 1.55; }
+.empty { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; color: var(--text-2); }
+.empty .icon { width: 1.5rem; height: 1.5rem; color: var(--text-3); }
+.empty strong { color: var(--text); font-weight: 500; }
+
+.demo { border-style: dashed; }
+.demo__block { display: grid; gap: .625rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.demo__row { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; }
+.demo__row .field { flex: 1 1 10rem; }
+.scenarios { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.scenario { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem;
+  border: 1px solid var(--line); border-radius: 14px; }
+.scenario__title { font-weight: 500; }
+
+@media (max-width: 900px) {
+  .settings { grid-template-columns: 1fr; }
+  .settings__toc { position: static; display: flex; flex-wrap: wrap; gap: .25rem; }
+}
+@media (max-width: 560px) {
+  .set__row { flex-wrap: wrap; }
+}

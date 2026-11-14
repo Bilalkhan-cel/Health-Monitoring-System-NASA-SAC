@@ -17,7 +17,8 @@ export function webglAvailable() {
 }
 
 export function reducedMotion() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    || document.documentElement.classList.contains('reduce-motion');
 }
 
 export function initialTier() {

@@ -26,10 +26,10 @@ def test_landing_page_renders_with_the_disclaimer(client):
     response = client.get("/")
     assert response.status_code == 200
     page = response.get_data(as_text=True)
-    assert "Beyond Earth." in page and "always in health." in page
+    assert "Beyond Earth." in page and "Always in health." in page
     assert "Prototype for educational purposes. Not a certified medical device." in page
     assert 'name="csrf-token"' in page
-    assert "<script" not in page, "phase 0 ships no JavaScript"
+    assert "Astronaut login" in page and "Register" not in page, "no sign-up exists"
 
 
 def test_landing_page_has_no_link_to_a_page_that_does_not_exist(client, app):
@@ -124,3 +124,15 @@ def test_secrets_are_redacted_from_log_lines():
                                ("super-secret-token",), None)
     assert redactor.filter(record) is True
     assert record.getMessage() == "connecting to wss://host/***/agent"
+
+
+def test_favicon_ico_is_served(client):
+    response = client.get("/favicon.ico")
+    assert response.status_code == 200 and response.mimetype == "image/svg+xml"
+
+
+def test_landing_poster_and_scene_assets_exist(client):
+    page = client.get("/").get_data(as_text=True)
+    assert "img/hero-poster.webp" in page and "data-hero-canvas" in page
+    poster = client.get("/static/img/hero-poster.webp")
+    assert poster.status_code == 200 and poster.data[8:12] == b"WEBP"

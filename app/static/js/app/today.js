@@ -218,7 +218,10 @@ function renderLive(snapshot) {
     const parts = [];
     if (snapshot.hr != null) parts.push(`Heart rate ${snapshot.hr} bpm`);
     if (snapshot.spo2 != null) parts.push(`SpO₂ ${snapshot.spo2} %`);
-    if (snapshot.temp?.value_c != null) parts.push(`Temp ${snapshot.temp.value_c} °C`);
+    if (snapshot.temp?.value_c != null) {
+      const fahrenheit = document.querySelector('meta[name="astro-temp-unit"]')?.content === 'F';
+      parts.push(fahrenheit ? `Temp ${(snapshot.temp.value_c * 9 / 5 + 32).toFixed(1)} °F` : `Temp ${snapshot.temp.value_c} °C`);
+    }
     strip.append(dot, h('span', { class: 'live__values' }, parts.join(' · ') || LIVE_TEXT[snapshot.state] || ''));
   } else {
     let text = LIVE_TEXT[snapshot.state] || '';

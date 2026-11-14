@@ -1,9 +1,11 @@
 // App shell behaviour: rail labels, dialogs, account menu, environment picker, alert bar.
 
 import { api } from './api.js';
-import { clear, h } from './dom.js';
+import { clear, h, toast } from './dom.js';
 
 const RAIL_KEY = 'astrovital.rail-open';
+const SEEN_KEY = 'astrovital.notes-seen';
+const TOAST_TYPES = new Set(['reminder', 'critical', 'attention', 'badge', 'doctor']);
 
 function readPref(key) {
   try {
@@ -104,11 +106,57 @@ export function showAlerts(alerts, protocol) {
 
 async function pollAlerts() {
   if (document.getElementById('summary-data')) return; // Today renders its own alerts
+  if (document.querySelector('[data-surgeon]')) return; // alerts belong to astronauts; Mission Control shows colours
   try {
     const data = await api('/api/alerts');
     showAlerts(data.alerts, data.protocol);
   } catch {
     /* offline: keep whatever is shown */
+  }
+}
+
+function setUnread(count) {
+  const badge = document.querySelector('[data-bell-count]');
+  const bell = document.querySelector('[data-bell]');
+  if (!badge || !bell) return;
+  badge.hidden = !count;
+  badge.textContent = count > 9 ? '9+' : String(count || '');
+  bell.setAttribute('aria-label', count ? `Notifications, ${count} unread` : 'Notifications');
+}
+
+let seen = null;
+function readSeen() {
+  try {
+    const value = window.sessionStorage.getItem(SEEN_KEY);
+    return value === null ? null : Number(value) || 0;
+  } catch {
+    return null;
+  }
+}
+
+function writeSeen(value) {
+  seen = value;
+  try {
+    window.sessionStorage.setItem(SEEN_KEY, String(value));
+  } catch {
+    /* private mode: toasts may repeat after a reload, nothing else changes */
+  }
+}
+
+async function pollNotifications() {
+  if (!document.querySelector('[data-bell]')) return;
+  if (seen === null) seen = readSeen();
+  try {
+    const data = await api(`/api/notifications/poll?since=${seen ?? 0}`);
+    setUnread(data.unread);
+    // The first poll of a browser session only sets the bell; later ones toast what is new.
+    if (seen !== null) {
+      const fresh = data.items.filter((item) => !item.read && TOAST_TYPES.has(item.type));
+      for (const item of fresh.slice(-2)) toast(item.title, 6000);
+    }
+    writeSeen(data.latest_id);
+  } catch {
+    /* offline: try again on the next tick */
   }
 }
 
@@ -118,4 +166,10 @@ setupMenu();
 setupEnvironment();
 window.addEventListener('astro:alerts', (event) => showAlerts(event.detail.alerts, event.detail.protocol));
 pollAlerts();
-window.setInterval(() => { if (!document.hidden) pollAlerts(); }, 30000);
+pollNotifications();
+window.addEventListener('astro:unread', (event) => setUnread(event.detail.unread));
+window.setInterval(() => {
+  if (document.hidden) return;
+  pollAlerts();
+  pollNotifications();
+}, 30000);

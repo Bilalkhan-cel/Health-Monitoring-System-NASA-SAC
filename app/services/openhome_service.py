@@ -34,6 +34,7 @@ API_BASE = "https://app.openhome.com"
 USER_AGENT = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
               "Chrome/131.0.0.0 Safari/537.36")
 TEXT_TIMEOUT_S = 25
+AUDIO_END_GRACE_S = 1.5  # after the reply, wait this long for audio-end before hanging up
 HEALTH_TTL_S = 60
 _health_cache: dict[str, tuple[float, str]] = {}
 
@@ -218,15 +219,20 @@ def text_call(config: Config, message: str, timeout: float = TEXT_TIMEOUT_S) -> 
     """
     if mode(config) != "live":
         return None
-    state = {"sent": False, "reply": None}
+    state = {"sent": False, "reply": None, "speaking": False}
     done = threading.Event()
+    spoken = threading.Event()  # the agent finished its utterance (audio-end), so closing is clean
 
     def on_frame(frame: Frame) -> None:
         kind, data = frame.get("type"), frame.get("data")
         if kind == "text" and data == "audio-init":
+            state["speaking"] = True
+            spoken.clear()
             upstream.send({"type": "text", "data": "bot-speaking"})
         elif kind == "text" and data == "audio-end":
+            state["speaking"] = False
             upstream.send({"type": "text", "data": "bot-speak-end"})
+            spoken.set()
         elif kind == "audio":
             upstream.send({"type": "ack", "data": "audio-received"})
         elif kind == "error-event":
@@ -250,6 +256,8 @@ def text_call(config: Config, message: str, timeout: float = TEXT_TIMEOUT_S) -> 
                 upstream.send({"type": "transcribed", "data": message})
         threading.Timer(8, nudge).start()
         done.wait(timeout)
+        if state["reply"] is not None and state["speaking"]:
+            spoken.wait(AUDIO_END_GRACE_S)  # let the agent finish instead of hanging up mid-sentence
         upstream.close()
     except Exception as error:  # noqa: BLE001 (any failure falls back)
         log.warning("OpenHome text call failed: %s", redact(str(error), config))

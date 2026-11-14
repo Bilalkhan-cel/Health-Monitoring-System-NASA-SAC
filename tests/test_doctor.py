@@ -234,9 +234,14 @@ def test_text_call_contract_against_the_mock_server(env_values):
         assert openhome_service.mode(config) == "live"
         reply = openhome_service.text_call(config, "how am I doing?", timeout=10)
     assert reply == "You said: how am I doing?"
-    kinds = [(frame["type"], frame["data"]) for frame in RECEIVED]
-    assert ("transcribed", "how am I doing?") in kinds
-    assert ("text", "bot-speaking") in kinds and ("ack", "audio-received") in kinds
+    expected = {("transcribed", "how am I doing?"), ("text", "bot-speaking"), ("ack", "audio-received")}
+    deadline = time.monotonic() + 2.0  # the mock records frames on its own thread
+    while time.monotonic() < deadline:
+        kinds = {(frame["type"], frame["data"]) for frame in list(RECEIVED) if isinstance(frame.get("data"), str)}
+        if expected <= kinds:
+            break
+        time.sleep(0.02)
+    assert expected <= kinds, kinds
 
 
 def test_live_upstream_relays_frames_both_ways(env_values):

@@ -7,6 +7,8 @@ from flask import Flask, current_app, request, url_for
 from config import ENVIRONMENTS, VERSION, Config
 
 from .auth.services import current_crew
+from .services.mission import mission_day
+from .services.units import current_units
 
 # (endpoint, label, icon). An item is shown only when its page exists, so nothing is dead.
 NAV = (
@@ -48,8 +50,19 @@ def mission_chip(config: Config) -> dict | None:
     environment = load_environments().get(mission.environment, {})
     delay = mission.comms_delay_s if mission.comms_delay_s is not None \
         else environment.get("comms_delay_one_way_s", 0)
-    return {"day": config.mission_day, "environment": mission.environment, "options": ENVIRONMENTS,
+    return {"day": mission_day(config, mission), "environment": mission.environment, "options": ENVIRONMENTS,
             "gravity_g": environment.get("gravity_g"), "comms_delay_text": duration_text(delay)}
+
+
+def reduce_motion() -> bool:
+    """Settings → Reduce motion, for the logged-in astronaut (the OS setting is honoured in CSS)."""
+    crew = current_crew()
+    if crew is None:
+        return False
+    from .models import UserSettings
+
+    row = UserSettings.query.filter_by(astronaut_id=crew.id).first()
+    return bool(row and row.reduced_motion)
 
 
 def register_template_helpers(app: Flask, config: Config) -> None:
@@ -63,4 +76,6 @@ def register_template_helpers(app: Flask, config: Config) -> None:
             "nav_items": nav_items,
             "mission_chip": lambda: mission_chip(config),
             "demo_mode": config.demo_mode,
+            "display_units": current_units,
+            "reduce_motion": reduce_motion,
         }

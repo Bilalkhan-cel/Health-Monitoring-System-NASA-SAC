@@ -1,0 +1,23 @@
+/* Notifications page (Section 15). Severity uses the status colours only. */
+
+.notes-page { display: grid; gap: 1.25rem; max-width: 52rem; }
+.notes-page__bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .75rem; }
+.segmented a.segmented__item { text-decoration: none; }
+.notes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .625rem; }
+.note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 1rem; align-items: start;
+  padding: 1rem 1.25rem; border-left: 3px solid transparent; }
+.note.is-unread { border-left-color: var(--status-color, var(--text)); background: rgba(255, 255, 255, .05); }
+.note__icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%;
+  background: color-mix(in srgb, var(--status-color, #fff) 16%, transparent); color: var(--status-color, var(--text)); }
+.note__title { font-weight: 500; }
+.note:not(.is-unread) .note__title { color: var(--text-2); }
+.note__text { color: var(--text-2); font-size: .9375rem; }
+.note__meta { display: flex; align-items: center; gap: .375rem; color: var(--text-3); font-size: .8125rem; margin-top: .25rem; }
+.note__actions { display: flex; align-items: center; gap: .375rem; }
+.empty { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; color: var(--text-2); }
+.empty .icon { width: 1.5rem; height: 1.5rem; color: var(--text-3); }
+.empty strong { color: var(--text); font-weight: 500; }
+@media (max-width: 560px) {
+  .note { grid-template-columns: auto minmax(0, 1fr); }
+  .note__actions { grid-column: 2; }
+}

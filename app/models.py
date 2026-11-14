@@ -37,6 +37,7 @@ class Mission(db.Model):
     environment = db.Column(db.String(40), nullable=False)
     comms_delay_s = db.Column(db.Float)
     sensor_mode = db.Column(db.String(10), nullable=False, default="device")
+    day_override = db.Column(db.Integer)  # Demo panel "jump the mission day"; NULL = the calendar day
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
 
 

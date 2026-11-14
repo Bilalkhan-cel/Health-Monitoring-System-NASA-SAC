@@ -1,0 +1,46 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon %}
+{% block title %}Mission Control · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mission_control.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="page-title">Mission Control. <span class="headline__second">The whole crew at a glance.</span></h1>
+{% endblock %}
+{% block content %}
+<div class="mc">
+  <p class="mc__note">{{ icon("shield") }}<span>Status colours only. No transcripts and no mental-health detail beyond a colour. Every view you open is recorded in the audit log.</span></p>
+  {% if crew_grid %}
+  <ul class="crew-grid">
+    {% for member in crew_grid %}
+    <li class="crew card is-{{ member.status.key if member.status else 'empty' }}">
+      <a class="crew__link" href="{{ url_for('mission_control.crew', astro_id=member.astro_id) }}">
+        <div class="crew__head">
+          <span class="avatar avatar--big" aria-hidden="true">{{ member.initials }}</span>
+          <div>
+            <p class="crew__name">{{ member.name }}</p>
+            <p class="card__meta">{{ member.role }} · {{ member.callsign }} · {{ member.astro_id }}</p>
+          </div>
+        </div>
+        <div class="crew__status">
+          <span class="crew__lamp" aria-hidden="true"></span>
+          <span>Readiness: {{ member.status.label if member.status else "Not enough data" }}</span>
+        </div>
+        <ul class="crew__systems" aria-label="Body systems">
+          {% for system in member.systems %}
+          <li><span class="dot is-{{ system.status.key if system.status else 'empty' }}" aria-hidden="true"></span>{{ system.label }}: <span class="crew__word">{{ system.status.label if system.status else "no data" }}</span></li>
+          {% endfor %}
+        </ul>
+        {% if member.flags %}
+        <ul class="crew__flags">{% for flag in member.flags %}<li>{{ icon("triangle-alert") }}{{ flag }}</li>{% endfor %}</ul>
+        {% endif %}
+        <p class="card__meta crew__last">Last check-in: {{ member.last_checkin }}</p>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty card">{{ icon("users") }}<p><strong>No crew registered.</strong> Add astronauts to <code>REGISTERED_ASTRONAUTS</code> in <code>.env</code>.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

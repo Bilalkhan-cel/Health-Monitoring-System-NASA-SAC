@@ -1,20 +1,115 @@
 {% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
 {% block title %}AstroVital: crew health for long missions{% endblock %}
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
 {% endblock %}
-{% block content %}
-<section class="hero" aria-labelledby="hero-title">
-  <div class="hero__limb" aria-hidden="true"></div>
-  <p class="hero__wordmark">AstroVital</p>
-  <div class="hero__copy">
-    <p class="tag"><span class="tag__dot" aria-hidden="true"></span>Crew health system for long missions</p>
-    <h1 class="headline headline--hero" id="hero-title">
-      Beyond Earth.
-      <span class="headline__second">always in health.</span>
-    </h1>
-    <p class="lede">Check your heart, bones and mind in a few minutes a day, guided by an AI doctor that knows your data.</p>
-    <p class="caption hero__caption">Prototype build {{ app_version }}. Crew sign-in is not open yet.</p>
-  </div>
-</section>
+{% block body_class %}landing{% endblock %}
+{% block body %}
+<header class="topnav">
+  <a class="wordmark" href="{{ url_for('landing.index') }}"><img src="{{ url_for('static', filename='img/favicon.svg') }}" alt="" width="22" height="22">AstroVital</a>
+  <nav class="pillnav" aria-label="Sections">
+    <a class="pill pill--ghost pill--small" href="#how">How it works</a>
+    <a class="pill pill--ghost pill--small" href="#nova">Dr. NOVA</a>
+    <a class="pill pill--primary pill--small" href="{{ url_for('auth.login') }}">Log in</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title" data-hero>
+    <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
+    <img class="hero__poster" src="{{ url_for('static', filename='img/hero-poster.webp') }}" alt="" data-hero-poster
+         onerror="this.remove()">
+    <div class="hero__copy" data-hero-copy>
+      <p class="tag"><span class="tag__dot" aria-hidden="true"></span>Crew health system for long missions</p>
+      <h1 class="headline headline--hero" id="hero-title">Beyond Earth. <span class="headline__second">Always in health.</span></h1>
+      <p class="lede">Check your heart, bones and mind in a few minutes a day, guided by an AI doctor that knows your data.</p>
+      <div class="hero__actions">
+        <a class="pill pill--primary pill--hero" href="{{ url_for('auth.login') }}">Astronaut login</a>
+        <a class="pill pill--ghost pill--hero" href="#how">How it works</a>
+      </div>
+    </div>
+    <p class="caption hero__caption">ISS · NASA 3D model · live WebGL</p>
+  </section>
+
+  <section class="section how" id="how" aria-labelledby="how-title">
+    <div class="section__head">
+      <h2 class="headline" id="how-title">Three quick checks. <span class="headline__second">A few minutes a day.</span></h2>
+      <p class="lede">No medical training needed. Every number comes with a plain answer: is this okay, and what should I do?</p>
+    </div>
+    <ol class="checks">
+      <li class="check-col" data-reveal>
+        <div class="check-col__visual check-col__visual--heart"><canvas data-mini-heart aria-hidden="true"></canvas></div>
+        <h3>Heart</h3>
+        <p>Rest a finger on the wearable or type your numbers. You get heart rate, oxygen, temperature and blood pressure, each with a plain verdict.</p>
+      </li>
+      <li class="check-col" data-reveal>
+        <div class="check-col__visual check-col__visual--bones" aria-hidden="true">
+          <svg viewBox="0 0 160 70" class="pose"><polyline points="20,22 50,28 70,42 100,48 128,56"/><line x1="50" y1="28" x2="40" y2="52"/><circle cx="20" cy="22" r="4"/><circle cx="50" cy="28" r="4"/><circle cx="70" cy="42" r="4"/><circle cx="100" cy="48" r="4"/><circle cx="128" cy="56" r="4"/><circle cx="40" cy="52" r="4"/></svg>
+          <span class="reps-count" data-mini-reps>14</span>
+        </div>
+        <h3>Bones & muscle</h3>
+        <p>Exercise in front of your camera. It counts reps and checks your form to fight bone loss in low gravity. Video never leaves your computer.</p>
+      </li>
+      <li class="check-col" data-reveal>
+        <div class="check-col__visual check-col__visual--mind" aria-hidden="true">
+          <span class="voice-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        </div>
+        <h3>Mind</h3>
+        <p>Talk for a few minutes about your day. Local AI listens for stress and tiredness. It never diagnoses.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section twin-section" aria-labelledby="twin-title">
+    <div class="stage twin-showcase" data-reveal>
+      <div class="twin-showcase__copy">
+        <h2 class="headline" id="twin-title">Tap your body. <span class="headline__second">See how it's doing.</span></h2>
+        <p class="lede">Each glowing point is a body system. Drag to turn, then tap a point.</p>
+        <div class="system-pills" role="group" aria-label="Body systems">
+          <button class="system-pill" type="button" data-demo-pill="mind" aria-pressed="false"><span class="dot is-okay"></span>Mind</button>
+          <button class="system-pill" type="button" data-demo-pill="heart" aria-pressed="true"><span class="dot is-watch"></span>Heart</button>
+          <button class="system-pill" type="button" data-demo-pill="bones" aria-pressed="false"><span class="dot is-good"></span>Bones & muscle</button>
+        </div>
+        <article class="card demo-card" data-demo-card aria-live="polite"></article>
+        <p class="caption">Example readings for a crew member on day 160.</p>
+      </div>
+      <div class="twin twin--showcase" data-demo-twin></div>
+    </div>
+  </section>
+
+  <section class="section nova-section" id="nova" aria-labelledby="nova-title">
+    <div class="orb orb--big" aria-hidden="true"></div>
+    <h2 class="headline" id="nova-title">A doctor who knows you. <span class="headline__second">Just ask.</span></h2>
+    <div class="sample" data-reveal>
+      <p class="msg msg--user">Why is my heart rate up today?</p>
+      <p class="msg msg--assistant">It's 104 this morning, up from your usual 72, and you've slept under 6 hours three nights in a row. Drink some water now and let's check again at 2 pm.</p>
+    </div>
+    <p class="nova-note">Voice AI powered by OpenHome (cloud). It only sees what's listed under "What Dr. NOVA sees", and it tells you to alert your crew medical officer when something is serious.</p>
+  </section>
+
+  <section class="section statement" aria-labelledby="statement-title">
+    <h2 class="headline headline--big" id="statement-title">Built for when Earth is <span class="headline__second">22 minutes away.</span></h2>
+    <ul class="facts">
+      <li data-reveal><h3>Local-first</h3><p>Vitals, camera and microphone analysis run on this computer. The wearable talks only to it, over your own Wi-Fi. Only Dr. NOVA's voice uses the cloud.</p></li>
+      <li data-reveal><h3>Private</h3><p>Video is never saved. Voice recordings are deleted once they're read. Transcripts are off by default.</p></li>
+      <li data-reveal><h3>Honest</h3><p>A prototype, not a medical device. It never diagnoses, and it tells you which numbers were measured if you ask.</p></li>
+    </ul>
+  </section>
+
+  <section class="section cta" aria-labelledby="cta-title">
+    <h2 class="headline headline--big" id="cta-title">Astronaut, are you <span class="headline__second">mission-ready?</span></h2>
+    <a class="pill pill--primary pill--hero" href="{{ url_for('auth.login') }}">Astronaut login</a>
+  </section>
+</main>
+<footer class="site-foot site-foot--landing">
+  <span>Inspired by NASA's Human Research Program</span>
+  <span>Prototype for educational purposes. Not a certified medical device.</span>
+  <span>ISS model: NASA 3D Resources</span>
+</footer>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='vendor/gsap/gsap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/gsap/ScrollTrigger.min.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/app/landing.js') }}"></script>
 {% endblock %}

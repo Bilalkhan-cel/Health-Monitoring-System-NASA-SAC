@@ -78,4 +78,5 @@ export function sparkline(values, statusKey) {
   return node;
 }
 
-export const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+export const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  || document.documentElement.classList.contains('reduce-motion');

@@ -1,0 +1,235 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon %}
+{% block title %}Settings · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="page-title">Settings. <span class="headline__second">Make it yours.</span></h1>
+{% endblock %}
+{% block content %}
+<div class="settings" data-settings>
+  <nav class="settings__toc" aria-label="Settings sections">
+    <a href="#display">Display</a><a href="#reminders">Reminders</a><a href="#wearable">Wearable</a>
+    <a href="#privacy">Privacy</a><a href="#badges">Badges</a><a href="#about">About</a>
+    {% if demo_mode %}<a href="#demo">Demo</a>{% endif %}
+  </nav>
+
+  <div class="settings__body">
+    <section class="card set" id="display" aria-labelledby="display-title">
+      <h2 class="card__title" id="display-title">Display and sound</h2>
+      <form class="set__rows" data-prefs-form>
+        <div class="set__row">
+          <span class="set__label" id="temp-label">Temperature</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="temp-label">
+            {% for value, label in (("C", "°C"), ("F", "°F")) %}
+            <label class="segmented__item segmented__radio"><input type="radio" name="temp_unit" value="{{ value }}"{% if prefs.temp_unit == value %} checked{% endif %}>{{ label }}</label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="set__row">
+          <span class="set__label" id="glucose-label">Blood sugar</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="glucose-label">
+            {% for value in ("mg/dL", "mmol/L") %}
+            <label class="segmented__item segmented__radio"><input type="radio" name="glucose_unit" value="{{ value }}"{% if prefs.glucose_unit == value %} checked{% endif %}>{{ value }}</label>
+            {% endfor %}
+          </div>
+        </div>
+        <label class="set__row switch">
+          <span><span class="set__label">Voice cues</span><span class="set__hint">Spoken counts and prompts during exercise and checks.</span></span>
+          <input type="checkbox" role="switch" name="voice_cues"{% if prefs.voice_cues %} checked{% endif %}>
+        </label>
+        <label class="set__row switch">
+          <span><span class="set__label">Reduce motion</span><span class="set__hint">Calmer animations everywhere, even if your computer doesn't ask for it.</span></span>
+          <input type="checkbox" role="switch" name="reduced_motion"{% if prefs.reduced_motion %} checked{% endif %}>
+        </label>
+        <p class="set__saved" data-saved="prefs" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="card set" id="reminders" aria-labelledby="reminders-title">
+      <h2 class="card__title" id="reminders-title">Daily reminders</h2>
+      <p class="card__meta">Mission time (UTC). Leave a time empty to turn that reminder off. A reminder only fires while the task is still open.</p>
+      <form class="set__rows" data-reminders-form>
+        {% for item in reminders %}
+        <label class="set__row">
+          <span class="set__label">{{ item.label }}</span>
+          <input class="field__input field__input--time" type="time" name="{{ item.code }}" value="{{ item.time }}">
+        </label>
+        {% endfor %}
+        <div class="set__actions">
+          <button class="pill pill--primary pill--small" type="submit">Save reminders</button>
+          <p class="set__saved" data-saved="reminders" aria-live="polite"></p>
+        </div>
+      </form>
+    </section>
+
+    <section class="card set" id="wearable" aria-labelledby="wearable-title" data-wearable>
+      <h2 class="card__title" id="wearable-title">Wearable</h2>
+      {% if not wearable.exists %}
+      <div class="empty">
+        {{ icon("radio") }}
+        <p><strong>No wearable has connected yet.</strong> Set it up with <code>python scripts/device_setup.py</code>, then power it on. It appears here on its first message.</p>
+      </div>
+      {% else %}
+      <ul class="rows">
+        <li class="row"><span class="row__label">Connection</span>
+          <span class="row__value"><span class="status is-{{ 'good' if wearable.online else 'watch' }}">{{ icon("wifi" if wearable.online else "wifi-off") }}{{ "Online" if wearable.online else "Offline" }}</span></span></li>
+        <li class="row"><span class="row__label">Last seen</span>
+          <span class="row__value" data-last-seen="{{ wearable.last_seen_age_s if wearable.last_seen_age_s is not none else '' }}">{% if wearable.last_seen_age_s is none %}Never{% else %}{{ wearable.last_seen_age_s }} s ago{% endif %}</span></li>
+        <li class="row"><span class="row__label">Device</span><span class="row__value">{{ wearable.label }} · {{ wearable.device_id }}</span></li>
+        <li class="row"><span class="row__label">Firmware</span><span class="row__value">{{ wearable.fw or "Unknown" }}</span></li>
+        <li class="row"><span class="row__label">Wi-Fi signal</span>
+          <span class="row__value">{% if wearable.rssi is none %}Unknown{% else %}{{ wearable.rssi }} dBm · {% if wearable.rssi >= -60 %}strong{% elif wearable.rssi >= -72 %}fair{% else %}weak, move closer to the hotspot{% endif %}{% endif %}</span></li>
+      </ul>
+      <form class="set__rows" data-device-form>
+        <label class="set__row switch">
+          <span><span class="set__label">I'm wearing it</span><span class="set__hint">{% if wearable.wearing %}Readings from this wearable go to you.{% else %}Another crew member is wearing it now. Switch on to take it over.{% endif %}</span></span>
+          <input type="checkbox" role="switch" name="wearing"{% if wearable.wearing %} checked{% endif %}>
+        </label>
+        {% if wearable.wearing %}
+        <label class="set__row">
+          <span class="set__label">Temperature probe</span>
+          <select class="field__input field__input--auto" name="temp_site">
+            {% for value, label in temp_sites.items() %}<option value="{{ value }}"{% if wearable.temp_site == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </label>
+        {% endif %}
+        <p class="set__saved" data-saved="device" aria-live="polite"></p>
+      </form>
+      {% if wearable.wearing %}
+      <form class="calibrate" data-calibrate-form>
+        <h3 class="set__sub">Calibrate temperature</h3>
+        <p class="card__meta">Keep the probe under your arm until it has settled, take a reading with a reference thermometer and type it here. The difference (at most 2 °C) replaces the default offset. Current offset: <strong>{{ "%+.2f"|format(wearable.temp_offset_c) }} °C</strong>.
+          Probe now: <strong data-probe-state>{% if wearable.temp_state == "settled" %}settled{% elif wearable.temp_state == "warming" %}warming up, keep your arm down{% elif wearable.temp_state == "ambient" %}not on the body{% else %}not connected{% endif %}</strong>.</p>
+        <div class="calibrate__row">
+          <label class="field"><span class="field__label">Thermometer reading ({{ "°F" if prefs.temp_unit == "F" else "°C" }})</span>
+            <input class="field__input" name="reference_c" inputmode="decimal" required{% if wearable.temp_state != "settled" %} aria-describedby="calibrate-note"{% endif %}></label>
+          <button class="pill pill--ghost pill--small" type="submit"{% if wearable.temp_state != "settled" %} disabled{% endif %}>Calibrate</button>
+        </div>
+        {% if wearable.temp_state != "settled" %}<p class="card__meta" id="calibrate-note">Calibration opens once the probe has settled. Reload this page to check again.</p>{% endif %}
+        <p class="form-error" data-calibrate-message hidden></p>
+      </form>
+      {% endif %}
+      {% endif %}
+    </section>
+
+    <section class="card set" id="privacy" aria-labelledby="privacy-title">
+      <h2 class="card__title" id="privacy-title">Privacy</h2>
+      <form class="set__rows" data-privacy-form>
+        <label class="set__row switch">
+          <span><span class="set__label">Keep voice check-in transcripts</span><span class="set__hint">Off by default. When off, only your scores and a short summary are kept.</span></span>
+          <input type="checkbox" role="switch" name="store_transcripts"{% if prefs.store_transcripts %} checked{% endif %}>
+        </label>
+        <p class="set__saved" data-saved="privacy" aria-live="polite"></p>
+      </form>
+      <div class="danger">
+        <div>
+          <h3 class="set__sub">Delete my mental-health data</h3>
+          <p class="card__meta">Removes every voice check-in, your Dr. NOVA conversations and your wellbeing scores, then recalculates readiness. This cannot be undone.</p>
+        </div>
+        <button class="pill pill--danger pill--small" type="button" data-open-dialog="delete-dialog">{{ icon("trash-2") }}Delete…</button>
+      </div>
+    </section>
+
+    <section class="card set" id="badges" aria-labelledby="badges-title">
+      <div class="card__head">
+        <h2 class="card__title" id="badges-title">Badges</h2>
+        <span class="card__meta">Level {{ game.level }} · {{ game.xp }} XP · {{ game.streak }}-day streak</span>
+      </div>
+      <p class="card__meta">XP comes from finishing tasks, never from your numbers, so there's nothing to gain from a "good" reading.</p>
+      <ul class="badges">
+        {% for badge in game.badges %}
+        <li class="badge{% if badge.earned %} is-earned{% endif %}">
+          <span class="badge__icon" aria-hidden="true">{{ icon("award" if badge.earned else "lock") }}</span>
+          <span class="badge__name">{{ badge.name }}</span>
+          <span class="badge__rule">{{ badge.rule }}</span>
+          <span class="visually-hidden">{{ "Earned" if badge.earned else "Not earned yet" }}</span>
+          {% if badge.earned %}<span class="badge__date">{{ badge.awarded_at }}</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="card set" id="about" aria-labelledby="about-title">
+      <h2 class="card__title" id="about-title">About this prototype</h2>
+      <p class="about">{{ about }}</p>
+      <p class="card__meta">Alert rules are cautious placeholders: the counts, quality levels and time windows need calibration on the real hardware and clinical review. An alert, or the absence of one, is never medical advice. Inspired by NASA's Human Research Program.</p>
+    </section>
+
+    {% if demo_mode %}
+    <section class="card set demo" id="demo" aria-labelledby="demo-title">
+      <h2 class="card__title" id="demo-title">Demo panel</h2>
+      <p class="card__meta">For demonstrations. Every change here is written to the audit log.</p>
+
+      <div class="demo__block">
+        <h3 class="set__sub">Wearable mode</h3>
+        <div class="segmented" role="radiogroup" aria-label="Wearable mode" data-sensor-mode>
+          <label class="segmented__item segmented__radio"><input type="radio" name="mode" value="device"{% if sensor_mode == "device" %} checked{% endif %}>Real wearable</label>
+          <label class="segmented__item segmented__radio"><input type="radio" name="mode" value="demo"{% if sensor_mode == "demo" %} checked{% endif %}>Demo data</label>
+        </div>
+        <p class="card__meta">Changes only when you switch it here. A wearable going offline never switches it.</p>
+        <p class="set__saved" data-saved="mode" aria-live="polite"></p>
+      </div>
+
+      <div class="demo__block">
+        <h3 class="set__sub">Judge Mode scenarios</h3>
+        <ul class="scenarios">
+          {% for scenario in scenarios %}
+          <li class="scenario">
+            <div><p class="scenario__title">{{ scenario.title }}</p><p class="card__meta">{{ scenario.story }}</p></div>
+            <button class="pill pill--ghost pill--small" type="button" data-scenario="{{ scenario.code }}">{{ icon("play") }}Run</button>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <form class="demo__block" data-force-form>
+        <h3 class="set__sub">Force a status</h3>
+        <div class="demo__row">
+          <label class="field"><span class="field__label">Measure</span>
+            <select class="field__input" name="metric">
+              {% for key, label in force_metrics.items() %}<option value="{{ key }}"{% if key in wearable_metrics and sensor_mode != "demo" %} disabled{% endif %}>{{ label }}{% if key in wearable_metrics and sensor_mode != "demo" %} (switch to Demo data){% endif %}</option>{% endfor %}
+            </select></label>
+          <label class="field"><span class="field__label">Status</span>
+            <select class="field__input" name="status">
+              <option value="good">Good</option><option value="okay">Okay</option>
+              <option value="watch">Needs attention</option><option value="alert">Get help now</option>
+            </select></label>
+          <button class="pill pill--ghost pill--small" type="submit">Apply</button>
+        </div>
+        <p class="set__saved" data-saved="force" aria-live="polite"></p>
+      </form>
+
+      <form class="demo__block" data-day-form>
+        <h3 class="set__sub">Mission day</h3>
+        <div class="demo__row">
+          <label class="field"><span class="field__label">Show day</span>
+            <input class="field__input" type="number" name="day" min="1" max="2000" value="{{ day }}"></label>
+          <button class="pill pill--ghost pill--small" type="submit">Jump</button>
+          {% if day_jumped %}<button class="pill pill--ghost pill--small" type="button" data-day-reset>Back to today</button>{% endif %}
+        </div>
+        <p class="set__saved" data-saved="day" aria-live="polite"></p>
+      </form>
+    </section>
+    {% endif %}
+  </div>
+</div>
+
+<dialog class="dialog" id="delete-dialog" aria-labelledby="delete-title">
+  <form class="dialog__body" data-delete-form>
+    <h2 class="dialog__title" id="delete-title">Delete your mental-health data?</h2>
+    <p class="dialog__lede">Every voice check-in, Dr. NOVA conversation and wellbeing score is removed for good, and readiness is recalculated without them. Your heart, exercise and sleep data stay.</p>
+    <label class="field"><span class="field__label">Type DELETE to confirm</span>
+      <input class="field__input" name="confirm" autocomplete="off" required pattern="[Dd][Ee][Ll][Ee][Tt][Ee]"></label>
+    <p class="form-error" data-delete-message hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--danger" type="submit">Delete for good</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}
+{% block page_scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/app/settings.js') }}"></script>
+{% endblock %}

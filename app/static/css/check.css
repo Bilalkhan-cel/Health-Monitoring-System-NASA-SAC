@@ -13,9 +13,6 @@
 .wear-line { color: var(--text-2); }
 .trend { padding: 1.25rem 1.5rem; display: grid; gap: .75rem; }
 .trend__canvas { position: relative; height: 240px; }
-.segmented { display: inline-flex; gap: .25rem; padding: .25rem; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); }
-.segmented__item { border: 0; background: none; color: var(--text-2); padding: .4rem .9rem; border-radius: var(--radius-pill); cursor: pointer; font-size: .875rem; }
-.segmented__item[aria-pressed="true"] { background: var(--primary-bg); color: var(--primary-fg); }
 
 .precheck { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
 .precheck .card { display: grid; gap: 1rem; padding: 1.5rem; }

@@ -23,6 +23,8 @@ SOURCE = "simulated"
 GENERATED = ("blood_pressure", "glucose", "respiration")
 MIN_INTERVAL_S = 30
 MAX_BACKFILL = timedelta(hours=24)
+SCENARIO_SOURCE = "scenario"
+SCENARIO_HOLD = timedelta(minutes=30)  # a Demo-panel reading is not overwritten for this long
 
 
 class SimRecorder:
@@ -51,6 +53,19 @@ class SimRecorder:
             slot += step
         return out
 
+    @staticmethod
+    def _held_until(astronaut_id: int, now: datetime) -> dict[str, datetime]:
+        """Per generated metric: the end of the hold after a recent Demo-panel reading.
+
+        Slots up to that moment are skipped (left empty), so a forced or scenario reading
+        stays the latest value instead of being replaced by the next generated slot.
+        """
+        rows = (db.session.query(Measurement.metric, db.func.max(Measurement.created_at))
+                .filter(Measurement.astronaut_id == astronaut_id, Measurement.source == SCENARIO_SOURCE,
+                        Measurement.metric.in_(GENERATED), Measurement.created_at >= now - SCENARIO_HOLD)
+                .group_by(Measurement.metric).all())
+        return {metric: at + SCENARIO_HOLD for metric, at in rows}
+
     def catch_up(self, astronaut: Astronaut, now: datetime, hr_live: float | None = None, *,
                  force: bool = False) -> int:
         """Write the missing slots. Returns how many slots were added (0 when rate-limited)."""
@@ -62,18 +77,23 @@ class SimRecorder:
                 return 0
             self._last_run[astronaut.id] = time.monotonic()
             last = (db.session.query(db.func.max(Measurement.created_at))
-                    .filter(Measurement.astronaut_id == astronaut.id, Measurement.metric == "respiration",
+                    .filter(Measurement.astronaut_id == astronaut.id, Measurement.metric.in_(GENERATED),
                             Measurement.source == SOURCE).scalar())
             slots = self.slots(now, last or now - MAX_BACKFILL)
             model = self.model(astronaut)
+            held = self._held_until(astronaut.id, now)
             for slot in slots:
                 sample = model.sample(slot, hr_live=hr_live if slot >= now - timedelta(minutes=1) else None)
                 common = {"source": SOURCE, "created_at": slot, "live": False, "commit": False}
-                measurements.record(astronaut.id, "blood_pressure", sample["systolic"], value2=sample["diastolic"],
-                                    context="resting", **common)
-                measurements.record(astronaut.id, "glucose", sample["glucose"], context=sample["glucose_context"],
-                                    **common)
-                measurements.record(astronaut.id, "respiration", sample["respiration"], context="resting", **common)
+                if slot > held.get("blood_pressure", datetime.min):
+                    measurements.record(astronaut.id, "blood_pressure", sample["systolic"],
+                                        value2=sample["diastolic"], context="resting", **common)
+                if slot > held.get("glucose", datetime.min):
+                    measurements.record(astronaut.id, "glucose", sample["glucose"],
+                                        context=sample["glucose_context"], **common)
+                if slot > held.get("respiration", datetime.min):
+                    measurements.record(astronaut.id, "respiration", sample["respiration"], context="resting",
+                                        **common)
             if slots:
                 from ..stream_hub import queue_event
                 from ..summary import store_readiness

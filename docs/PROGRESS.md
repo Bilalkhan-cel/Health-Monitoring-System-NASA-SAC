@@ -1,6 +1,6 @@
 # PROGRESS
 
-Current: P9 · loop 0/3 · step: EXECUTE
+Current: P11 · loop 1/3 · step: EXECUTE
 
 | Phase | Status | Loops | Gate |
 |---|---|---|---|
@@ -13,8 +13,8 @@ Current: P9 · loop 0/3 · step: EXECUTE
 | P6 Bone & Muscle | done (2026-11-14) | 1 | green (synthetic keypoints exact; live camera not testable here) |
 | P7 Mental | done (2026-11-14) | 1 | green: safety recall 100 % (23 phrases), real Whisper on a recorded clip, local NLP models |
 | P8 Dr. NOVA | done (2026-11-14) | 1 | green on the mock and offline rules; real OpenHome: needs keys |
-| P9 Landing + login | not started | | |
-| P10 Product completeness | not started | | |
+| P9 Landing + login | done (2026-11-14) | 2 | green: ISS 10.7 MB, landing JS+CSS 54 KB, poster fallback, no console errors |
+| P10 Product completeness | done (2026-11-14) | 1 | green: 40 passed, 0 failed; Appendix D runs end to end (`tests/test_demo_script.py`) |
 | P11 Hardening, hardware bring-up & release | not started | | |
 
 Hardware status: **needs hardware** (nothing tested on the physical ESP32; see `docs/HARDWARE_FACTS.md`).
@@ -43,6 +43,30 @@ OpenHome status: **needs keys** (no API key or agent id in `.env`).
     Now plain ASCII; the checklist marks already fall back to `[ok]` / `[--]` / `[!!]`.
 - **Next phase:** P1 (models, auth, host guard, thresholds, readiness, `measurements.record()`, seed,
   `/api/summary`, the Today page without 3D).
+
+## Phase 9 checkpoint (2026-11-14)
+
+- **Built:** cinematic landing (`js/3d/earth.js`: Earth shader with day/night, clouds, specular and
+  atmosphere; the optimized NASA ISS drifting over the limb; scroll dolly with GSAP ScrollTrigger),
+  the same scene behind login, a scene-only WebP poster for browsers without WebGL, `/favicon.ico`.
+- **Verified:** headless Edge captures at 1600x900 (hero, login), no overflow at 375 px, no console
+  errors, gate checks `check_iss_budget` and the landing files.
+- **Optimize loop:** the ISS was cut off at the left edge and overlapped the headline: the station
+  offset now scales with the aspect ratio and it is smaller. The intro animation could leave the
+  buttons hidden in a background tab: a 3 s fallback completes it.
+
+## Phase 10 checkpoint (2026-11-14)
+
+- **Built:** History (filters, heatmap, trend, day dialog, CSV, Downlink Report PDF), Notifications
+  (page, poll, reminders, bell toasts), Settings (units, reminders, voice cues, reduce motion,
+  Wearable panel with wearer switch and calibration, privacy delete, badges, About, Demo panel with
+  sensor mode, forced statuses, day jump and the three Judge Mode scenarios), Mission Control (surgeon
+  only, colours only, audited). Migration `c4e1f2a9b310` adds `Mission.day_override`.
+- **Verified:** 28 product tests + the Appendix D script test; browser pass on every new page at
+  desktop and 375 px; PDF inspected (one page, no transcripts).
+- **Optimize loop:** a forced blood pressure was overwritten by the next generated slot within 5 min,
+  so SimRecorder now holds for 30 min after a Demo-panel reading (D61). A flaky OpenHome contract test
+  exposed that `text_call` hung up before the agent's `audio-end`; it now waits up to 1.5 s (D67).
 
 ## Current phase plan
 

@@ -10,7 +10,7 @@ from ..auth.decorators import login_required
 from ..auth.services import current_crew
 from ..extensions import db
 from ..models import CardioSession, utcnow
-from ..services import measurements, summary
+from ..services import measurements, summary, units
 from ..services.live import get_runtime
 from ..services.stream_hub import format_sse
 from . import services
@@ -107,12 +107,23 @@ def reading():
     if error:
         return error
     try:
-        reply = services.add_reading(get_runtime(), run, current_crew(), request.get_json(silent=True) or {},
-                                     utcnow())
+        payload = _stored_units(request.get_json(silent=True) or {})
+        reply = services.add_reading(get_runtime(), run, current_crew(), payload, utcnow())
     except (ValueError, TypeError, measurements.InvalidReading) as problem:
         db.session.rollback()
         return jsonify(ok=False, error="bad_reading", message=str(problem)), 400
     return jsonify(reply)
+
+
+def _stored_units(payload: dict) -> dict:
+    """Typed temperature and blood sugar arrive in the astronaut's display units."""
+    metric = payload.get("metric")
+    if metric in ("temperature_c", "glucose"):
+        try:
+            payload = {**payload, "value": round(units.to_stored(metric, float(payload.get("value"))), 2)}
+        except (TypeError, ValueError):
+            pass  # add_reading reports the bad value
+    return payload
 
 
 @bp.post("/cardio/end")

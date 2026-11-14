@@ -418,7 +418,7 @@ def check_boot() -> list[Check]:
     return checks
 
 
-PUBLIC_ENDPOINTS = {"landing.index", "landing.healthz", "auth.login", "static"}
+PUBLIC_ENDPOINTS = {"landing.index", "landing.healthz", "landing.favicon", "auth.login", "static"}
 SAMPLE_ARGS = {"system": "heart", "code": "hydration", "scenario": "mars_transit", "id": 1, "checkin_id": 1,
                "notification_id": 1, "astro_id": "AST-1002"}
 TOKEN_ROUTES = ("/api/device/", "/api/openhome/")
@@ -883,6 +883,24 @@ def check_firmware() -> list[Check]:
     return checks
 
 
+def check_downlink_report() -> Check:
+    """Phase 10: the Downlink Report renders for a seeded astronaut and carries no transcript."""
+    with tempfile.TemporaryDirectory(prefix="astrovital-report-", ignore_cleanup_errors=True) as temp:
+        app = _seeded_client(Path(temp))
+        client = app.test_client()
+        client.post("/login", data={"astro_id": "AST-1001"})
+        try:
+            response = client.get("/history/report.pdf")
+            csv_text = client.get("/history/export.csv").get_data(as_text=True)
+            ok = response.status_code == 200 and response.data[:5] == b"%PDF-"
+            problems = scan_source_labels(csv_text) + (["source column in CSV"] if ",source" in csv_text else [])
+        finally:
+            _dispose(app)
+    if not ok or problems:
+        return Check("Downlink Report + CSV", FAIL, "; ".join(problems) or f"PDF answered {response.status_code}")
+    return Check("Downlink Report + CSV", PASS, f"PDF {len(response.data) // 1024} KB, CSV {csv_text.count(chr(10))} rows")
+
+
 def check_module_files(phase: int) -> Check:
     needed = {
         5: ["app/cardio/routes.py", "app/templates/cardio.html", "app/static/js/app/cardio.js",
@@ -891,9 +909,24 @@ def check_module_files(phase: int) -> Check:
             "app/static/js/app/exercise.js", "app/static/js/app/pose_adapters.js",
             "app/static/vendor/mediapipe/vision_bundle.mjs", "app/static/vendor/mediapipe/pose_landmarker_lite.task",
             "app/static/vendor/mediapipe/wasm/vision_wasm_internal.wasm"],
+        7: ["app/mental/routes.py", "app/services/nlp_service.py", "app/services/whisper_service.py",
+            "config/mental.yaml", "config/safety_lexicon.yaml", "app/static/js/app/mental.js",
+            "app/static/js/app/pcm_worklet.js"],
+        8: ["app/doctor/routes.py", "app/services/openhome_service.py", "app/services/doctor_context.py",
+            "app/services/rules_engine.py", "config/dr_nova_persona.md", "openhome_ability/main.py.tmpl",
+            "scripts/build_openhome_ability.py", "app/static/js/app/doctor_chat.js"],
+        9: ["app/templates/landing.html", "app/static/css/landing.css", "app/static/js/app/landing.js",
+            "app/static/js/3d/earth.js", "app/static/img/hero-poster.webp",
+            "app/static/vendor/gsap/gsap.min.js", "app/static/vendor/gsap/ScrollTrigger.min.js"],
+        10: ["app/history/routes.py", "app/notifications/routes.py", "app/mission_control/routes.py",
+             "app/services/history.py", "app/services/report.py", "app/services/notifications.py",
+             "app/services/demo_controls.py", "app/services/privacy.py", "app/services/crew_view.py",
+             "app/templates/history.html", "app/templates/settings.html", "app/templates/notifications.html",
+             "app/templates/mission_control.html", "tests/test_demo_script.py"],
     }[phase]
     missing = [name for name in needed if not (ROOT / name).exists()]
-    label = {5: "Heart check files", 6: "Bone & Muscle files (incl. MediaPipe)"}[phase]
+    label = {5: "Heart check files", 6: "Bone & Muscle files (incl. MediaPipe)", 7: "Mind check-in files",
+             8: "Dr. NOVA files", 9: "Cinematic landing files", 10: "Product completeness files"}[phase]
     return Check(label, FAIL if missing else PASS, "missing: " + ", ".join(missing) if missing
                  else f"{len(needed)} files present")
 
@@ -911,6 +944,10 @@ PHASES: dict[int, list[Callable[[], Check | list[Check]]]] = {
     4: [check_firmware],
     5: [lambda: check_module_files(5)],
     6: [lambda: check_module_files(6)],
+    7: [lambda: check_module_files(7)],
+    8: [lambda: check_module_files(8)],
+    9: [lambda: check_module_files(9), check_iss_budget],
+    10: [lambda: check_module_files(10), check_downlink_report],
 }
 
 

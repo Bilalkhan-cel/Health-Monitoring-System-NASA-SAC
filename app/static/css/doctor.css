@@ -39,7 +39,7 @@
 .composer__send:hover { color: var(--text); background: var(--surface); }
 .composer__mic { border: 0; width: 3.25rem; height: 3.25rem; border-radius: 50%; background: var(--primary-bg); color: var(--primary-fg);
   display: grid; place-items: center; cursor: pointer; }
-.composer__mic[aria-pressed="true"] { background: var(--alert); color: #fff; box-shadow: 0 0 0 6px rgba(255,77,109,.2); }
+.composer__mic[aria-pressed="true"] { background: var(--alert-fill); color: #fff; box-shadow: 0 0 0 6px rgba(255,77,109,.2); }
 
 .sees { padding: 1.5rem; display: flex; flex-direction: column; gap: .75rem; align-self: start; position: sticky; top: 1.5rem; }
 .sees__rows .row__label { display: flex; align-items: center; gap: .625rem; color: var(--text); }
