@@ -330,7 +330,7 @@ export async function mountBody(container, { onSelect, modelUrl, reducedMotion =
     scan.material.opacity = sweep >= 0 && sweep <= 1 ? Math.sin(sweep * Math.PI) * 0.5 : 0;
 
     const beat = bpm ? (t * bpm) / 60 : 0;
-    const pulse = bpm ? 1 + 0.16 * Math.max(0, Math.sin(beat * Math.PI * 2)) ** 8 : 1;
+    const pulse = bpm && !reducedMotion ? 1 + 0.16 * Math.max(0, Math.sin(beat * Math.PI * 2)) ** 8 : 1;
     heart.scale.setScalar(pulse / model.scale.x);
     heartMaterial.emissiveIntensity = bpm ? 0.6 + (pulse - 1) * 4 : 0.45 + Math.sin(t * 1.2) * 0.1;
     brain.rotation.y = t * 0.25;

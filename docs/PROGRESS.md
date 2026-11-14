@@ -1,6 +1,6 @@
 # PROGRESS
 
-Current: P11 · loop 1/3 · step: EXECUTE
+Current: done · all phases built (hardware: needs hardware · OpenHome: needs keys)
 
 | Phase | Status | Loops | Gate |
 |---|---|---|---|
@@ -15,10 +15,34 @@ Current: P11 · loop 1/3 · step: EXECUTE
 | P8 Dr. NOVA | done (2026-11-14) | 1 | green on the mock and offline rules; real OpenHome: needs keys |
 | P9 Landing + login | done (2026-11-14) | 2 | green: ISS 10.7 MB, landing JS+CSS 54 KB, poster fallback, no console errors |
 | P10 Product completeness | done (2026-11-14) | 1 | green: 40 passed, 0 failed; Appendix D runs end to end (`tests/test_demo_script.py`) |
-| P11 Hardening, hardware bring-up & release | not started | | |
+| P11 Hardening, hardware bring-up & release | done (2026-11-14), hardware: needs hardware | 1 | `verify --full` green: 40 passed, 0 failed; 346 tests; ingest p95 32 ms, device→browser 33 ms worst, summary p95 15 ms with 604,800 raw frames |
 
 Hardware status: **needs hardware** (nothing tested on the physical ESP32; see `docs/HARDWARE_FACTS.md`).
 OpenHome status: **needs keys** (no API key or agent id in `.env`).
+
+## Acceptance checklist (Section 22)
+
+| Item | Status | Evidence |
+|---|---|---|
+| Clean checkout: `setup.py` then `run.py`, no API keys | done | Phase 0 clean-clone test; `verify` boot check on a fresh database |
+| Landing: 3D Earth + NASA ISS (≤ 15 MB), 6 sections, twin, tiers, fallbacks | done | ISS 10.7 MB; poster + 2D twin fallbacks; reduced motion; `test_app.py` |
+| Only `.env` IDs log in, no sign-up, own data only, tunnel reaches only the bridge | done | `test_auth.py`, `test_host_guard.py`, scoping tests in `test_product.py` |
+| Today: every indicator with status, icon, word, sparkline, ⓘ; no source labels; readiness | done | label scan (templates, scripts, JSON, CSV); `test_summary.py`, `test_readiness.py` |
+| Personal baseline flags trends, never CRITICAL alone | done | `test_readiness.py` |
+| 3D twin hotspots by live status with environment-aware advice | done | Phase 2 checkpoint; `/api/bodypart` tests |
+| Cardio session, coverage and rest rules, 9.7 alert table | done | `test_cardio.py`, `test_alert_gate.py` |
+| Wearable: every emulator profile per 10A.10, freshness, finger lift, probe off body, offline/backlog, retention | done (emulated) | `test_live_backbone.py`; `verify` live-path latency |
+| Generated attributes smooth, in range, follow live HR, never called measured | done | `test_physiology.py`; disclosure in README, Settings → About, demo script |
+| Display rule: no source label anywhere | done | `verify` label scans green |
+| Hardware: Appendix G with real parts, firmware compiles | **needs hardware** | firmware compiles (RAM 16.1 %, flash 76.4 %), 6 native tests; nothing run on physical parts |
+| Owner decisions: wearable SpO₂ ≤ Needs attention, manual audited mode switch, facts register | done | `test_thresholds.py`, `test_product.py::test_sensor_mode_switch_is_manual_and_audited`, `HARDWARE_FACTS.md` |
+| Bone & Muscle: webcam counting, environment-aware, no video stored | done (synthetic) | `test_exercise.py`; live camera not testable on the build machine |
+| Mental: chunked recording, local Whisper + NLP, wellbeing, safety screen, deletable transcript | done | `test_mental.py` (real Whisper on a recorded clip; safety recall 100 %) |
+| Dr. NOVA on OpenHome | done on the mock; **needs keys** for the real agent | `test_doctor.py`; handoff in `docs/OPENHOME_SETUP.md` |
+| History: filters, heatmap, CSV, Downlink Report PDF | done | `test_product.py`, `verify` Downlink check |
+| Notifications, reminders, checklist, XP/streaks/badges, environment + comms delay | done | `test_product.py`, `test_summary.py` |
+| Judge Mode scenarios; Mission Control (audited, no mental-health detail) | done | `test_product.py`, `test_demo_script.py` |
+| PROGRESS shows every phase and the final `verify --full` | done | below |
 
 ## Phase 0 checkpoint (2026-11-14)
 

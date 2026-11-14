@@ -1,8 +1,8 @@
 # Last verify result
 
-- Mode: `--phase 10`
-- When: 2026-11-14 18:22 UTC
-- Python: 3.13.5 · commit `f17ca2d`
+- Mode: `--full`
+- When: 2026-11-14 18:26 UTC
+- Python: 3.13.5 · commit `c6093e1`
 - Result: **GREEN: 40 passed, 0 failed, 0 skipped, 0 informational**
 
 | # | Check | Result | Detail |
@@ -16,9 +16,9 @@
 | 7 | Secrets git-ignored | PASS | .env, firmware/include/secrets.h and local data |
 | 8 | Vendored assets match the manifest | PASS | 16 files, checksums match |
 | 9 | Hardware facts register | PASS | 23 rows, none marked verified |
-| 10 | pytest | PASS | 346 passed in 111.57s (0:01:51) |
-| 11 | App boots (clean database, no keys) | PASS | /healthz answered after 3.3 s |
-| 12 | First byte under 500 ms | PASS | worst of 5: / 31 ms, /healthz 26 ms, /login 26 ms |
+| 10 | pytest | PASS | 346 passed in 106.22s (0:01:46) |
+| 11 | App boots (clean database, no keys) | PASS | /healthz answered after 2.8 s |
+| 12 | First byte under 500 ms | PASS | worst of 5: / 31 ms, /healthz 16 ms, /login 23 ms |
 | 13 | Boot log clean | PASS | no traceback, no unexpected warning |
 | 14 | Boot checklist printed | PASS | database and listening lines present |
 | 15 | Database file created | PASS | created in the instance folder |
@@ -34,11 +34,11 @@
 | 25 | Digital twin assets | PASS | astronaut.glb 845 KB, 3D twin + SVG fallback present |
 | 26 | Emulator profiles (10A.11) | PASS | 15 profiles |
 | 27 | Ingest p95 under 50 ms | PASS | p95 32.4 ms over 60 batches (real HTTP) |
-| 28 | Device-to-browser under 1.5 s | PASS | worst 35 ms, median 25 ms |
+| 28 | Device-to-browser under 1.5 s | PASS | worst 33 ms, median 31 ms |
 | 29 | Live server log clean | PASS | no traceback, no unexpected warning |
-| 30 | /api/summary p95 with 7 days of raw frames | PASS | p95 14 ms (604,800 raw frames + 30 days of history) |
+| 30 | /api/summary p95 with 7 days of raw frames | PASS | p95 15 ms (604,800 raw frames + 30 days of history) |
 | 31 | Firmware compiles | PASS | RAM:   [==        ]  16.1% (used 52844 bytes from 327680 bytes); Flash: [========  ]  76.4% (used 1001093 bytes from 1310720 bytes) |
-| 32 | Firmware logic tests (native) | PASS | 6 test cases: 6 succeeded in 00:00:02.781 |
+| 32 | Firmware logic tests (native) | PASS | 6 test cases: 6 succeeded in 00:00:02.652 |
 | 33 | Heart check files | PASS | 6 files present |
 | 34 | Bone & Muscle files (incl. MediaPipe) | PASS | 8 files present |
 | 35 | Mind check-in files | PASS | 7 files present |
