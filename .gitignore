@@ -230,3 +230,7 @@ uploads/*
 # Vendored front-end files are committed, so they are exempt.
 !app/static/vendor/
 !app/static/vendor/**
+# Build-time Node tools and their downloaded inputs (outputs under app/static are committed)
+scripts/vendor_build/node_modules/
+scripts/vendor_build/three-entry.js
+build_sources/

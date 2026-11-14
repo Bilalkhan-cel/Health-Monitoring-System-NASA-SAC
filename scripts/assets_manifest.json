@@ -18,14 +18,6 @@
       "license": "OFL-1.1"
     },
     {
-      "id": "font-instrument-serif-italic",
-      "url": "https://cdn.jsdelivr.net/npm/@fontsource/instrument-serif@5.3.0/files/instrument-serif-latin-400-italic.woff2",
-      "dest": "app/static/vendor/fonts/instrument-serif-latin-400-italic.woff2",
-      "sha256": "5a51946dfffa82972bc98745359c46761515641fda557c25116459a9f83da4a7",
-      "bytes": 22128,
-      "license": "OFL-1.1"
-    },
-    {
       "id": "license-geist",
       "url": "https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@5.3.0/LICENSE",
       "dest": "app/static/vendor/fonts/LICENSE-geist.txt",
@@ -42,12 +34,100 @@
       "license": "OFL-1.1"
     },
     {
-      "id": "license-instrument-serif",
-      "url": "https://cdn.jsdelivr.net/npm/@fontsource/instrument-serif@5.3.0/LICENSE",
-      "dest": "app/static/vendor/fonts/LICENSE-instrument-serif.txt",
-      "sha256": "b6106a757902d2d412e09d94dc4a226fe3da80485208a98003969f1b8b6b1d74",
-      "bytes": 4532,
-      "license": "OFL-1.1"
+      "id": "chartjs",
+      "url": "https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js",
+      "dest": "app/static/vendor/chartjs/chart.umd.min.js",
+      "sha256": "87364cc2b2a76a6684929e7d6b80b18a897794db38400caff1fcf1791c6925d2",
+      "bytes": 210082,
+      "license": "MIT"
+    },
+    {
+      "id": "chartjs-license",
+      "url": "https://cdn.jsdelivr.net/npm/chart.js@4.6.1/LICENSE.md",
+      "dest": "app/static/vendor/chartjs/LICENSE.md",
+      "sha256": "41a84aa2caba645f966a18d9c2056b73e6d3a81d80bc0046bc0011a2634d4cce",
+      "bytes": 1093,
+      "license": "MIT"
+    },
+    {
+      "id": "chartjs-annotation",
+      "url": "https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js",
+      "dest": "app/static/vendor/chartjs/chartjs-plugin-annotation.min.js",
+      "sha256": "ff03786a60f6c93ccacfe0fbb6c2e3c671d7930856a3689f2f393113d8d655ec",
+      "bytes": 38359,
+      "license": "MIT"
+    },
+    {
+      "id": "chartjs-annotation-license",
+      "url": "https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/LICENSE.md",
+      "dest": "app/static/vendor/chartjs/LICENSE-annotation.md",
+      "sha256": "868e144ac8fc605036f5a4403fd1007dcb70d69150619b95bc87c200bcbdb8c5",
+      "bytes": 1110,
+      "license": "MIT"
+    },
+    {
+      "id": "gsap",
+      "url": "https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js",
+      "dest": "app/static/vendor/gsap/gsap.min.js",
+      "sha256": "92bb9a96476f983d212a2bc4f54c889039c1696dd4461d40a736860938570fbb",
+      "bytes": 72927,
+      "license": "GSAP Standard License (no charge)"
+    },
+    {
+      "id": "gsap-scrolltrigger",
+      "url": "https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js",
+      "dest": "app/static/vendor/gsap/ScrollTrigger.min.js",
+      "sha256": "b0b14d67b55b0c43c756ac0b106cfcb09d0879945f6ead64451065b0672916a2",
+      "bytes": 44575,
+      "license": "GSAP Standard License (no charge)"
+    },
+    {
+      "id": "three-license",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.186.1/LICENSE",
+      "dest": "app/static/vendor/three/LICENSE",
+      "sha256": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc",
+      "bytes": 1081,
+      "license": "MIT"
+    },
+    {
+      "id": "mediapipe-bundle",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.1/vision_bundle.mjs",
+      "dest": "app/static/vendor/mediapipe/vision_bundle.mjs",
+      "sha256": "a84921e02321e582484c1f8126d344b5f33b791fa09c640a52e20ee8632068f1",
+      "bytes": 156139,
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "mediapipe-wasm-js",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.1/wasm/vision_wasm_internal.js",
+      "dest": "app/static/vendor/mediapipe/wasm/vision_wasm_internal.js",
+      "sha256": "6522286aa32dd93eff17c3da002b0649516f87abfec7a80b5bfe5c9625caa5f8",
+      "bytes": 334128,
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "mediapipe-wasm",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.1/wasm/vision_wasm_internal.wasm",
+      "dest": "app/static/vendor/mediapipe/wasm/vision_wasm_internal.wasm",
+      "sha256": "0e101a010e262ef8e78f22e3c95b60a9705fd06962753c9acd6356d9fb56b7bd",
+      "bytes": 13519922,
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "mediapipe-pose-lite",
+      "url": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+      "dest": "app/static/vendor/mediapipe/pose_landmarker_lite.task",
+      "sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+      "bytes": 5777746,
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "lucide-license",
+      "url": "https://cdn.jsdelivr.net/npm/lucide-static@1.62.0/LICENSE",
+      "dest": "app/static/vendor/lucide/LICENSE",
+      "sha256": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57",
+      "bytes": 3208,
+      "license": "ISC"
     }
   ]
 }

@@ -30,7 +30,6 @@ TEMP_SITES: tuple[str, ...] = ("axilla", "skin")
 FONT_FILES: tuple[str, ...] = (
     "geist-latin-wght-normal.woff2",
     "geist-mono-latin-wght-normal.woff2",
-    "instrument-serif-latin-400-italic.woff2",
 )
 
 _TRUE = {"1", "true", "yes", "on"}

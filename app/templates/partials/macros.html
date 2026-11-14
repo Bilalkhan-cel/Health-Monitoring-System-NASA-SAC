@@ -1,0 +1,7 @@
+{% macro icon(name, cls="") -%}
+<svg class="icon {{ cls }}" aria-hidden="true" focusable="false"><use href="{{ url_for('static', filename='vendor/lucide/sprite.svg') }}#{{ name }}"></use></svg>
+{%- endmacro %}
+
+{% macro status_pill(status) -%}
+{% if status %}<span class="status is-{{ status.key }}">{{ icon(status.icon) }}{{ status.label }}</span>{% endif %}
+{%- endmacro %}

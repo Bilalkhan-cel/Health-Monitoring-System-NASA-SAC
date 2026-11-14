@@ -16,13 +16,6 @@
   font-style: normal;
   font-display: swap;
 }
-@font-face {
-  font-family: "Instrument Serif";
-  src: url("../vendor/fonts/instrument-serif-latin-400-italic.woff2") format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
 
 :root {
   --bg: #000000;
@@ -46,7 +39,6 @@
 
   /* System fallbacks keep the app readable if a font file is missing. */
   --font-sans: "Geist", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
 
   --size-hero: clamp(3rem, 7.2vw, 6.5rem);      /* 104px at 1440 */
@@ -62,6 +54,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
 
 html { -webkit-text-size-adjust: 100%; }
 
@@ -114,12 +108,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
   letter-spacing: -.045em;
 }
 .headline--hero { font-size: var(--size-hero); line-height: .96; }
+/* Second line of a headline: same family, grey (per the crew UI mockups). */
 .headline__second {
   display: block;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -.02em;
   color: var(--text-3);
 }
 .lede { max-width: 34rem; color: var(--text-2); font-size: 1.0625rem; }
@@ -136,6 +127,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   letter-spacing: -.05em;
   font-variant-numeric: tabular-nums;
 }
+
+.icon { width: 1.125rem; height: 1.125rem; flex: none; }
 
 /* ── Pills and buttons ────────────────────────────────── */
 .pill {
@@ -157,6 +150,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .pill--primary:hover { background: #FFFFFF; }
 .pill--ghost { border-color: var(--line-strong); color: var(--text); background: transparent; }
 .pill--ghost:hover { border-color: var(--text-2); background: var(--surface); }
+.pill--wide { width: 100%; justify-content: center; min-height: 3.25rem; font-size: 1rem; }
+.pill--light { background: rgba(255,255,255,.92); color: var(--primary-fg); }
+.pill--on-alert { border-color: rgba(255,255,255,.5); color: #fff; background: transparent; }
+.pill--small { min-height: 2.25rem; padding: .375rem .9rem; font-size: .875rem; }
 .pill[disabled], .pill[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
 
 .tag {
@@ -216,6 +213,19 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .row__value { font-variant-numeric: tabular-nums; }
 
 .hairline { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+/* ── Forms ── */
+.field { display: grid; gap: .375rem; }
+.field__label { font-size: .875rem; color: var(--text-2); }
+.field__input {
+  width: 100%; min-height: 3rem; padding: .625rem 1rem;
+  border: 1px solid var(--line-strong); border-radius: 16px; background: #0A0C10; color: var(--text);
+  font-size: 1rem;
+}
+.field__input:focus { outline: 2px solid var(--text); outline-offset: 1px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.form-error { color: var(--alert); font-size: .9375rem; }
+.form-error[hidden] { display: none; }
 
 /* ── Footer line shown on every page ──────────────────── */
 .site-foot {

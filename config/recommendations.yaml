@@ -1,0 +1,73 @@
+# Plain-language advice per body system and status (prototype wording, not medical advice).
+# Three numbered steps each. `{env_note}` is replaced by the environment's advice_notes,
+# `{exercise}` by the exercise options of the current environment, `{delay}` by the comms delay.
+
+heart:
+  NOMINAL:
+    - Keep drinking water through your shift.
+    - Do your exercise session as planned.
+    - Check your heart again tomorrow morning.
+  STABLE:
+    - Nothing to do right now.
+    - Keep drinking water through your shift.
+    - Check your heart again tomorrow morning.
+  CAUTION:
+    - Drink a glass of water now and sit quietly for five minutes.
+    - Take ten slow breaths, in for four counts and out for six.
+    - Check your heart again in two hours. If it is still high, ask Dr. NOVA.
+  CRITICAL:
+    - Tell your crew medical officer now.
+    - Follow the onboard medical protocol and stay seated.
+    - Messages to Earth take {delay}, so do not wait for the ground before acting.
+
+mind:
+  NOMINAL:
+    - Keep your usual bedtime tonight.
+    - Spend a few minutes with the crew off duty.
+    - Do your voice check-in this evening.
+  STABLE:
+    - Keep your usual bedtime tonight.
+    - Plan a call home in the next few days.
+    - Do your voice check-in this evening.
+  CAUTION:
+    - Dim the lights an hour before bed and skip caffeine after midday.
+    - Talk to a crewmate or plan a call home today.
+    - Try a two-minute breathing exercise before your next shift.
+  CRITICAL:
+    - Talk to your crew medical officer now.
+    - Contact ground behavioural-health support as soon as you can.
+    - Stay with a crewmate. Dr. NOVA can talk with you while you wait.
+
+bones:
+  NOMINAL:
+    - Keep up your exercise sessions.
+    - Mix in strength work, not only cardio.
+    - "{env_note}"
+  STABLE:
+    - Add one more session this week.
+    - "Options here: {exercise}."
+    - "{env_note}"
+  CAUTION:
+    - Do a 20-minute exercise session today.
+    - "Options here: {exercise}."
+    - "{env_note}"
+  CRITICAL:
+    - Tell your crew medical officer.
+    - Stop exercising if anything hurts.
+    - Follow the onboard protocol.
+
+# Shown by the red alert bar's "View protocol" button.
+protocol:
+  - Stop what you are doing and sit down somewhere safe.
+  - Tell your crew medical officer now, and tell them the reading you see here.
+  - Follow the onboard medical checklist for this problem.
+  - Re-measure in five minutes if you are able to.
+  - Contact the ground flight surgeon. Messages to Earth take {delay}.
+
+exercise_names:
+  run: running
+  pushup: push-ups
+  pullup: pull-ups
+  squat: squats
+  device_log: logged device sessions (ARED, cycle, treadmill)
+  treadmill_harness: the harnessed treadmill

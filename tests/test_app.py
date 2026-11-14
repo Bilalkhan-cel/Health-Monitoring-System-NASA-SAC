@@ -88,7 +88,11 @@ def test_sqlite_runs_in_wal_mode_with_foreign_keys(app):
         assert db.session.execute(text("PRAGMA busy_timeout")).scalar() == 5000
 
 
-def test_bootstrap_creates_the_database_and_sweeps_uploads(app):
+def test_bootstrap_creates_the_database_and_sweeps_uploads(env_values):
+    from app import create_app
+    from config import load_config
+
+    app = create_app(load_config(env_values), testing=True)
     config = get_config(app)
     config.uploads_dir.mkdir(parents=True, exist_ok=True)
     (config.uploads_dir / "leftover.wav").write_bytes(b"RIFF")
@@ -98,6 +102,7 @@ def test_bootstrap_creates_the_database_and_sweeps_uploads(app):
 
     assert report.db_ready is True
     assert report.uploads_swept == 1
+    assert report.crew_loaded == 3 and report.sensor_mode == "device"
     assert (config.instance_dir / "astrovital.db").exists()
     assert [path.name for path in config.uploads_dir.iterdir()] == [".gitkeep"]
 

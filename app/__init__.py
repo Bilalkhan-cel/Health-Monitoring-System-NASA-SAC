@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, abort, jsonify, render_template, request
 from werkzeug.exceptions import HTTPException
 
 from config import VERSION, Config, load_config
@@ -63,6 +63,8 @@ def _wants_json() -> bool:
 
 def _register_error_handlers(app: Flask) -> None:
     messages = {
+        400: ("Check your input", "Something in the request was not right."),
+        403: ("Not allowed", "Your account can't open this page."),
         404: ("Page not found", "That page isn't part of this mission."),
         405: ("Not allowed", "That action isn't available here."),
         429: ("Too many attempts", "Wait a minute, then try again."),
@@ -73,7 +75,12 @@ def _register_error_handlers(app: Flask) -> None:
         code = error.code or 500
         title, detail = messages.get(code, ("Something went wrong", "Go back and try again."))
         if _wants_json():
-            return jsonify(ok=False, error=title.lower().replace(" ", "_")), code
+            body = {"ok": False, "error": title.lower().replace(" ", "_")}
+            if code == 400 and error.description and not error.description.startswith("The browser"):
+                body["message"] = error.description
+            elif code == 429:
+                body["message"] = detail
+            return jsonify(body), code
         return render_template("error.html", code=code, title=title, detail=detail), code
 
     @app.errorhandler(Exception)
@@ -87,32 +94,67 @@ def _register_error_handlers(app: Flask) -> None:
         ), 500
 
 
-def create_app(config: Config | None = None, *, testing: bool = False) -> Flask:
-    """Build the Flask app: config, extensions, blueprints and error pages."""
+BLUEPRINTS = (
+    "landing", "auth", "dashboard", "settings",
+)
+
+
+def _register_blueprints(app: Flask) -> None:
+    import importlib
+
+    for name in BLUEPRINTS:
+        module = importlib.import_module(f".{name}.routes", __name__)
+        app.register_blueprint(module.bp)
+
+
+def _install_guards(app: Flask, config: Config) -> None:
+    from . import security
+    from .auth.services import load_current_crew
+
+    @app.before_request
+    def host_guard():
+        if not security.allowed(request.host, request.path, request.headers, config.trusted_hosts,
+                                config.device_hosts):
+            abort(404)
+
+    app.before_request(load_current_crew)
+
+    @app.after_request
+    def security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "same-origin")
+        response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        response.headers.setdefault("Permissions-Policy", "geolocation=(), payment=()")
+        return response
+
+
+def create_app(config: Config | None = None, *, testing: bool = False, rate_limits: bool | None = None) -> Flask:
+    """Build the Flask app: config, extensions, guards, blueprints and error pages."""
     config = config or load_config()
     app = Flask(__name__, instance_path=str(config.instance_dir))
     app.config.from_mapping(config.flask_mapping())
     app.config["TESTING"] = testing
+    app.config["RATELIMIT_ENABLED"] = (not testing) if rate_limits is None else rate_limits
     app.extensions["astrovital_config"] = config
 
     configure_logging(config, to_file=not testing)
     config.instance_dir.mkdir(parents=True, exist_ok=True)
 
+    from . import models  # noqa: F401  (register the tables with SQLAlchemy and Alembic)
+
     db.init_app(app)
-    migrate.init_app(app, db)
+    migrate.init_app(app, db, render_as_batch=True)
     csrf.init_app(app)
     limiter.init_app(app)
     sock.init_app(app)
 
-    from .landing.routes import bp as landing_bp
-
-    app.register_blueprint(landing_bp)
+    _install_guards(app, config)
+    _register_blueprints(app)
     _register_error_handlers(app)
 
-    @app.context_processor
-    def inject_globals() -> dict[str, object]:
-        return {"app_version": VERSION, "mission_name": config.mission_name}
+    from .views import register_template_helpers
 
+    register_template_helpers(app, config)
     return app
 
 

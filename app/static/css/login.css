@@ -1,0 +1,45 @@
+/* Login: Earth's horizon rising from the bottom with the station passing above it.
+   The WebGL scene mounts into [data-scene-canvas]; the CSS horizon is the fallback. */
+
+.login { min-height: 100vh; overflow-x: hidden; }
+.login-scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.login-scene__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.login-scene__horizon {
+  position: absolute; left: 50%; bottom: -118vmax; width: 150vmax; height: 150vmax;
+  transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle at 50% 8%, #10233E 0%, #050A14 30%, #000 60%);
+  box-shadow: 0 -2px 60px rgba(124,243,255,.28), inset 0 18px 40px -18px rgba(124,243,255,.45);
+}
+.login-scene.has-webgl .login-scene__horizon { display: none; }
+
+.login-top {
+  position: relative; z-index: 2;
+  display: flex; justify-content: space-between; align-items: center; padding: 1.5rem var(--gutter);
+}
+.wordmark { display: inline-flex; align-items: center; gap: .625rem; font-weight: 600; font-size: 1.125rem; text-decoration: none; letter-spacing: -.02em; }
+.login-top__link { color: var(--text-2); text-decoration: none; font-size: .9375rem; }
+.login-top__link:hover { color: var(--text); }
+
+.login-main { position: relative; z-index: 2; display: grid; place-items: center; padding: 6vh 1rem 30vh; }
+.login-form { width: min(28rem, 100%); display: grid; gap: 1.125rem; text-align: center; }
+.login-form__eyebrow { color: var(--text-2); font-size: .9375rem; }
+.login-form__title { font-size: clamp(2.5rem, 5.5vw, 4rem); }
+.login-form__lede { color: var(--text-2); }
+.login-form .field { text-align: left; margin-top: .5rem; }
+.field__input--id {
+  min-height: 3.75rem; font-family: var(--font-mono); font-size: 1.375rem; letter-spacing: .06em;
+  text-transform: uppercase; background: rgba(5,7,10,.85);
+}
+.field__input--id::placeholder { color: #4A515D; }
+.login-form__note { color: var(--text-3); font-size: .875rem; }
+.login-form .form-error { text-align: left; }
+.login-form.is-wrong .field__input--id { border-color: var(--alert); animation: shake .4s var(--ease-calm); }
+@keyframes shake {
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+.site-foot--clear { position: relative; z-index: 2; border-top: 0; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .login-form.is-wrong .field__input--id { animation: none; }
+}

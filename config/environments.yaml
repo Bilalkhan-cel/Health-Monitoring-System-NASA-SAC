@@ -1,0 +1,49 @@
+# Mission environments. They change gravity, the Earth comms delay, the exercise
+# options, the loading targets and the wording of advice.
+# They NEVER change the clinical thresholds in thresholds.yaml.
+# Targets are prototype values.
+
+Spacecraft:
+  gravity_g: 0.0
+  comms_delay_one_way_s: 600        # deep-space transit; scenarios may override the delay
+  exercise: [device_log, treadmill_harness]
+  weekly_active_min_target: 420
+  target_days: 5
+  target_met: 5.0
+  advice_notes: "In transit there is no gravity to load your bones, so the harnessed treadmill and logged device sessions matter every day."
+
+Space Station:
+  gravity_g: 0.0
+  comms_delay_one_way_s: 2
+  exercise: [device_log, treadmill_harness]   # ARED and cycle sessions are logged by hand
+  weekly_active_min_target: 420
+  target_days: 5
+  target_met: 5.0
+  advice_notes: "In microgravity your body sheds bone and muscle quickly. Keep to the daily exercise block."
+
+Lunar Base:
+  gravity_g: 0.166
+  comms_delay_one_way_s: 1.3
+  exercise: [run, pushup, pullup, squat, device_log]
+  weekly_active_min_target: 240
+  target_days: 5
+  target_met: 5.0
+  advice_notes: "Lunar gravity is one sixth of Earth's. It helps, but it is not enough on its own to protect your bones."
+
+Rover:
+  gravity_g: 0.166
+  comms_delay_one_way_s: 1.3        # lunar surface rover
+  exercise: [run, pushup, squat, device_log]
+  weekly_active_min_target: 240
+  target_days: 5
+  target_met: 5.0
+  advice_notes: "Space is tight in the rover. Short sets of squats and push-ups still count."
+
+Mars Base:
+  gravity_g: 0.38
+  comms_delay_one_way_s: 760
+  exercise: [run, pushup, pullup, squat, device_log]
+  weekly_active_min_target: 300
+  target_days: 5
+  target_met: 5.0
+  advice_notes: "Mars gravity is about a third of Earth's. Regular loading exercise keeps your bones and muscles ready for the trip home."

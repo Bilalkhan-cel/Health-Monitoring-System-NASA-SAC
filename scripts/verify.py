@@ -53,6 +53,10 @@ PHASE0_FILES = (
     "run.py", "config.py", "requirements.txt", "requirements-core.txt", "requirements-ml.txt",
     "requirements-dev.txt", ".env.example", ".gitignore", "README.md", "PROMPT.md",
     "app/__init__.py", "app/extensions.py", "app/bootstrap.py", "app/landing/routes.py",
+    "app/models.py", "app/security.py", "app/auth/routes.py", "app/dashboard/routes.py",
+    "app/services/thresholds.py", "app/services/readiness.py", "app/services/alert_gate.py",
+    "app/services/measurements.py", "config/thresholds.yaml", "config/environments.yaml",
+    "migrations/env.py",
     "app/templates/base.html", "app/templates/landing.html", "app/static/css/theme.css",
     "scripts/setup.py", "scripts/verify.py", "scripts/fetch_assets.py", "scripts/download_models.py",
     "scripts/assets_manifest.json",
@@ -74,8 +78,8 @@ ENV_KEYS = (
     "MEAL_TIMES", "DEMO_MODE", "SEED_DAYS", "SEED_ON_FIRST_RUN",
 )
 
-# Routes that exist so far: (path, expected status for an anonymous visitor).
-PUBLIC_ROUTES = (("/", 200), ("/healthz", 200))
+# Routes timed for the first-byte budget.
+PUBLIC_ROUTES = (("/", 200), ("/healthz", 200), ("/login", 200))
 
 
 @dataclass(frozen=True)
@@ -299,7 +303,7 @@ def check_config() -> list[Check]:
 
 
 def check_app_healthz() -> Check:
-    with tempfile.TemporaryDirectory(prefix="astrovital-verify-") as temp:
+    with tempfile.TemporaryDirectory(prefix="astrovital-verify-", ignore_cleanup_errors=True) as temp:
         try:
             response = _make_test_client(Path(temp)).get("/healthz")
         except Exception as error:  # noqa: BLE001
@@ -413,28 +417,121 @@ def check_boot() -> list[Check]:
     return checks
 
 
+PUBLIC_ENDPOINTS = {"landing.index", "landing.healthz", "auth.login", "static"}
+SAMPLE_ARGS = {"system": "heart", "code": "hydration", "scenario": "mars_transit", "id": 1, "checkin_id": 1,
+               "notification_id": 1, "astro_id": "AST-1002"}
+TOKEN_ROUTES = ("/api/device/", "/api/openhome/")
+
+
+def _seeded_client(instance: Path):
+    from app import bootstrap, create_app
+    from app.extensions import db
+    from config import load_config
+
+    values = {"ASTROVITAL_INSTANCE_DIR": str(instance), "FLASK_SECRET_KEY": "verify-only",
+              "BIND_HOST": "127.0.0.1", "OPENHOME_MOCK": "true", "SEED_ON_FIRST_RUN": "true"}
+    example = ROOT / ".env.example"
+    from config import read_env
+
+    merged = {**read_env(example, overrides={}), **values}
+    app = create_app(load_config(merged), testing=True)
+    app.config["WTF_CSRF_ENABLED"] = False
+    with app.app_context():
+        db.create_all()
+        bootstrap.prepare_data(app, seed=True)
+    return app
+
+
+def _dispose(app) -> None:
+    """Release the SQLite file so Windows can delete the temporary folder."""
+    from app.extensions import db
+
+    with app.app_context():
+        db.session.remove()
+        db.engine.dispose()
+
+
+def _get_routes(app) -> list[tuple[str, str]]:
+    """Every GET route as (endpoint, path) with sample values for its arguments."""
+    from flask import url_for
+
+    routes = []
+    with app.test_request_context():
+        for rule in app.url_map.iter_rules():
+            if "GET" not in rule.methods or rule.endpoint == "static" or rule.rule.startswith("/ws/"):
+                continue
+            try:
+                path = url_for(rule.endpoint, **{arg: SAMPLE_ARGS.get(arg, 1) for arg in rule.arguments})
+            except Exception:  # noqa: BLE001 (a route with an argument we cannot fill)
+                continue
+            routes.append((rule.endpoint, path))
+    return sorted(set(routes))
+
+
 def check_route_smoke() -> list[Check]:
-    """Anonymous smoke test of every route that exists so far, plus the 404 page."""
-    with tempfile.TemporaryDirectory(prefix="astrovital-smoke-") as temp:
-        client = _make_test_client(Path(temp))
-        wrong, label_hits = [], []
-        for path, expected in PUBLIC_ROUTES:
-            response = client.get(path)
-            if response.status_code != expected:
-                wrong.append(f"{path} gave {response.status_code}, expected {expected}")
-            if response.is_json:
-                label_hits += [f"{path} {hit}" for hit in find_source_keys(response.get_json())]
-            else:
-                label_hits += [f"{path}: {hit}" for hit in scan_source_labels(response.get_data(as_text=True))]
-        missing_page = client.get("/no-such-page")
-        if missing_page.status_code != 404 or b"Traceback" in missing_page.data:
-            wrong.append(f"/no-such-page gave {missing_page.status_code}")
+    """Every GET route, anonymously and as every crew member: no 5xx, protected routes stay protected."""
+    with tempfile.TemporaryDirectory(prefix="astrovital-smoke-", ignore_cleanup_errors=True) as temp:
+        app = _seeded_client(Path(temp))
+        config = app.extensions["astrovital_config"]
+        routes = _get_routes(app)
+        problems, label_hits, payloads = [], [], 0
+        anonymous = app.test_client()
+        for endpoint, path in routes:
+            response = anonymous.get(path)
+            if response.status_code >= 500:
+                problems.append(f"anonymous {path} gave {response.status_code}")
+            elif endpoint in PUBLIC_ENDPOINTS:
+                if response.status_code != 200:
+                    problems.append(f"anonymous {path} gave {response.status_code}")
+            elif path.startswith(TOKEN_ROUTES):
+                if response.status_code not in (401, 403, 404, 405):
+                    problems.append(f"anonymous {path} gave {response.status_code} without a token")
+            elif response.status_code not in (302, 401):
+                problems.append(f"anonymous {path} gave {response.status_code}, expected a login redirect")
+        crew_ids = [member.astro_id for member in (*config.astronauts, *config.surgeons)]
+        for astro_id in crew_ids:
+            client = app.test_client()
+            client.post("/login", data={"astro_id": astro_id})
+            for _endpoint, path in routes:
+                if path.startswith(TOKEN_ROUTES):
+                    continue
+                response = client.get(path)
+                if response.status_code >= 500 or b"Traceback" in response.data:
+                    problems.append(f"{astro_id} {path} gave {response.status_code}")
+                    continue
+                if response.is_json:
+                    payloads += 1
+                    label_hits += [f"{path} {hit}" for hit in find_source_keys(response.get_json())]
+                elif response.mimetype == "text/html":
+                    label_hits += [f"{path}: {hit}" for hit in scan_source_labels(response.get_data(as_text=True),
+                                                                                   exempt_words="/settings" in path)]
+        missing_page = anonymous.get("/no-such-page")
+        if missing_page.status_code != 404:
+            problems.append(f"/no-such-page gave {missing_page.status_code}")
+        _dispose(app)
     return [
-        Check("Route smoke test (anonymous)", FAIL if wrong else PASS,
-              "; ".join(wrong) if wrong else f"{len(PUBLIC_ROUTES)} routes and the 404 page behave"),
+        Check("Route smoke test (anonymous + every crew member)", FAIL if problems else PASS,
+              "; ".join(problems[:5]) if problems
+              else f"{len(routes)} GET routes x {len(crew_ids) + 1} users, no 5xx, protected routes protected"),
         Check("Label scan: rendered pages and JSON", FAIL if label_hits else PASS,
-              "; ".join(label_hits[:4]) if label_hits else "no source label or source key"),
+              "; ".join(label_hits[:4]) if label_hits else f"no source label or source key ({payloads} JSON responses)"),
     ]
+
+
+def check_summary_speed() -> Check:
+    """/api/summary p95 with 30 days of seeded history."""
+    with tempfile.TemporaryDirectory(prefix="astrovital-perf-", ignore_cleanup_errors=True) as temp:
+        client = _seeded_client(Path(temp)).test_client()
+        client.post("/login", data={"astro_id": "AST-1001"})
+        timings = []
+        for _ in range(40):
+            started = time.perf_counter()
+            client.get("/api/summary")
+            timings.append((time.perf_counter() - started) * 1000)
+        _dispose(client.application)
+    p95 = sorted(timings)[int(len(timings) * 0.95) - 1]
+    return Check("/api/summary p95 under 300 ms", PASS if p95 < 300 else FAIL,
+                 f"p95 {p95:.0f} ms over 40 requests (30 days of history)")
 
 
 def check_forbidden_patterns() -> Check:
@@ -547,6 +644,7 @@ PHASES: dict[int, list[Callable[[], Check | list[Check]]]] = {
         check_forbidden_patterns, check_secrets_not_in_source, check_label_scan_files, check_budgets,
         check_node_syntax,
     ],
+    1: [check_summary_speed],
 }
 
 

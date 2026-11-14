@@ -12,15 +12,16 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   {% block head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
   <a class="skip-link" href="#main">Skip to content</a>
-  {% block shell %}{% endblock %}
+  {% block body %}
   <main id="main">
     {% block content %}{% endblock %}
   </main>
   <footer class="site-foot">
     {% block footer %}Prototype for educational purposes. Not a certified medical device.{% endblock %}
   </footer>
+  {% endblock %}
   {% block scripts %}{% endblock %}
 </body>
 </html>

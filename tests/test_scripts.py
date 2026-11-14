@@ -58,7 +58,8 @@ def test_manifest_is_valid_and_stays_inside_vendor():
     assert len({asset.dest for asset in assets}) == len(assets)
     for asset in assets:
         assert asset.dest.startswith("app/static/vendor/")
-        assert asset.url.startswith("https://") and "@" in asset.url, "URLs must pin a version"
+        pinned = "@" in asset.url or "/float16/1/" in asset.url
+        assert asset.url.startswith("https://") and pinned, "URLs must pin a version"
 
 
 @pytest.mark.parametrize("change", [

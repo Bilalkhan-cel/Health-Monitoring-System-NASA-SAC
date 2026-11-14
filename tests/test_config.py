@@ -133,7 +133,8 @@ def test_session_cookie_is_http_only_and_lax(config):
     assert mapping["SQLALCHEMY_ENGINE_OPTIONS"]["connect_args"]["check_same_thread"] is False
 
 
-def test_checklist_without_keys_explains_every_gap(config):
+def test_checklist_without_keys_explains_every_gap(env_values):
+    config = load_config({**env_values, "OPENHOME_MOCK": "false", "BIND_HOST": ""})
     lines = build_checklist(config)
     text = "\n".join(render_checklist(lines))
     assert "Crew loaded (3 astronauts, 1 flight surgeon)" in text

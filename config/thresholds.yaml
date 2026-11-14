@@ -1,0 +1,115 @@
+version: 1                       # stored on every Measurement as threshold_version
+# Educational prototype ranges pending clinical validation.
+# Sources: AHA resting HR 60–100; AHA/ACC 2017 BP categories (crisis ≥180 or ≥120 diastolic);
+# ADA Standards of Care (glucose; the 100–110 split is a prototype UI subdivision);
+# clinical convention (temperature, SpO2, respiration); AASM/NSF (sleep); prototype scales (scores).
+# CRITICAL is reserved for values that could be dangerous without prompt action.
+
+heart_rate:        # bpm, resting
+  unit: bpm
+  requires_rest: true
+  nominal:  [[60, 91]]
+  stable:   [[50, 60], [91, 101]]
+  caution:  [[40, 50], [101, 130]]
+  critical: [[null, 40], [130, null]]
+systolic:          # mmHg
+  unit: mmHg
+  requires_rest: true
+  nominal:  [[90, 120]]
+  stable:   [[120, 130]]
+  caution:  [[80, 90], [130, 180]]
+  critical: [[null, 80], [180, null]]
+diastolic:         # mmHg
+  unit: mmHg
+  requires_rest: true
+  nominal:  [[60, 80]]
+  stable:   [[55, 60]]
+  caution:  [[50, 55], [80, 120]]
+  critical: [[null, 50], [120, null]]
+glucose_fasting:   # mg/dL (store canonical mg/dL; convert for display)
+  unit: mg/dL
+  nominal:  [[70, 100]]
+  stable:   [[100, 110]]
+  caution:  [[54, 70], [110, 250]]
+  critical: [[null, 54], [250, null]]
+glucose_post_meal: # mg/dL, 2 h after eating. The "random" context uses this table too
+  unit: mg/dL
+  nominal:  [[70, 140]]
+  stable:   [[140, 160]]
+  caution:  [[54, 70], [160, 250]]
+  critical: [[null, 54], [250, null]]
+temperature_c:     # °C
+  unit: °C
+  nominal:  [[36.1, 37.3]]
+  stable:   [[35.8, 36.1], [37.3, 37.6]]
+  caution:  [[35.0, 35.8], [37.6, 39.0]]
+  critical: [[null, 35.0], [39.0, null]]
+spo2:              # %
+  unit: "%"
+  max_status_by_origin: {wearable: CAUTION}   # the wearable alone can never produce CRITICAL (owner decision); other origins keep CRITICAL
+  nominal:  [[96, null]]
+  stable:   [[94, 96]]
+  caution:  [[90, 94]]
+  critical: [[null, 90]]
+respiration:       # breaths/min
+  unit: br/min
+  requires_rest: true
+  nominal:  [[12, 19]]
+  stable:   [[10, 12], [19, 21]]
+  caution:  [[8, 10], [21, 25]]
+  critical: [[null, 8], [25, null]]
+sleep_hours:       # hours, last night
+  unit: h
+  max_status: CAUTION
+  nominal:  [[7, 9.1]]
+  stable:   [[6, 7], [9.1, 10.1]]
+  caution:  [[null, 6], [10.1, null]]
+wellbeing:         # 0–100 prototype scale. CRITICAL only ever comes from the safety screen (Section 12)
+  unit: score
+  max_status: CAUTION
+  nominal:  [[70, null]]
+  stable:   [[55, 70]]
+  caution:  [[null, 55]]
+loading_index:     # 0–100 prototype scale
+  unit: score
+  max_status: CAUTION
+  force_caution_after_days_without_exercise: 3
+  nominal:  [[75, null]]
+  stable:   [[60, 75]]
+  caution:  [[null, 60]]
+
+alert_confirm:     # the gates of 9.7. A range that says CRITICAL becomes "Get help now" only if its gate passes; otherwise it shows `unmet_status`. A gate can only LOWER a status.
+  unmet_status: CAUTION               # Needs attention
+  heart_rate:
+    wearable:                         # the MAX30102 path. A single frame can never pass.
+      require_resting_session: true   # only inside a cardio session that began after the rest countdown (Section 10)
+      require_rest_verified: true     # the rest_verification checks below passed for that session
+      rest_verification:              # prototype checks; there is no motion sensor, so these cannot prove stillness
+        countdown_completed: true     # a skipped countdown (DEMO_MODE) never verifies rest
+        min_valid_coverage: 0.8       # share of the last 60 s of the countdown with valid heart-rate frames
+        max_hr_range_bpm: 15          # max minus min of the six 10 s medians in that minute
+      min_quality: 60                 # q required on every frame of the run (frame validity itself is MIN_SIGNAL_QUALITY)
+      consecutive_frames: 10          # 1 Hz frames in the CRITICAL range in a row; any invalid frame resets the run
+      min_span_s: 10                  # and the run must span at least this many seconds
+      outside_session_display: true   # outside a resting session a sustained run shows Needs attention on the live strip only
+  spo2:
+    wearable_notice_frames: 5         # valid frames below 94 % before the Needs attention notice (the wearable is capped at CAUTION)
+    manual:                           # a typed-in value is never an emergency on its own
+      confirmations_required: 2       # entries in the CRITICAL range needed, the first one included
+      min_gap_s: 60                   # the confirming entry must come at least this long after the previous one
+      window_min: 10                  # and within this long, otherwise the first entry expires
+      symptom_override_confirms: true # ticking a symptom in the same form confirms at once (9.2)
+  wearable_temperature_aggregates: 2  # consecutive 60 s aggregates, both settled
+  generated_readings: 2
+
+baseline:          # per-metric parameters for the personal-baseline layer (9.2a)
+  heart_rate:   {floor: 3,   min_change: 8}
+  systolic:     {floor: 4,   min_change: 10}
+  diastolic:    {floor: 3,   min_change: 7}
+  glucose_fasting: {floor: 8, min_change: 15}
+  temperature_c: {floor: 0.2, min_change: 0.5}
+  spo2:         {floor: 1,   min_change: 2}
+  respiration:  {floor: 1.5, min_change: 3}
+  sleep_hours:  {floor: 0.7, min_change: 1.5}
+  wellbeing:    {floor: 6,   min_change: 12}
+  loading_index: {floor: 6,  min_change: 12}

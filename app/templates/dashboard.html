@@ -1,0 +1,131 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon %}
+{% block title %}Today · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/today.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="greeting">{{ summary.greeting }}, {{ summary.astronaut.first_name }}</h1>
+  <p class="greeting__date">{{ summary.mission.date_text }} · Day {{ summary.mission.day }} of your mission</p>
+{% endblock %}
+{% block content %}
+<p class="today-lede" data-readiness-sentence>{{ summary.readiness.sentence }}</p>
+
+<div class="today">
+  <div class="today__main">
+  <section class="scores" aria-label="Health scores">
+    {% for system in ["heart", "mind", "bones"] %}
+    <button class="score" type="button" data-score="{{ system }}" aria-pressed="false">
+      <span class="score__label">{{ icon(summary.systems[system].icon) }}{{ summary.systems[system].label }}</span>
+      <span class="score__value"><span data-score-number>–</span><span class="score__max">/100</span></span>
+      <span class="meter" aria-hidden="true"><span class="meter__fill" data-score-meter></span></span>
+      <span data-score-status></span>
+    </button>
+    {% endfor %}
+    <div class="score score--overall" data-score="overall">
+      <span class="score__label">{{ icon("activity") }}Overall</span>
+      <span class="score__value"><span data-score-number>–</span><span class="score__max">/100</span></span>
+      <span class="meter" aria-hidden="true"><span class="meter__fill" data-score-meter></span></span>
+      <span data-score-status></span>
+      <span class="score__caption">{{ summary.readiness.caption }}</span>
+    </div>
+  </section>
+
+
+  <div class="today__row">
+  <section class="card tasks" aria-labelledby="tasks-title">
+    <div class="card__head">
+      <h2 class="card__title" id="tasks-title">Today's tasks</h2>
+      <p class="card__meta" data-tasks-count></p>
+    </div>
+    <span class="meter meter--wide" aria-hidden="true"><span class="meter__fill" data-tasks-meter></span></span>
+    <ul class="task-list" data-task-list></ul>
+    <p class="tasks__streak" data-streak></p>
+  </section>
+  {% if has_endpoint("doctor.index") %}
+  <section class="card nova-card" aria-labelledby="nova-title">
+    <div class="orb" aria-hidden="true"></div>
+    <h2 class="nova-card__title" id="nova-title">Dr. NOVA</h2>
+    <p class="nova-card__sub">Your AI doctor</p>
+    <p class="nova-card__text">Get a short, simple summary of how you are doing today and what to do next.</p>
+    <a class="pill pill--primary" href="{{ url_for('doctor.index', ask='summary') }}">Get today's summary</a>
+  </section>
+  {% else %}
+  <section class="card nova-card" aria-labelledby="nova-title">
+    <h2 class="nova-card__title" id="nova-title">Last night</h2>
+    <p class="nova-card__text" data-sleep-note></p>
+  </section>
+  {% endif %}
+  </div>
+
+  <section class="readings" aria-labelledby="readings-title">
+    <div class="readings__head">
+      <h2 class="card__title" id="readings-title">All readings</h2>
+      <p class="card__meta">Every number with a plain answer. Tap <span class="info-hint">{{ icon("info") }}</span> to learn what it means.</p>
+    </div>
+    <ul class="reading-list" data-readings></ul>
+  </section>
+  </div>
+
+  <section class="body-col" aria-labelledby="body-title">
+    <div class="stage twin-stage">
+      <div class="twin-stage__head">
+        <h2 class="card__title" id="body-title">Your body</h2>
+        <p class="card__meta">Drag to turn · tap a glowing point</p>
+      </div>
+      <div class="twin" data-twin></div>
+      <div class="system-pills" role="group" aria-label="Body systems">
+        {% for system in ["mind", "heart", "bones"] %}
+        <button class="system-pill" type="button" data-system-pill="{{ system }}" aria-pressed="false">
+          <span class="dot" data-pill-dot></span>{{ summary.systems[system].label }}
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+    <article class="card panel" data-panel aria-live="polite">
+      <div class="panel__live" data-live-strip hidden></div>
+      <div class="card__head">
+        <h3 class="card__title" data-panel-title></h3>
+        <span data-panel-status></span>
+      </div>
+      <p class="panel__headline" data-panel-headline></p>
+      <ul class="rows" data-panel-rows></ul>
+      <h4 class="panel__subtitle">What to do</h4>
+      <ol class="steps" data-panel-steps></ol>
+      <div class="panel__actions">
+        <a class="pill pill--primary" data-panel-start hidden>Start check</a>
+        {% if has_endpoint("doctor.index") %}<a class="pill pill--ghost" href="{{ url_for('doctor.index') }}">Ask Dr. NOVA</a>{% endif %}
+      </div>
+      <p class="panel__foot" data-panel-foot></p>
+    </article>
+  </section>
+</div>
+
+<dialog class="dialog" id="sleep-dialog" aria-labelledby="sleep-title">
+  <form class="dialog__body" data-sleep-form>
+    <h2 class="dialog__title" id="sleep-title">How long did you sleep?</h2>
+    <div class="field-row">
+      <label class="field"><span class="field__label">Hours</span>
+        <input class="field__input" type="number" name="hours" min="0" max="16" step="1" value="7" required></label>
+      <label class="field"><span class="field__label">Minutes</span>
+        <input class="field__input" type="number" name="minutes" min="0" max="59" step="5" value="0" required></label>
+    </div>
+    <label class="field"><span class="field__label">How well did you sleep?</span>
+      <select class="field__input" name="quality">
+        <option value="">Skip</option><option value="1">Very badly</option><option value="2">Badly</option>
+        <option value="3">Okay</option><option value="4">Well</option><option value="5">Very well</option>
+      </select></label>
+    <p class="form-error" data-sleep-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save sleep</button>
+    </div>
+  </form>
+</dialog>
+
+<noscript><p class="noscript">Turn on JavaScript to see your readings and today's tasks.</p></noscript>
+<script type="application/json" id="summary-data">{{ summary|tojson }}</script>
+{% endblock %}
+{% block page_scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/app/today.js') }}"></script>
+{% endblock %}
