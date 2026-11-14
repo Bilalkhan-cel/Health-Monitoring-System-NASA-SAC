@@ -637,6 +637,28 @@ def check_hardware_facts() -> Check:
                  else "23 rows, none marked verified")
 
 
+def check_twin_assets() -> Check:
+    """Phase 2: the humanoid, the twin modules and the 2D fallback exist."""
+    model = STATIC_DIR / "models" / "astronaut.glb"
+    needed = [model, STATIC_DIR / "js" / "3d" / "twin.js", STATIC_DIR / "js" / "3d" / "twin2d.js",
+              STATIC_DIR / "js" / "astro3d.js", ROOT / "config" / "recommendations.yaml"]
+    missing = [_rel(path) for path in needed if not path.exists()]
+    if missing:
+        return Check("Digital twin assets", FAIL, "missing: " + ", ".join(missing))
+    header = model.read_bytes()[:4]
+    return Check("Digital twin assets", PASS if header == b"glTF" else FAIL,
+                 f"astronaut.glb {model.stat().st_size // 1024} KB, 3D twin + SVG fallback present")
+
+
+def check_iss_budget() -> Check:
+    """Phase 9 budget: optimized ISS glb at most 15 MB."""
+    model = STATIC_DIR / "models" / "iss.glb"
+    if not model.exists():
+        return Check("ISS model (15 MB)", FAIL, "app/static/models/iss.glb missing")
+    size = model.stat().st_size
+    return Check("ISS model (15 MB)", PASS if size <= 15 * 1024 * 1024 else FAIL, f"{size / 1048576:.1f} MB")
+
+
 PHASES: dict[int, list[Callable[[], Check | list[Check]]]] = {
     0: [
         check_python, check_packages, check_layout, check_env_example, check_requirements_pinned,
@@ -645,6 +667,7 @@ PHASES: dict[int, list[Callable[[], Check | list[Check]]]] = {
         check_node_syntax,
     ],
     1: [check_summary_speed],
+    2: [check_twin_assets],
 }
 
 

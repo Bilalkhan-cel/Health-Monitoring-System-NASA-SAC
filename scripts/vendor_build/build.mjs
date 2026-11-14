@@ -71,12 +71,12 @@ async function buildTextures() {
   const out = join(root, 'app', 'static', 'textures');
   mkdirSync(out, { recursive: true });
   const jobs = [
-    ['earth_day', 'earth-day.jpg'],
-    ['earth_night', 'earth-night.jpg'],
-    ['earth_clouds', 'earth-clouds.png'],
-    ['earth_specular', 'earth-specular.jpg'],
+    ['earth_day', 'earth-day.jpg', null],
+    ['earth_night', 'earth-night.jpg', null],
+    ['earth_clouds', 'earth-bump-roughness-clouds.jpg', 'blue'],  // three.js packs clouds in the blue channel
+    ['earth_specular', 'earth-specular.jpg', null],
   ];
-  for (const [name, file] of jobs) {
+  for (const [name, file, channel] of jobs) {
     const input = join(sources, 'earth', file);
     if (!existsSync(input)) {
       console.log(`skip ${name}: ${input} missing`);
@@ -84,8 +84,10 @@ async function buildTextures() {
     }
     for (const [tier, width] of [['2k', 2048], ['4k', 4096]]) {
       const target = join(out, `${name}_${tier}.webp`);
-      let image = sharp(input).resize({ width, height: width / 2, fit: 'fill' });
-      if (name === 'earth_clouds' || name === 'earth_specular') image = image.greyscale();
+      let image = sharp(input);
+      if (channel) image = image.extractChannel(channel);
+      image = image.resize({ width, height: width / 2, fit: 'fill' });
+      if (!channel && name === 'earth_specular') image = image.toColourspace('b-w');
       await image.webp({ quality: name === 'earth_day' ? 82 : 76 }).toFile(target);
       console.log(`${name}_${tier}.webp  ${kb(target)}`);
     }
@@ -112,10 +114,15 @@ async function buildModels() {
   const fn = await import('@gltf-transform/functions');
   const { MeshoptEncoder, MeshoptSimplifier } = await import('meshoptimizer');
   const sharp = (await import('sharp')).default;
+  const draco3d = (await import('draco3dgltf')).default;
+  const { MeshoptDecoder } = await import('meshoptimizer');
   await MeshoptEncoder.ready;
+  await MeshoptDecoder.ready;
   await MeshoptSimplifier.ready;
+  // The NASA source is Draco-compressed: decode at build time, re-encode with meshopt (no Draco at runtime).
   const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
-    'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptEncoder,
+    'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder,
+    'draco3d.decoder': await draco3d.createDecoderModule(),
   });
   const out = join(root, 'app', 'static', 'models');
   mkdirSync(out, { recursive: true });
@@ -137,12 +144,28 @@ async function buildModels() {
       }
     }
     console.log(`ISS: detached ${removed} greeble node(s)`);
+    for (const ext of doc.getRoot().listExtensionsUsed()) {
+      if (ext.extensionName === 'KHR_draco_mesh_compression') ext.dispose();
+    }
     await doc.transform(
       fn.prune(), fn.dedup(), fn.weld(),
       fn.simplify({ simplifier: MeshoptSimplifier, ratio: 0.6, error: 0.0008 }),
-      fn.textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [1024, 1024] }),
       fn.quantize(), fn.prune(),
     );
+    // Keep the original materials; re-encode their textures as WebP, at most 1024 px.
+    const { EXTTextureWebP } = await import('@gltf-transform/extensions');
+    doc.createExtension(EXTTextureWebP).setRequired(true);
+    let texBytes = 0;
+    for (const texture of doc.getRoot().listTextures()) {
+      const image = texture.getImage();
+      if (!image) continue;
+      const webp = await sharp(Buffer.from(image)).resize({ width: 1024, height: 1024, fit: 'inside',
+        withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
+      texture.setImage(new Uint8Array(webp)).setMimeType('image/webp');
+      if (texture.getURI()) texture.setURI(texture.getURI().replace(/\.\w+$/, '.webp'));
+      texBytes += webp.length;
+    }
+    console.log(`ISS textures: ${doc.getRoot().listTextures().length}, ${(texBytes / 1e6).toFixed(1)} MB as WebP`);
     doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({
       method: EXTMeshoptCompression.EncoderMethod.FILTER,
     });

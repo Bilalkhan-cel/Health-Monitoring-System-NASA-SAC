@@ -42,3 +42,14 @@ The owner supplied `ASTROVITAL UI Mockups.pdf` (10 screens) as the visual refere
 | D27 | **Icons are a 84-symbol Lucide sprite** built from `lucide-static` into `static/vendor/lucide/sprite.svg`. | One cached 27 KB file instead of the 1 MB full sprite. |
 | D28 | **Daily tasks are ticked by the module that finishes them**, not inside `measurements.record()`. | Keeps the write path pure; XP is awarded once per task per day by `gamification.complete_task`. |
 | D29 | **The demo blood-pressure emergency is the evening reading 18 days ago** and settles by the next morning. | The end-of-day readiness then shows the dip in History, matching the mockup's "Oct 21 · blood pressure spike". |
+
+## Phase 2
+
+| # | Decision | Why |
+|---|---|---|
+| D30 | **Humanoid: three.js r186 `Xbot.glb`** (Mixamo rig, idle clip kept, meshopt-compressed to 845 KB as `static/models/astronaut.glb`). | The model the brief suggests; Mixamo characters are free to use. Bones found by regex: `mixamorigHead`, `mixamorigSpine2`, `mixamorigLeftLeg`, `mixamorigHips` (exposed as `twin.bones`). |
+| D31 | **The 2D SVG body paints first and is swapped for WebGL once the model loads.** | No empty stage while the glb downloads, and the same component is the no-WebGL fallback. |
+| D32 | **Body FPS was not measured during the build.** | The in-app browser pane was hidden, which pauses `requestAnimationFrame`. Recorded as a known limitation; measure with the pane visible (`twin.fps`). |
+| D33 | **The NASA ISS source is Draco-compressed.** It is decoded at build time (`draco3dgltf`, build-only) and re-encoded with meshopt, so the runtime needs only `MeshoptDecoder`. Result: 11.0 MB, 697,619 vertices, 109 WebP textures (≤ 1024 px); 309 detail meshes (`Details`, `Handrails`, …) removed. | Spec budget ≤ 15 MB and ≈ 780k vertices, no Draco at runtime. |
+| D34 | **`sharp` is pinned to one version (0.34.4) in the build tools**, with a `postinstall` step that removes the copy nested under `ndarray-pixels`. | Two libvips builds in one Node process corrupt each other ("colourspace: parameter space not set"). |
+| D35 | **Earth textures come from three.js r186 examples** (NASA-derived): day and night 4096, clouds from the blue channel of `earth_bump_roughness_clouds_4096`, specular 2048. Shipped as WebP in 2K and 4K tiers plus a generated star field. | Same imagery family as Blue Marble / Black Marble with a stable, pinned source. |

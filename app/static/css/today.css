@@ -76,6 +76,17 @@ button.score:hover { border-color: var(--line-strong); }
   background: radial-gradient(70% 55% at 50% 60%, rgba(124,243,255,.07), transparent 70%), var(--surface-2); }
 .twin { position: relative; height: clamp(320px, 42vh, 460px); }
 .twin canvas, .twin svg.twin2d { width: 100%; height: 100%; display: block; touch-action: none; }
+.twin__webgl { position: absolute; inset: 0; }
+.twin__webgl canvas { cursor: grab; }
+.twin-tag {
+  position: absolute; left: 0; top: 0; pointer-events: none; white-space: nowrap;
+  padding: .2rem .55rem; border-radius: 8px; font-size: .75rem; font-weight: 500;
+  background: rgba(0,0,0,.72); border: 1px solid var(--status-color, var(--glow)); color: var(--text);
+}
+.twin-tag[data-status="good"] { --status-color: var(--good); }
+.twin-tag[data-status="okay"] { --status-color: var(--okay); }
+.twin-tag[data-status="watch"] { --status-color: var(--watch); }
+.twin-tag[data-status="alert"] { --status-color: var(--alert); }
 .system-pills { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; }
 .system-pill {
   display: inline-flex; align-items: center; gap: .5rem; min-height: 2.25rem; padding: .375rem .875rem;

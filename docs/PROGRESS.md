@@ -1,12 +1,12 @@
 # PROGRESS
 
-Current: P2 · loop 0/3 · step: PLAN
+Current: P3 · loop 0/3 · step: PLAN
 
 | Phase | Status | Loops | Gate |
 |---|---|---|---|
 | P0 Bootstrap & harness | done (2026-11-14) | 1 | green: 23 passed, 0 failed |
 | P1 Core domain + Today | done (2026-11-14) | 1 | green: 24 passed, 0 failed |
-| P2 Digital twin | not started | | |
+| P2 Digital twin | done (2026-11-14) | 1 | green (FPS not measured: pane hidden) |
 | P3 Live data backbone | not started | | |
 | P4 Wearable firmware | not started | | |
 | P5 Cardio | not started | | |
