@@ -1,6 +1,6 @@
 # PROGRESS
 
-Current: P7 · loop 0/3 · step: EXECUTE
+Current: P9 · loop 0/3 · step: EXECUTE
 
 | Phase | Status | Loops | Gate |
 |---|---|---|---|
@@ -11,8 +11,8 @@ Current: P7 · loop 0/3 · step: EXECUTE
 | P4 Wearable firmware | done (2026-11-14) | 1 | green: compiles (RAM 16 %, flash 76 %), 6 native tests pass; hardware: needs hardware |
 | P5 Cardio | done (2026-11-14) | 1 | green (pytest: session flow, 9.7 rows, coverage, symptoms) |
 | P6 Bone & Muscle | done (2026-11-14) | 1 | green (synthetic keypoints exact; live camera not testable here) |
-| P7 Mental | not started | | |
-| P8 Dr. NOVA | not started | | |
+| P7 Mental | done (2026-11-14) | 1 | green: safety recall 100 % (23 phrases), real Whisper on a recorded clip, local NLP models |
+| P8 Dr. NOVA | done (2026-11-14) | 1 | green on the mock and offline rules; real OpenHome: needs keys |
 | P9 Landing + login | not started | | |
 | P10 Product completeness | not started | | |
 | P11 Hardening, hardware bring-up & release | not started | | |

@@ -1,0 +1,138 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon %}
+{% block title %}Mind · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/check.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mind.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="page-title">How are you, <span class="headline__second">really?</span></h1>
+{% endblock %}
+{% block content %}
+<div class="check" data-mind data-target="{{ target_min }}" data-max="{{ max_min }}" data-prompts='{{ prompts|tojson }}'>
+
+  <section class="step" data-step="intro">
+    <div class="overview">
+      <div class="overview__main">
+        <p class="lede">Talk for a few minutes about your day. Distance from family, a tight cabin and a heavy workload wear anyone down slowly. A short daily check-in helps you notice it early.</p>
+        <p class="card__meta">{% if last %}Last check-in: {{ last.mood_category }} · {{ last.started_at.strftime("%b %d") }}{% else %}No check-ins yet.{% endif %}</p>
+        <div class="rating">
+          <label class="field"><span class="field__label">Mood right now (optional)</span>
+            <select class="field__input" data-mood><option value="">Skip</option>{% for i in range(1, 11) %}<option value="{{ i }}">{{ i }}{% if i == 1 %} (very low){% elif i == 10 %} (very good){% endif %}</option>{% endfor %}</select></label>
+          <label class="field"><span class="field__label">Sleep quality last night (optional)</span>
+            <select class="field__input" data-sleep><option value="">Skip</option><option value="1">Very bad</option><option value="2">Bad</option><option value="3">Okay</option><option value="4">Good</option><option value="5">Very good</option></select></label>
+        </div>
+        <div class="overview__actions">
+          {% if voice_ready %}
+          <button class="pill pill--primary" type="button" data-record>{{ icon("mic") }}Start voice check-in</button>
+          {% endif %}
+          <button class="pill {{ 'pill--ghost' if voice_ready else 'pill--primary' }}" type="button" data-show="text">{{ icon("keyboard") }}Type instead</button>
+        </div>
+        {% if not voice_ready %}<p class="card__meta">Voice check-ins need the local speech model. Run <code>python scripts/download_models.py</code>, or type for now.</p>{% endif %}
+        <p class="form-error" data-mic-error hidden></p>
+      </div>
+      <div class="card">
+        <h2 class="card__title">What happens to what you say</h2>
+        <ul class="steps steps--roomy">
+          <li>Everything is analysed on this computer. Nothing goes to the cloud.</li>
+          <li>Audio is deleted as soon as it has been read.</li>
+          <li>{% if store %}Your transcript is kept until you delete it.{% else %}Only your scores and a short summary are kept. The transcript is discarded.{% endif %}</li>
+          <li>Analysis works in English only. Other languages use your mood rating.</li>
+          <li>This is support, not a diagnosis.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="step listen" data-step="recording" hidden>
+    <p class="listen__status"><span class="dot is-alert" aria-hidden="true"></span><span data-listening>Listening · only you can hear this</span></p>
+    <div class="listen__stage">
+      <canvas data-wave aria-hidden="true"></canvas>
+      <div class="listen__center"><p class="listen__timer" data-timer>0:00</p>
+        <p class="card__meta">About {{ target_min }} minutes is ideal. Stop whenever you like.</p></div>
+    </div>
+    <div class="listen__level" aria-hidden="true"><span class="meter"><span class="meter__fill" data-level></span></span></div>
+    <p class="card__meta" data-prompt-count></p>
+    <p class="listen__prompt" data-prompt aria-live="polite"></p>
+    <p class="listen__preview" data-preview aria-live="polite"></p>
+    <div class="panel__actions listen__actions">
+      <button class="pill pill--ghost" type="button" data-skip-prompt>Another question</button>
+      <button class="pill pill--ghost" type="button" data-pause>Pause</button>
+      <button class="pill pill--primary" type="button" data-done>I'm done</button>
+    </div>
+    <p class="card__meta listen__foot">Private · audio is deleted once it's read · this is support, not a diagnosis</p>
+  </section>
+
+  <section class="step" data-step="text" hidden>
+    <form class="card text-checkin" data-text-form>
+      <h2 class="card__title">Write how today went</h2>
+      <textarea class="field__input" name="text" rows="7" maxlength="8000" placeholder="How did you sleep? What's on your mind? How are things with the crew?" aria-label="Your check-in"></textarea>
+      <p class="form-error" data-text-error hidden></p>
+      <div class="panel__actions">
+        <button class="pill pill--ghost" type="button" data-show="intro">Back</button>
+        <button class="pill pill--primary" type="submit">Save check-in</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="step processing" data-step="processing" hidden>
+    <div class="orb" aria-hidden="true"></div>
+    <p class="lede" data-processing aria-live="polite">Reading your words…</p>
+  </section>
+
+  <section class="step safety" data-step="safety" hidden>
+    <div class="card safety__card" role="alert">
+      <h2 class="headline">You're not alone. <span class="headline__second">Let's get you support now.</span></h2>
+      <p class="lede" data-safety-text></p>
+      <ol class="steps steps--roomy">
+        <li>Tell your crew medical officer now, or the nearest crewmate.</li>
+        <li>Contact ground behavioural-health support as soon as you can.</li>
+        <li>Stay with someone while you wait.</li>
+      </ol>
+      <div class="panel__actions">
+        {% if has_endpoint("doctor.index") %}<a class="pill pill--primary" href="{{ url_for('doctor.index') }}">Talk to Dr. NOVA</a>{% endif %}
+        <a class="pill pill--ghost" href="{{ url_for('dashboard.index') }}">Back to Today</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="step results" data-step="results" hidden>
+    <div class="results__head">
+      <span data-result-status></span>
+      <p class="load__value"><span data-result-score></span><span class="score__max">/100</span></p>
+      <p class="card__meta" data-result-confidence></p>
+      <p class="lede" data-result-summary></p>
+      <ul class="themes" data-result-themes aria-label="Themes you talked about"></ul>
+    </div>
+    <div class="results__grid">
+      <div class="card"><h3 class="card__title">Emotions</h3><div class="trend__canvas trend__canvas--short"><canvas data-emotions role="img" aria-describedby="emotions-text"></canvas></div><p class="visually-hidden" id="emotions-text" data-emotions-text></p></div>
+      <div class="card"><h3 class="card__title">How your tone moved</h3><div class="trend__canvas trend__canvas--short"><canvas data-timeline role="img" aria-label="Tone across the check-in: up is positive, down is negative"></canvas></div></div>
+      <div class="card"><h3 class="card__title">Ideas for today</h3><ul class="steps steps--roomy" data-result-tips></ul></div>
+      <div class="card"><h3 class="card__title">Last 14 days</h3><div class="trend__canvas trend__canvas--short"><canvas data-trend role="img" aria-label="Mood score over the last 14 days"></canvas></div></div>
+    </div>
+    <details class="card transcript" data-transcript hidden>
+      <summary>Transcript</summary>
+      <p data-transcript-text></p>
+      <button class="pill pill--ghost pill--small" type="button" data-delete-transcript>{{ icon("trash-2") }}Delete transcript</button>
+    </details>
+    <p class="card__meta">This reflects your words today. It is not a diagnosis.</p>
+  </section>
+</div>
+
+<dialog class="dialog" id="breathe-dialog" aria-labelledby="breathe-title">
+  <div class="dialog__body breathe">
+    <h2 class="dialog__title" id="breathe-title">Two-minute breathing</h2>
+    <div class="breathe__circle" data-breathe-circle aria-hidden="true"></div>
+    <p class="lede" data-breathe-label aria-live="polite">In for four, out for six.</p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Close</button>
+      <button class="pill pill--primary" type="button" data-breathe-start>Start</button>
+    </div>
+  </div>
+</dialog>
+{% endblock %}
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/chartjs/chartjs-plugin-annotation.min.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/app/mental.js') }}"></script>
+{% endblock %}

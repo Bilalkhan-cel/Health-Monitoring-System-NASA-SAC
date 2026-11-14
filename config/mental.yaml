@@ -1,0 +1,35 @@
+# Voice check-in settings (Section 12). The wellbeing score is a prototype scale, not a diagnosis.
+
+wellbeing_weights:          # score = 100 · Σ weight · component (missing self-rating: renormalise)
+  sentiment: 0.35
+  emotion: 0.25
+  self_rating: 0.20
+  flags: 0.20
+
+flag_penalty_per_theme: 0.25
+
+prompts:
+  - How did you sleep?
+  - What's taking up most of your headspace today?
+  - Anything you're looking forward to?
+  - How are things with the crew?
+  - What was the hardest part of today?
+  - Is there anything you'd like to tell the ground team?
+
+themes:                     # lexicon flags (whole words, case-insensitive)
+  stress: [stress, stressed, stressful, pressure, overwhelmed, anxious, anxiety, worried, worry, tense, panic]
+  fatigue: [tired, exhausted, fatigue, fatigued, drained, worn out, no energy, sleepy, wiped out]
+  loneliness: [lonely, alone, isolated, isolation, nobody, no one to talk]
+  sleep trouble: [cant sleep, can not sleep, insomnia, waking up, woke up at, wake up at, nightmares, restless night, slept badly, no sleep, barely slept]
+  homesickness: [homesick, miss home, miss my family, miss my kids, thinking about home, missing home, miss earth]
+  conflict: [argument, argued, conflict, annoyed, angry at, fight with, frustrated with, tension with]
+
+positive_words: [good, great, happy, glad, excited, looking forward, fun, proud, calm, rested, love, enjoyed, well]
+negative_words: [bad, sad, angry, upset, tired, lonely, worried, stressed, awful, terrible, hate, scared, down, miserable]
+
+suggestions:
+  breathing: Try a two-minute breathing exercise.
+  sleep: Dim the lights an hour before bed and keep the same bedtime.
+  family: Schedule a call home this week.
+  crew: Spend some off-duty time with a crewmate.
+  exercise: A short workout often lifts the mood.

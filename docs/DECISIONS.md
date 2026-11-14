@@ -72,3 +72,17 @@ The owner supplied `ASTROVITAL UI Mockups.pdf` (10 screens) as the visual refere
 | D47 | **Bluetooth strap heart rate is treated like a hand entry** for alerts (immediate), since 9.7's fast path names only SpO₂ and glucose. | The strap reading is the astronaut's own deliberate measurement. |
 | D48 | **Pose counters use an EMA on the joint angle and need ≥ 0.6 s per rep;** pull-ups count only after returning to straight arms (> 150°). The optional ViTPose route answers 409 in fast mode and 503 until the model is downloaded. | Section 11. Live camera counting could not be tested here (no camera); synthetic keypoint tests cover the state machines. |
 | D49 | **The loading index is forced to "Needs attention" after 3 days without exercise** (`force_caution_after_days_without_exercise`). | thresholds.yaml; drives the "Lunar base: no exercise for 4 days" scenario. |
+
+## Phases 7–8
+
+| # | Decision | Why |
+|---|---|---|
+| D50 | **Whisper reads our own 16 kHz mono WAV chunks directly (numpy), not through PyAV.** | faster-whisper 1.2.1 calls `av.open(metadata_errors=…)`, which PyAV 19 removed. Decoding our known format avoids the dependency; other formats still go through PyAV. |
+| D51 | **Wellbeing weights, prompts, theme words and suggestions live in `config/mental.yaml`;** the crisis lexicon in `config/safety_lexicon.yaml` (23-phrase fixture, recall 100 %). | Section 12: "weights live in config"; the safety screen is a hard rule, not a model. |
+| D52 | **A safety hit records wellbeing as "Get help now" through the symptom override, with one critical notification** (the write path's own notification is skipped for this row). | The only way wellbeing becomes CRITICAL (Section 12); avoids a duplicate alert. |
+| D53 | **OpenHome protocol taken from the official `openhome-client` 0.1.1 source**: voice stream URL with key and agent id, single `Origin: https://app.openhome.com`, browser User-Agent, `transcribed` frames for text input, `audio-init`/`audio-end` lifecycle, `ack`, `ping`, `interrupt-event`. There is no separate REST text endpoint: text chat opens the stream in text-only mode, waits for the greeting and sends one `transcribed` turn. | Section 13 asks to adapt to the live docs. |
+| D54 | **Ability rules from `openhome-dev/abilities/validate_ability.py`** (no print/open/assert/eval/asyncio.sleep, register tag, `resume_normal_flow`) are re-implemented in `scripts/build_openhome_ability.py`; the downloaded validator is not executed. | Running a downloaded script is not allowed in this build environment. |
+| D55 | **The Ability reads optional overrides from OpenHome Settings → API Keys** (`astrovital_url`, `astrovital_bridge_token`) before the rendered constants. | OpenHome's documented way to keep secrets out of ability code; rendering still works without it. |
+| D56 | **Practice mode (`OPENHOME_MOCK=true`) answers with the offline rules engine**, transcribing microphone audio locally with Whisper after a pause. Captions only; the browser reads them aloud. The engine chip says OFFLINE RULES. | Offline-first demo; honest about which engine answered. |
+| D57 | **"New consultation" hides earlier messages instead of deleting them.** | Section 13.2.7 stores chat history; deletion would lose it. |
+| D58 | **Voice works for one astronaut at a time** (the bridge serves the single session with a heartbeat in the last 45 s; two → 409). | Fail-closed session binding (Section 13.2.4). |

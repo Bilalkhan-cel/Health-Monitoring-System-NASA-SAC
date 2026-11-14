@@ -3,7 +3,6 @@
 .banner { display: flex; gap: .625rem; align-items: flex-start; padding: .875rem 1rem; border: 1px solid var(--line-strong);
   border-radius: 16px; color: var(--text-2); font-size: .9375rem; }
 .banner .icon { margin-top: .15rem; color: var(--okay); }
-.load__value { font-size: 4rem; font-weight: 300; letter-spacing: -.05em; line-height: 1; font-variant-numeric: tabular-nums; }
 .exercise-picker { display: flex; flex-wrap: wrap; gap: .5rem; }
 
 .workout { grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); align-items: start; }

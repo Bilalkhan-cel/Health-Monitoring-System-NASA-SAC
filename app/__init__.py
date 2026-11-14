@@ -95,7 +95,7 @@ def _register_error_handlers(app: Flask) -> None:
 
 
 BLUEPRINTS = (
-    "landing", "auth", "dashboard", "settings", "devices", "cardio", "musculoskeletal",
+    "landing", "auth", "dashboard", "settings", "devices", "cardio", "musculoskeletal", "mental", "doctor",
 )
 
 

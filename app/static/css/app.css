@@ -177,6 +177,16 @@
 
 .noscript { padding: 1rem; border: 1px solid var(--line-strong); border-radius: 16px; }
 
+/* ── Dr. NOVA orb (shared) ── */
+.orb {
+  width: 5.25rem; height: 5.25rem; margin: .25rem 0 .75rem; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #E9F6FF 0%, #7CC4FF 22%, #3B7BFF 55%, #5B3CE0 100%);
+  box-shadow: 0 0 60px rgba(59,123,255,.45);
+  animation: orb-breathe 5s ease-in-out infinite;
+}
+@keyframes orb-breathe { 50% { transform: scale(1.05); box-shadow: 0 0 80px rgba(59,123,255,.6); } }
+@media (prefers-reduced-motion: reduce) { .orb { animation: none; } }
+
 /* ── Responsive shell ── */
 @media (max-width: 760px) {
   .app { --rail-w: 0px; }

@@ -1,0 +1,151 @@
+import asyncio
+import json
+import re
+import time
+
+import requests
+
+from src.agent.capability import MatchingCapability
+from src.agent.capability_worker import CapabilityWorker
+from src.main import AgentWorker
+
+# =============================================================================
+# AstroVital Health Context: gives Dr. NOVA the logged-in astronaut's real data.
+# Rendered by scripts/build_openhome_ability.py; do not edit the rendered copy by hand.
+# Optional overrides (OpenHome Settings -> API Keys): astrovital_url, astrovital_bridge_token.
+# =============================================================================
+
+ASTROVITAL_URL = "{{PUBLIC_BASE_URL}}"
+BRIDGE_TOKEN = "{{OPENHOME_BRIDGE_TOKEN}}"
+PERSONA = """{{DR_NOVA_PERSONA}}"""
+
+CONTEXT_REFRESH_S = 120
+MAX_HISTORY = 10
+REQUEST_TIMEOUT = 8
+
+# Exit only when the WHOLE utterance is an exit phrase ("I can't stop coughing" must not exit).
+_EXIT_RE = re.compile(
+    r"^(thats all|that is all|thanks|thank you|goodbye|bye|exit|stop|end consultation|end the consultation)"
+    r"( doctor| dr nova| nova| please)*$"
+)
+_LOG_PATTERNS = [
+    ("sleep_hours", re.compile(r"\blog (?:my )?(\d+(?:\.\d+)?) hours? (?:of )?sleep\b")),
+    ("mood", re.compile(r"\blog (?:my )?mood (?:as |at )?(\d{1,2})\b")),
+    ("water_ml", re.compile(r"\blog (\d{2,4}) (?:ml|milliliters|millilitres)(?: of water)?\b")),
+]
+
+
+def _normalize(text):
+    return re.sub(r"[^a-z0-9 .]", "", (text or "").lower().replace("'", "")).strip().rstrip(".")
+
+
+def _is_exit(text):
+    return bool(_EXIT_RE.match(_normalize(text).replace(".", "")))
+
+
+class AstroVitalHealthContext(MatchingCapability):
+    worker: AgentWorker = None
+    capability_worker: CapabilityWorker = None
+
+    #{{register capability}}
+
+    def call(self, worker: AgentWorker):
+        self.worker = worker
+        self.capability_worker = CapabilityWorker(self.worker)
+        self.worker.session_tasks.create(self.run())
+
+    # --- settings: an API key saved in OpenHome wins over the rendered value ---
+    def _setting(self, name, default):
+        try:
+            value = self.capability_worker.get_api_keys(name)
+        except Exception:
+            value = None
+        return value or default
+
+    # --- blocking helpers, always called through asyncio.to_thread ---
+    def _fetch_context(self):
+        url = self._setting("astrovital_url", ASTROVITAL_URL)
+        token = self._setting("astrovital_bridge_token", BRIDGE_TOKEN)
+        try:
+            response = requests.get(f"{url}/api/openhome/context", headers={"X-AstroVital-Token": token},
+                                    timeout=REQUEST_TIMEOUT)
+            if response.status_code != 200:
+                self.worker.editor_logging_handler.warning(f"[AstroVital] context answered {response.status_code}")
+                return None
+            return response.json()
+        except Exception as error:
+            self.worker.editor_logging_handler.error(f"[AstroVital] context failed: {error!r}")
+            return None
+
+    def _post_log(self, metric, value):
+        url = self._setting("astrovital_url", ASTROVITAL_URL)
+        token = self._setting("astrovital_bridge_token", BRIDGE_TOKEN)
+        try:
+            response = requests.post(f"{url}/api/openhome/log", headers={"X-AstroVital-Token": token},
+                                     json={"metric": metric, "value": value}, timeout=REQUEST_TIMEOUT)
+            return response.status_code == 200
+        except Exception:
+            return False
+
+    @staticmethod
+    def _system_prompt(ctx):
+        if not ctx:
+            return PERSONA + "\n\nNo astronaut data is available right now. Say so and give only general guidance."
+        return PERSONA + "\n\nThis is a VOICE conversation.\n\nASTRONAUT CONTEXT:\n" + json.dumps(ctx, indent=1)
+
+    async def _try_log(self, text):
+        clean = _normalize(text)
+        for metric, pattern in _LOG_PATTERNS:
+            match = pattern.search(clean)
+            if match:
+                ok = await asyncio.to_thread(self._post_log, metric, float(match.group(1)))
+                return "Logged." if ok else "I couldn't save that. Please log it in AstroVital."
+        return None
+
+    async def run(self):
+        cw = self.capability_worker
+        try:
+            ctx = await asyncio.to_thread(self._fetch_context)
+            fetched_at = time.time()
+            if ctx:
+                name = ctx.get("profile", {}).get("callsign", "")
+                await cw.speak(f"Dr. Nova here, {name}. I have your latest data. What would you like to check?")
+            else:
+                await cw.speak("I can't reach the AstroVital health records right now. "
+                               "I can still give general guidance, but please re-measure on board.")
+            system_prompt = self._system_prompt(ctx)
+
+            history = []
+            empty_turns = 0
+            while True:
+                user_text = await cw.user_response()
+                if not user_text:
+                    empty_turns += 1
+                    if empty_turns >= 2:
+                        break
+                    continue
+                empty_turns = 0
+                if _is_exit(user_text):
+                    await cw.speak("Okay. Stay safe up there. I'm here whenever you need me.")
+                    break
+                if time.time() - fetched_at > CONTEXT_REFRESH_S:
+                    fresh = await asyncio.to_thread(self._fetch_context)
+                    if fresh:
+                        ctx, system_prompt = fresh, self._system_prompt(fresh)
+                    fetched_at = time.time()
+                logged = await self._try_log(user_text)
+                if logged:
+                    await cw.speak(logged)
+                    continue
+                reply = await asyncio.to_thread(
+                    cw.text_to_text_response, user_text, history[-MAX_HISTORY:], system_prompt)
+                history += [{"role": "user", "content": user_text}, {"role": "assistant", "content": reply}]
+                await cw.speak(reply)
+        except Exception as error:
+            self.worker.editor_logging_handler.error(f"[AstroVital] {error!r}")
+            try:
+                await cw.speak("Sorry, something went wrong on my side. If this is urgent, alert your crew medical officer.")
+            except Exception:
+                pass
+        finally:
+            cw.resume_normal_flow()

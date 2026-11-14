@@ -127,6 +127,7 @@ def record(
     gate_context: dict | None = None,
     live: bool = True,
     commit: bool = True,
+    notify: bool = True,
 ) -> RecordResult:
     """Classify, gate and store one reading.
 
@@ -165,7 +166,8 @@ def record(
     db.session.add(measurement)
 
     if live:
-        _notify(astronaut_id, measurement, needs_remeasure)
+        if notify:
+            _notify(astronaut_id, measurement, needs_remeasure)
         if status is not None:
             from .stream_hub import queue_event
 
