@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · AstroVital{% endblock %}
+{% block head %}
+  <style>
+    .notice { flex: 1; display: grid; align-content: center; justify-items: start; gap: 1.25rem; padding: 4rem var(--gutter); }
+  </style>
+{% endblock %}
+{% block content %}
+<section class="notice" aria-labelledby="notice-title">
+  <p class="caption">Error {{ code }}</p>
+  <h1 class="headline" id="notice-title">{{ title }}</h1>
+  <p class="lede">{{ detail }}</p>
+  <a class="pill pill--primary" href="{{ url_for('landing.index') }}">Back to the start</a>
+</section>
+{% endblock %}

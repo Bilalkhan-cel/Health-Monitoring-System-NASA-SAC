@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <meta name="astro-temp-unit" content="{{ display_units().temp }}">
+  {% block page_head %}{% endblock %}
+{% endblock %}
+{% block body_class %}app{% endblock %}
+{% block body %}
+{% set chip = mission_chip() %}
+<div class="shell" data-sprite="{{ url_for('static', filename='vendor/lucide/sprite.svg') }}"{% if crew.is_surgeon %} data-surgeon{% endif %}>
+  <nav class="rail" id="rail" aria-label="Main">
+    <button class="rail__item rail__toggle" type="button" aria-expanded="false" aria-controls="rail" data-rail-toggle>
+      {{ icon("menu") }}<span class="rail__label">Collapse menu</span>
+      <span class="visually-hidden" data-rail-toggle-text>Show menu labels</span>
+    </button>
+    <ul class="rail__list">
+      {% for item in nav_items() %}
+      <li>
+        <a class="rail__item{% if item.active %} is-active{% endif %}" href="{{ item.url }}"{% if item.active %} aria-current="page"{% endif %}>
+          {{ icon(item.icon) }}<span class="rail__label">{{ item.label }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    <form class="rail__bottom" method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="rail__item" type="submit">{{ icon("log-out") }}<span class="rail__label">Log out</span></button>
+    </form>
+  </nav>
+
+  <div class="shell__main">
+    <header class="topbar">
+      <div class="topbar__title">{% block topbar_title %}{% endblock %}</div>
+      <div class="topbar__tools">
+        {% if chip and not crew.is_surgeon %}
+        <button class="chip" type="button" data-open-dialog="env-dialog" aria-haspopup="dialog">
+          {{ icon("orbit") }}<span>Day {{ chip.day }} · {{ chip.environment }}</span>
+        </button>
+        {% endif %}
+        {% if has_endpoint("notifications.index") and not crew.is_surgeon %}
+        <a class="icon-button" href="{{ url_for('notifications.index') }}" data-bell aria-label="Notifications">
+          {{ icon("bell") }}<span class="icon-button__badge" data-bell-count hidden></span>
+        </a>
+        {% endif %}
+        <details class="menu">
+          <summary class="menu__trigger" aria-label="Account menu for {{ crew.name }}">
+            <span class="menu__name">{{ crew.name }}</span>
+            <span class="avatar" aria-hidden="true">{{ crew.initials }}</span>
+          </summary>
+          <div class="menu__panel">
+            <p class="menu__who">{{ crew.role }} · {{ crew.callsign }}</p>
+            {% if not crew.is_surgeon %}
+            {% if has_endpoint("settings.index") %}<a class="menu__item" href="{{ url_for('settings.index') }}">{{ icon("settings") }}Settings</a>{% endif %}
+            {% if has_endpoint("notifications.index") %}<a class="menu__item" href="{{ url_for('notifications.index') }}">{{ icon("bell") }}Notifications</a>{% endif %}
+            {% endif %}
+            <form method="post" action="{{ url_for('auth.logout') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="menu__item" type="submit">{{ icon("log-out") }}Log out</button>
+            </form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <div class="alertbar" data-alertbar role="alert" hidden>
+      {{ icon("octagon-alert") }}
+      <p class="alertbar__text" data-alertbar-text></p>
+      <div class="alertbar__actions">
+        {% if has_endpoint("doctor.index") %}<a class="pill pill--light" href="{{ url_for('doctor.index') }}">Ask Dr. NOVA</a>{% endif %}
+        <button class="pill pill--on-alert" type="button" data-open-dialog="protocol-dialog">View protocol</button>
+      </div>
+    </div>
+
+    <main id="main" class="page">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-foot">Prototype for educational purposes. Not a certified medical device.</footer>
+  </div>
+</div>
+
+{% if chip and not crew.is_surgeon %}
+<dialog class="dialog" id="env-dialog" aria-labelledby="env-title">
+  <form class="dialog__body" data-env-form>
+    <h2 class="dialog__title" id="env-title">Where is the crew?</h2>
+    <p class="dialog__lede">This changes gravity, the delay to Earth and the exercises on offer. It never changes the health ranges.</p>
+    <fieldset class="choice-list">
+      <legend class="visually-hidden">Mission environment</legend>
+      {% for option in chip.options %}
+      <label class="choice">
+        <input type="radio" name="environment" value="{{ option }}"{% if option == chip.environment %} checked{% endif %}>
+        <span class="choice__label">{{ option }}</span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    <p class="form-error" data-env-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save location</button>
+    </div>
+  </form>
+</dialog>
+{% endif %}
+
+<dialog class="dialog" id="protocol-dialog" aria-labelledby="protocol-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="protocol-title">What to do now</h2>
+    <ol class="steps" data-protocol-steps></ol>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+<div class="toasts" data-toasts aria-live="polite"></div>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/app/shell.js') }}"></script>
+  {% block page_scripts %}{% endblock %}
+{% endblock %}

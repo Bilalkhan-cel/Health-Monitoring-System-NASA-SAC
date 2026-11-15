@@ -218,3 +218,22 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ── AstroVital ──────────────────────────────────────────
+# Secrets and local state
+firmware/include/secrets.h
+ml_models/*
+!ml_models/.gitkeep
+uploads/*
+!uploads/.gitkeep
+# The Python template above ignores build/, dist/, lib/ and similar folder names.
+# Vendored front-end files are committed, so they are exempt.
+!app/static/vendor/
+!app/static/vendor/**
+# Build-time Node tools and their downloaded inputs (outputs under app/static are committed)
+scripts/vendor_build/node_modules/
+scripts/vendor_build/three-entry.js
+build_sources/
+
+# PlatformIO build output
+firmware/.pio/

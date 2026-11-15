@@ -1,0 +1,92 @@
+/* Guided checks (Heart, Body, Mind): step screens, rings, the big live number, results. */
+
+.check { display: grid; gap: 1.5rem; }
+.step { display: grid; gap: 1.5rem; }
+.lede { max-width: 40rem; color: var(--text-2); font-size: 1.0625rem; }
+.why { margin-top: 1rem; color: var(--text-2); font-size: .9375rem; }
+.steps--roomy { gap: .875rem; }
+.steps--roomy strong { color: var(--text); font-weight: 500; }
+
+.overview { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+.overview__main { display: grid; gap: 1.25rem; }
+.overview__actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.wear-line { color: var(--text-2); }
+.trend { padding: 1.25rem 1.5rem; display: grid; gap: .75rem; }
+.trend__canvas { position: relative; height: 240px; }
+
+.precheck { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.precheck .card { display: grid; gap: 1rem; padding: 1.5rem; }
+.choice-list legend { margin-bottom: .5rem; }
+.symptoms .choice { border-color: rgba(255,77,109,.25); }
+.symptoms .choice:has(input:checked) { border-color: var(--alert); background: rgba(255,77,109,.08); }
+.symptoms input { accent-color: var(--alert); }
+
+/* Rest ring */
+.rest { justify-items: center; text-align: center; padding-top: 1rem; }
+.ring { position: relative; width: min(18rem, 70vw); aspect-ratio: 1; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring__track { fill: none; stroke: rgba(255,255,255,.08); stroke-width: 4; }
+.ring__fill { fill: none; stroke: var(--text); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 339.3; stroke-dashoffset: 339.3; transition: stroke-dashoffset 1s linear; }
+.ring__label { position: absolute; inset: 0; display: grid; place-content: center; gap: .25rem; }
+.ring__time { font-size: clamp(3rem, 7vw, 4.5rem); font-weight: 200; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.handshake { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; justify-items: start; }
+.handshake li { display: flex; align-items: center; gap: .5rem; color: var(--text-2); }
+.handshake li.is-ok { color: var(--text); }
+.handshake li.is-ok .icon { color: var(--good); }
+.handshake li.is-wait .icon { animation: spin 1.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.strap { width: min(32rem, 100%); text-align: left; color: var(--text-2); }
+.strap summary { cursor: pointer; padding: .5rem 0; }
+.strap__body { display: grid; gap: .5rem; justify-items: start; padding: .5rem 0 0; }
+
+/* Live session (mockup page 5) */
+.live { gap: 1rem; }
+.live__head { display: flex; justify-content: space-between; align-items: center; color: var(--text-2); }
+.live__status { display: flex; align-items: center; gap: .5rem; }
+.live__left { font-variant-numeric: tabular-nums; }
+.bpm { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
+.bpm__heart { width: clamp(2.5rem, 5vw, 3.5rem); height: auto; color: var(--alert); fill: var(--alert); filter: drop-shadow(0 0 18px rgba(255,77,109,.5)); }
+.bpm__heart.is-beating { animation: beat-heart 1s ease-out infinite; }
+@keyframes beat-heart { 0% { transform: scale(1.18); } 35% { transform: scale(1); } }
+.bpm__value { display: flex; align-items: baseline; gap: .5rem; }
+.bpm__value [data-bpm] { font-size: var(--size-reading); font-weight: 200; line-height: .9; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.bpm__unit { font-size: 1.5rem; color: var(--text-2); }
+.bpm__verdict { display: flex; justify-content: center; min-height: 2rem; }
+.bpm__note { text-align: center; color: var(--text-2); font-size: 1.0625rem; }
+.wave { height: clamp(140px, 22vh, 220px); }
+.wave canvas { width: 100%; height: 100%; display: block; }
+.vitals { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.vital { padding: 1rem 1.125rem; border-left: 1px solid var(--line); display: grid; gap: .25rem; }
+.vital:first-child { border-left: 0; padding-left: 0; }
+.vital__label { color: var(--text-2); font-size: .875rem; }
+.vital__value { font-size: 1.875rem; font-weight: 300; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.vital__unit { font-size: 1rem; color: var(--text-3); }
+.vital__verdict { font-size: .875rem; color: var(--text-3); }
+.vital__verdict.is-good { color: var(--good); }
+.vital__verdict.is-okay { color: var(--okay); }
+.vital__verdict.is-watch { color: var(--watch); }
+.vital__verdict.is-alert { color: var(--alert); }
+.manual { display: grid; grid-template-columns: auto minmax(8rem, 12rem) minmax(6rem, 8rem) minmax(6rem, 8rem) auto; gap: .5rem; align-items: center; }
+.manual > .card__meta, .manual .form-error { grid-column: 1 / -1; }
+.manual .field__input { min-height: 2.5rem; padding: .375rem .75rem; }
+.live__actions { justify-content: center; }
+
+/* Results */
+.load__value { font-size: 4rem; font-weight: 300; letter-spacing: -.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+
+.results__head { display: grid; gap: .75rem; justify-items: start; }
+.results__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.results__grid .card { padding: 1.5rem; display: grid; gap: 1rem; align-content: start; }
+.results__chart { grid-column: 1 / -1; }
+.notes { margin: 0; padding-left: 1.1rem; color: var(--watch); font-size: .9375rem; }
+
+@media (max-width: 960px) {
+  .overview, .precheck, .results__grid { grid-template-columns: 1fr; }
+  .vitals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vital:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .manual { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bpm__heart.is-beating, .handshake li.is-wait .icon { animation: none; }
+}

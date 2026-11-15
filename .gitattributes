@@ -1,0 +1,9 @@
+# Vendored files are checksum-verified, so git must never rewrite their line endings.
+app/static/vendor/** -text
+*.woff2 binary
+*.glb binary
+*.task binary
+*.wasm binary
+*.webp binary
+*.jpg binary
+*.png binary

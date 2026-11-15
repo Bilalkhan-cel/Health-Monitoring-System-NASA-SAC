@@ -1,0 +1,39 @@
+# Mandatory safety screen (Section 12). A hard rule that runs on every transcribed chunk,
+# every text check-in and every Dr. NOVA chat message, before any model or engine.
+# Matching is case-insensitive on normalised text (apostrophes removed, spaces collapsed).
+# Recall matters more than precision here: a false alarm costs a kind message, a miss
+# could cost a life. Patterns are Python regular expressions.
+
+crisis:
+  - "\\b(kill|hurt|harm|cut|injure)(ing|s)? (my ?self|myself)\\b"
+  - "\\bend (my life|it all)\\b"
+  - "\\bend it (all|now|tonight)\\b"
+  - "\\btake my (own )?life\\b"
+  - "\\b(want|wanna|wish|going|plan|planning|thinking about|think about) (to )?(die|be dead)\\b"
+  - "\\bbetter off dead\\b"
+  - "\\b(suicide|suicidal)\\b"
+  - "\\bself[- ]?harm"
+  - "\\bno (reason|point) (to|in) (live|living|go on|going on|keep going)\\b"
+  - "\\b(cant|can not|cannot|dont want to) (go on|keep going|do this anymore|live like this)\\b"
+  - "\\bdont want to (be here|live|exist|wake up)( anymore)?\\b"
+  - "\\bwish i (was|were) (dead|gone|never born)\\b"
+  - "\\beveryone (would be|is) better off without me\\b"
+  - "\\b(open|depressurize|vent) the (airlock|hatch) (on|with) me\\b"
+  - "\\bstep (out|outside) (of )?the airlock without\\b"
+  - "\\bnot (be|being) here anymore\\b"
+  - "\\bdisappear forever\\b"
+  - "\\boverdose\\b"
+  - "\\bhang(ing)? myself\\b"
+
+# Phrases that look similar but are not crisis statements (used only by the tests to keep
+# the false-alarm rate visible; the screen itself never ignores a crisis match).
+benign_examples:
+  - "I could kill for a cup of real coffee"
+  - "this treadmill session is killing me"
+  - "the experiment died on us again"
+  - "I am dying to see my kids"
+
+support_message: >
+  Thank you for telling me. You don't have to carry this alone. Please contact your crew medical
+  officer now, and reach ground behavioural-health support as soon as you can. If you are in
+  danger right now, tell the nearest crewmate. Dr. NOVA can stay with you while you reach them.

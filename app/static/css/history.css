@@ -1,0 +1,68 @@
+/* History (Section 14): filters, calendar heatmap, trend, exports, timeline, day dialog. */
+
+.history { display: grid; gap: 1.5rem; }
+.filters { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem 1rem; padding: 1rem 1.25rem; }
+.filters .field { min-width: 9.5rem; flex: 1 1 9.5rem; }
+.filters__actions { display: flex; gap: .5rem; padding-bottom: .125rem; }
+.field__input--small { min-height: 2.25rem; padding: .3rem .75rem; font-size: .875rem; width: auto; }
+
+.history__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 1.5rem; align-items: start; }
+
+.heat { display: grid; grid-template-columns: auto 1fr; gap: .75rem 1rem; }
+.heat .card__head, .heat .legend { grid-column: 1 / -1; }
+.heat__labels { display: grid; grid-template-rows: repeat(7, 1fr); gap: 4px; font-size: .6875rem; color: var(--text-3); }
+.heat__labels span { display: flex; align-items: center; height: 20px; }
+.heat__grid { display: grid; grid-template-rows: repeat(7, 20px); grid-auto-flow: column; grid-auto-columns: 20px; gap: 4px; overflow-x: auto; padding-bottom: .25rem; }
+.heat__pad { width: 20px; height: 20px; }
+.heat__day { width: 20px; height: 20px; padding: 0; border: 0; border-radius: 5px; cursor: pointer;
+  background: color-mix(in srgb, var(--status-color, #fff) 70%, transparent); }
+.heat__day.is-empty { background: rgba(255, 255, 255, .06); }
+.heat__day:hover, .heat__day:focus-visible { outline: 2px solid var(--text); outline-offset: 1px; }
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .75rem; color: var(--text-2); }
+.legend li { display: inline-flex; align-items: center; gap: .375rem; }
+.dot.is-empty { background: rgba(255, 255, 255, .14); }
+
+.trend-card { display: grid; gap: .75rem; }
+.trend-card .card__head { flex-wrap: wrap; align-items: center; }
+.trend-card__controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.trend-card__canvas { position: relative; height: 240px; }
+
+.exports { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; }
+.exports > div:first-child { max-width: 40rem; display: grid; gap: .375rem; }
+.exports__actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+.section-title { font-size: 1.25rem; font-weight: 500; letter-spacing: -.02em; margin-bottom: .75rem; }
+.timeline__days { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
+.day { padding: 0; overflow: hidden; }
+.day__head { width: 100%; display: flex; align-items: center; gap: .75rem; padding: .875rem 1.25rem; border: 0;
+  background: none; color: var(--text); text-align: left; cursor: pointer; font: inherit; }
+.day__head:hover { background: var(--surface); }
+.day__label { font-weight: 500; flex: 1; }
+.day__go { color: var(--text-3); }
+.day__entries, .day-list { list-style: none; margin: 0; padding: 0 1.25rem .5rem; display: grid; }
+.day-list { padding: 0; }
+.entry { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr) auto; gap: .75rem; align-items: start;
+  padding: .75rem 0; border-top: 1px solid var(--line); }
+.entry__time { color: var(--text-3); font-variant-numeric: tabular-nums; font-size: .875rem; padding-top: .125rem; }
+.entry__title { font-weight: 500; }
+.entry__text { color: var(--text-2); font-size: .9375rem; }
+
+.empty { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; color: var(--text-2); }
+.empty .icon { width: 1.5rem; height: 1.5rem; color: var(--text-3); }
+.empty strong { color: var(--text); font-weight: 500; }
+
+.dialog--wide { width: min(44rem, calc(100vw - 2rem)); }
+.dialog__sub { font-size: .9375rem; font-weight: 500; color: var(--text-2); margin-top: .25rem; }
+.readings__wrap { max-height: 18rem; overflow: auto; border: 1px solid var(--line); border-radius: 14px; }
+.readings { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.readings th, .readings td { padding: .5rem .75rem; text-align: left; border-bottom: 1px solid var(--line); }
+.readings th { position: sticky; top: 0; background: var(--surface-2); color: var(--text-3); font-weight: 500; }
+.readings td:first-child { font-variant-numeric: tabular-nums; color: var(--text-3); }
+
+@media (max-width: 960px) {
+  .history__grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .entry { grid-template-columns: 1fr auto; }
+  .entry__time { grid-column: 1 / -1; padding: 0; }
+}

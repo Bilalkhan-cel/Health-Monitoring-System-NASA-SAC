@@ -1,0 +1,5 @@
+# AstroVital: everything needed to run the app.
+# scripts/setup.py installs the two files below one after the other, so a failed
+# ML download never blocks the web app.
+-r requirements-core.txt
+-r requirements-ml.txt

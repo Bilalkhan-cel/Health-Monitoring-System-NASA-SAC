@@ -1,0 +1,25 @@
+{
+  "name": "astrovital-build-tools",
+  "private": true,
+  "description": "BUILD-TIME ONLY. Produces committed files under app/static (three.js bundle, icon sprite, optimized 3D models). End users never need Node.",
+  "type": "module",
+  "devDependencies": {
+    "@gltf-transform/cli": "4.2.1",
+    "@gltf-transform/core": "4.2.1",
+    "@gltf-transform/extensions": "4.2.1",
+    "@gltf-transform/functions": "4.2.1",
+    "draco3dgltf": "1.5.7",
+    "esbuild": "0.25.10",
+    "lucide-static": "1.62.0",
+    "meshoptimizer": "0.25.0",
+    "sharp": "0.34.4",
+    "three": "0.186.1"
+  },
+  "overrides": {
+    "sharp": "0.34.4"
+  },
+  "scripts": {
+    "postinstall": "node -e \"require('fs').rmSync('node_modules/ndarray-pixels/node_modules/sharp',{recursive:true,force:true})\"",
+    "build": "node build.mjs all"
+  }
+}

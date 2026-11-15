@@ -1,0 +1,48 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon %}
+{% block title %}Notifications · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="page-title">Notifications. <span class="headline__second">{% if unread %}{{ unread }} new.{% else %}You're all caught up.{% endif %}</span></h1>
+{% endblock %}
+{% block content %}
+<div class="notes-page" data-notes-page>
+  <div class="notes-page__bar">
+    <nav class="segmented" aria-label="Show">
+      <a class="segmented__item" href="{{ url_for('notifications.index') }}"{% if show != 'unread' %} aria-current="page"{% endif %}>All</a>
+      <a class="segmented__item" href="{{ url_for('notifications.index', show='unread') }}"{% if show == 'unread' %} aria-current="page"{% endif %}>Unread</a>
+    </nav>
+    <button class="pill pill--ghost pill--small" type="button" data-read-all{% if not unread %} disabled{% endif %}>{{ icon("check") }}Mark all read</button>
+  </div>
+
+  {% if items %}
+  <ul class="notes-list">
+    {% for item in items %}
+    <li class="note card{% if not item.read %} is-unread{% endif %} is-{{ item.severity }}" data-note="{{ item.id }}">
+      <span class="note__icon" aria-hidden="true">{{ icon(icons.get(item.type, "bell")) }}</span>
+      <div class="note__body">
+        <p class="note__title">{% if not item.read %}<span class="visually-hidden">New: </span>{% endif %}{{ item.title }}</p>
+        <p class="note__text">{{ item.message }}</p>
+        <p class="note__meta"><span class="dot is-{{ item.severity }}" aria-hidden="true"></span>{{ severity_labels.get(item.severity, "") }} · <time datetime="{{ item.at }}" data-local-time>{{ item.at[:16]|replace("T", " ") }} UTC</time></p>
+      </div>
+      <div class="note__actions">
+        {% if item.url %}<a class="pill pill--small {{ 'pill--primary' if item.severity == 'alert' else 'pill--ghost' }}" href="{{ item.url }}" data-open-note>Open</a>{% endif %}
+        {% if not item.read %}<button class="icon-button" type="button" data-mark-read aria-label="Mark “{{ item.title }}” as read">{{ icon("check") }}</button>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty card">
+    {{ icon("bell") }}
+    <p><strong>{% if show == 'unread' %}No unread notifications.{% else %}No notifications yet.{% endif %}</strong> Reminders, results and anything that needs your attention will show up here.</p>
+  </div>
+  {% endif %}
+  <p class="card__meta">Reminder times are set in <a href="{{ url_for('settings.index') }}#reminders">Settings</a>.</p>
+</div>
+{% endblock %}
+{% block page_scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/app/notifications.js') }}"></script>
+{% endblock %}

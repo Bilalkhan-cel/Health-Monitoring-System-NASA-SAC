@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Log in · AstroVital{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+{% block body_class %}login{% endblock %}
+{% block body %}
+<div class="login-scene" data-scene aria-hidden="true">
+  <canvas class="login-scene__canvas" data-scene-canvas></canvas>
+  <div class="login-scene__horizon"></div>
+</div>
+<header class="login-top">
+  <a class="wordmark" href="{{ url_for('landing.index') }}">
+    <img src="{{ url_for('static', filename='img/favicon.svg') }}" alt="" width="22" height="22">AstroVital
+  </a>
+  <a class="login-top__link" href="{{ url_for('landing.index') }}">Back to home</a>
+</header>
+<main id="main" class="login-main">
+  <form class="login-form{% if error %} is-wrong{% endif %}" method="post" action="{{ url_for('auth.login') }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <p class="login-form__eyebrow">Astronaut, are you mission-ready?</p>
+    <h1 class="headline login-form__title">Welcome back, <span class="headline__second">astronaut.</span></h1>
+    <p class="login-form__lede">Enter the Astro ID from Mission Control.</p>
+    <label class="field">
+      <span class="field__label">Astro ID</span>
+      <input class="field__input field__input--id" name="astro_id" value="{{ astro_id }}" autocomplete="username"
+             autocapitalize="characters" spellcheck="false" maxlength="32" required autofocus
+             placeholder="AST-1001" aria-describedby="{% if error %}login-error {% endif %}login-note"
+             {% if error %}aria-invalid="true"{% endif %}>
+    </label>
+    {% if error %}<p class="form-error" id="login-error" role="alert">{{ error }}</p>{% endif %}
+    <button class="pill pill--primary pill--wide" type="submit">Continue</button>
+    <p class="login-form__note" id="login-note">No sign-up. Crew accounts are set up by Mission Control.</p>
+  </form>
+</main>
+<footer class="site-foot site-foot--clear">Prototype for educational purposes. Not a certified medical device.</footer>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/app/login.js') }}"></script>
+{% endblock %}

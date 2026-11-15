@@ -1,0 +1,161 @@
+# What each tracked number is called and how it is explained to the astronaut.
+# `system` drives the body hotspots (Section 9.1a); the order inside a system is its priority.
+# `fresh_h` is how long a reading counts toward readiness (Section 9.3).
+# Every "info" block answers: what is this / why it matters in space / normal range / what to do.
+
+systems:
+  heart:
+    label: Heart
+    title: Heart health
+    icon: heart
+    metrics: [blood_pressure, heart_rate, spo2, glucose, respiration, temperature_c, hydration_ml]
+  mind:
+    label: Mind
+    title: Mind and sleep
+    icon: brain
+    metrics: [wellbeing, sleep_hours]
+  bones:
+    label: Bones & muscle
+    title: Bones and muscle
+    icon: bone
+    metrics: [loading_index]
+
+metrics:
+  blood_pressure:
+    label: Blood pressure
+    short: Blood pressure
+    unit: mmHg
+    decimals: 0
+    subsystem: cardio
+    fresh_h: 48
+    info:
+      what: The force of blood against your artery walls, shown as two numbers (heart beating / heart resting).
+      why: Without gravity, fluid shifts toward your head and your heart and vessels adapt. Radiation also adds long-term heart risk.
+      range: Ideal is 90 to 119 over 60 to 79.
+      do: Sit still for five minutes before measuring. If it stays high, cut back on salt, drink water and tell your crew medical officer.
+  heart_rate:
+    label: Resting heart rate
+    short: Heart rate
+    unit: bpm
+    decimals: 0
+    subsystem: cardio
+    fresh_h: 48
+    info:
+      what: How many times your heart beats in a minute while you are resting.
+      why: Poor sleep, stress, dehydration and a deconditioned heart all push it up. It is an early sign that your body is working harder.
+      range: Ideal at rest is 60 to 90 beats a minute.
+      do: Drink water, take ten slow breaths, rest for five minutes and measure again.
+  spo2:
+    label: Blood oxygen
+    short: Oxygen
+    unit: "%"
+    decimals: 0
+    subsystem: cardio
+    fresh_h: 48
+    info:
+      what: How much oxygen your blood is carrying.
+      why: Cabin air is recycled, so carbon dioxide can build up, and a pressure change affects how well you take in oxygen.
+      range: Ideal is 96 % or higher.
+      do: Warm your hand, keep still and measure again. If you feel short of breath, tell your crew medical officer now.
+  glucose:
+    label: Blood sugar
+    short: Blood sugar
+    unit: mg/dL
+    decimals: 0
+    subsystem: cardio
+    fresh_h: 48
+    info:
+      what: The amount of sugar in your blood, your body's main fuel.
+      why: Spaceflight changes how your body handles sugar, and meal times drift on a busy mission.
+      range: Ideal is 70 to 99 before eating and under 140 two hours after a meal.
+      do: Eat at regular times. If it is low, have a snack now. If it stays high, tell your crew medical officer.
+  respiration:
+    label: Breathing rate
+    short: Breathing
+    unit: br/min
+    decimals: 0
+    subsystem: cardio
+    fresh_h: 48
+    info:
+      what: How many breaths you take in a minute while resting.
+      why: Breathing speeds up with stress, fever or stale cabin air.
+      range: Ideal at rest is 12 to 18 breaths a minute.
+      do: Breathe in slowly for four counts and out for six, for two minutes. Measure again while resting.
+  temperature_c:
+    label: Body temperature
+    short: Temperature
+    unit: "°C"
+    decimals: 1
+    subsystem: cardio
+    fresh_h: 48
+    info:
+      what: How warm your body is.
+      why: In a closed cabin infections spread easily, and your body does not shed heat the way it does on Earth.
+      range: Ideal is 36.1 to 37.2 °C.
+      do: If it is high, rest and drink water, then measure again in an hour. A fever needs your crew medical officer.
+  hydration_ml:
+    label: Water today
+    short: Water
+    unit: L
+    decimals: 1
+    subsystem: null
+    fresh_h: 24
+    info:
+      what: How much water you have logged today.
+      why: Thirst is weaker in space, and being dry raises your heart rate and the risk of kidney stones.
+      range: Aim for about 2.5 litres a day.
+      do: Log a glass each time you drink.
+  wellbeing:
+    label: Mood score
+    short: Mood
+    unit: /100
+    decimals: 0
+    subsystem: mental
+    fresh_h: 48
+    info:
+      what: A score from your voice check-in that reflects how you sounded and how you rated your own mood.
+      why: Isolation, distance from family and a heavy workload wear people down slowly. Catching a dip early helps.
+      range: 70 or above is good. This is support, not a diagnosis.
+      do: Talk to a crewmate, plan a call home and protect your sleep.
+  sleep_hours:
+    label: Sleep last night
+    short: Sleep
+    unit: h
+    decimals: 1
+    subsystem: sleep
+    fresh_h: 36
+    info:
+      what: How long you slept last night.
+      why: There is no natural day and night on a mission, so sleep slips easily. Short sleep raises your heart rate and lowers your mood.
+      range: Ideal is 7 to 9 hours.
+      do: Dim the lights an hour before bed, keep the same bedtime and skip caffeine after midday.
+  loading_index:
+    label: Exercise load
+    short: Exercise load
+    unit: /100
+    decimals: 0
+    subsystem: bones
+    fresh_h: 168
+    info:
+      what: A score for how much bone-and-muscle loading exercise you did over the last seven days.
+      why: In low gravity you can lose 1 to 1.5 % of bone a month. Loading exercise is what slows it. A camera cannot measure bone density.
+      range: 75 or above is good.
+      do: Do today's exercise session. Short sessions on most days beat one long one.
+
+# Readiness weights (Section 9.3). The sleep subsystem is shown inside the Mind system.
+subsystems:
+  cardio: {weight: 30, system: heart}
+  bones: {weight: 25, system: bones}
+  mental: {weight: 25, system: mind}
+  sleep: {weight: 20, system: mind}
+
+# The five daily tasks (Section 9.6).
+tasks:
+  cardio: {label: Heart check, hint: About 7 minutes, xp: 30}
+  exercise: {label: Exercise session, hint: About 20 minutes, xp: 40}
+  mental: {label: "Voice check-in: how are you feeling?", hint: About 3 minutes, xp: 30}
+  sleep_log: {label: Log last night's sleep, hint: Takes 10 seconds, xp: 10}
+  hydration: {label: Drink water, hint: "", xp: 10}
+
+hydration_goal_ml: 2500
+glass_ml: 250

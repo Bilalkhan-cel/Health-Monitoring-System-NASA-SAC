@@ -1,0 +1,141 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon, status_pill %}
+{% block title %}History · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+{% endblock %}
+{% block topbar_title %}
+  <h1 class="page-title">Your history. <span class="headline__second">Every check, every day.</span></h1>
+{% endblock %}
+{% block content %}
+<div class="history" data-history>
+  <form class="filters card" method="get" action="{{ url_for('history.index') }}" aria-label="Filter history">
+    <label class="field"><span class="field__label">System</span>
+      <select class="field__input" name="system">
+        {% for key, label in systems.items() %}<option value="{{ key }}"{% if filters.system == key %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select></label>
+    <label class="field"><span class="field__label">Type</span>
+      <select class="field__input" name="kind">
+        {% for key, label in kinds.items() %}<option value="{{ key }}"{% if filters.kind == key %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select></label>
+    <label class="field"><span class="field__label">Status</span>
+      <select class="field__input" name="status">
+        {% for key, label in statuses.items() %}<option value="{{ key }}"{% if filters.status == key %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select></label>
+    <label class="field"><span class="field__label">From</span>
+      <input class="field__input" type="date" name="from" value="{{ query['from'] }}"></label>
+    <label class="field"><span class="field__label">To</span>
+      <input class="field__input" type="date" name="to" value="{{ query['to'] }}"></label>
+    <div class="filters__actions">
+      <button class="pill pill--primary pill--small" type="submit">Show</button>
+      <a class="pill pill--ghost pill--small" href="{{ url_for('history.index') }}">Reset</a>
+    </div>
+  </form>
+
+  <div class="history__grid">
+    <section class="card heat" aria-labelledby="heat-title">
+      <div class="card__head">
+        <h2 class="card__title" id="heat-title">Readiness by day</h2>
+        <span class="card__meta">{{ filters.start.strftime("%d %b") }} – {{ filters.end.strftime("%d %b") }}</span>
+      </div>
+      <div class="heat__labels" aria-hidden="true"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span>Sun</span></div>
+      <div class="heat__grid" role="grid" aria-label="Readiness calendar. Choose a day to see its details.">
+        {% for _ in range(heatmap[0].weekday if heatmap else 0) %}<span class="heat__pad" aria-hidden="true"></span>{% endfor %}
+        {% for day in heatmap %}
+        <button class="heat__day{% if day.status_key %} is-{{ day.status_key }}{% else %} is-empty{% endif %}" type="button"
+                data-day="{{ day.date }}" role="gridcell"
+                aria-label="{{ day.date }}: {% if day.score is not none %}readiness {{ day.score }}{% else %}no score{% endif %}"
+                title="{{ day.date }} · {% if day.score is not none %}{{ day.score }}{% else %}no score{% endif %}"></button>
+        {% endfor %}
+      </div>
+      <ul class="legend" aria-label="Colour key">
+        <li><span class="dot is-good"></span>Good</li><li><span class="dot is-okay"></span>Okay</li>
+        <li><span class="dot is-watch"></span>Needs attention</li><li><span class="dot is-alert"></span>Get help now</li>
+        <li><span class="dot is-empty"></span>No score</li>
+      </ul>
+    </section>
+
+    <section class="card trend-card" aria-labelledby="trend-title">
+      <div class="card__head">
+        <h2 class="card__title" id="trend-title">Trend</h2>
+        <div class="trend-card__controls">
+          <label class="visually-hidden" for="trend-metric">Measure</label>
+          <select class="field__input field__input--small" id="trend-metric" data-trend-metric>
+            {% for metric in metrics %}<option value="{{ metric.key }}">{{ metric.label }}</option>{% endfor %}
+          </select>
+          <div class="segmented" role="group" aria-label="Range">
+            <button class="segmented__item" type="button" data-range="7d" aria-pressed="false">7 days</button>
+            <button class="segmented__item" type="button" data-range="30d" aria-pressed="true">30 days</button>
+            <button class="segmented__item" type="button" data-range="mission" aria-pressed="false">Mission</button>
+          </div>
+        </div>
+      </div>
+      <div class="trend-card__canvas"><canvas data-trend-canvas aria-hidden="true"></canvas></div>
+      <p class="card__meta" data-trend-summary aria-live="polite">Loading…</p>
+    </section>
+  </div>
+
+  <section class="exports card" aria-labelledby="export-title">
+    <div>
+      <h2 class="card__title" id="export-title">Send it to the ground</h2>
+      <p class="card__meta">The Downlink Report is one page for your flight surgeon: trends, flags and sessions. Mental-health content is limited to status and trend.</p>
+    </div>
+    <div class="exports__actions">
+      <a class="pill pill--primary" href="{{ url_for('history.report_pdf') }}" download>{{ icon("file-text") }}Downlink Report (PDF)</a>
+      <a class="pill pill--ghost" href="{{ url_for('history.export_csv', **query) }}" download>{{ icon("download") }}Readings (CSV)</a>
+    </div>
+  </section>
+
+  <section class="timeline" aria-labelledby="timeline-title">
+    <h2 class="section-title" id="timeline-title">Timeline</h2>
+    {% if timeline %}
+    <ol class="timeline__days">
+      {% for day in timeline %}
+      <li class="day card">
+        <button class="day__head" type="button" data-day="{{ day.date }}">
+          <span class="dot is-{{ day.status_key or 'empty' }}" aria-hidden="true"></span>
+          <span class="day__label">{{ day.label }}</span>
+          <span class="card__meta">{{ day.entries|length }} {{ "entry" if day.entries|length == 1 else "entries" }}</span>
+          {{ icon("arrow-right", "day__go") }}
+        </button>
+        <ul class="day__entries">
+          {% for entry in day.entries %}
+          <li class="entry">
+            <span class="entry__time">{{ entry.time or "" }}</span>
+            <div class="entry__body">
+              <p class="entry__title">{{ entry.title }}</p>
+              <p class="entry__text">{{ entry.text }}</p>
+            </div>
+            {{ status_pill(entry.status) }}
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <div class="empty card">
+      {{ icon("calendar") }}
+      <p><strong>Nothing here yet.</strong> Finish a heart check, an exercise session or a voice check-in and it shows up here.</p>
+      {% if filters.system != "all" or filters.kind != "all" or filters.status != "all" %}<a class="pill pill--ghost pill--small" href="{{ url_for('history.index') }}">Clear filters</a>{% endif %}
+    </div>
+    {% endif %}
+  </section>
+</div>
+
+<dialog class="dialog dialog--wide" id="day-dialog" aria-labelledby="day-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="day-title" data-day-title>Day</h2>
+    <p class="dialog__lede" data-day-readiness></p>
+    <div data-day-body><p class="card__meta">Loading…</p></div>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+{% endblock %}
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/chartjs/chartjs-plugin-annotation.min.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/app/history.js') }}"></script>
+{% endblock %}

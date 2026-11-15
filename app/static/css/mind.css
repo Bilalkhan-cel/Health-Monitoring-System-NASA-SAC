@@ -1,0 +1,32 @@
+/* Mind check-in (mockup page 6): radial waveform, big timer, rotating question. */
+
+.rating { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; max-width: 32rem; }
+.listen { justify-items: center; text-align: center; gap: 1rem; }
+.listen__status { display: flex; align-items: center; gap: .5rem; color: var(--text-2); }
+.listen__stage { position: relative; width: min(26rem, 80vw); aspect-ratio: 1; }
+.listen__stage canvas { width: 100%; height: 100%; }
+.listen__center { position: absolute; inset: 0; display: grid; place-content: center; gap: .25rem; }
+.listen__timer { font-size: clamp(3.5rem, 9vw, 6rem); font-weight: 200; letter-spacing: -.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+.listen__level { width: min(16rem, 60vw); }
+.listen__level .meter { --status-color: var(--okay); }
+.listen__prompt { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 500; letter-spacing: -.03em; max-width: 36rem; }
+.listen__preview { max-width: 46rem; color: var(--text-2); font-style: italic; min-height: 1.5em; }
+.listen__actions { justify-content: center; }
+.listen__foot { margin-top: .5rem; }
+.text-checkin { display: grid; gap: 1rem; padding: 1.5rem; max-width: 44rem; }
+.text-checkin textarea { min-height: 10rem; resize: vertical; line-height: 1.5; }
+.processing { justify-items: center; text-align: center; padding: 4rem 0; }
+.safety__card { padding: 2rem; display: grid; gap: 1.25rem; border-color: var(--alert); max-width: 48rem; }
+.themes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.trend__canvas--short { height: 200px; }
+.transcript summary { cursor: pointer; font-weight: 500; }
+.transcript { padding: 1.25rem 1.5rem; display: grid; gap: .75rem; }
+.breathe { justify-items: center; text-align: center; }
+.breathe__circle { width: 9rem; height: 9rem; border-radius: 50%; margin: 1rem 0;
+  background: radial-gradient(circle, rgba(124,196,255,.5), rgba(59,123,255,.15)); transform: scale(.6);
+  transition: transform 4s ease-in-out; }
+.breathe__circle[data-phase="in"] { transform: scale(1); transition-duration: 4s; }
+.breathe__circle[data-phase="out"] { transform: scale(.6); transition-duration: 6s; }
+code { font-family: var(--font-mono); font-size: .875em; background: var(--surface); padding: .1rem .35rem; border-radius: 6px; }
+
+@media (max-width: 760px) { .rating { grid-template-columns: 1fr; } }

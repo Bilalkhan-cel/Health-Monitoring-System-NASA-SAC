@@ -1,0 +1,67 @@
+{% extends "app_base.html" %}
+{% from "partials/macros.html" import icon %}
+{% block title %}Dr. NOVA · AstroVital{% endblock %}
+{% block page_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}">
+{% endblock %}
+{% block content %}
+<div class="doctor" data-doctor data-mode="{{ mode }}" data-ask="{{ ask or '' }}" data-callsign="{{ callsign }}" data-speak="{{ 1 if mode != 'live' else 0 }}">
+  <section class="convo" aria-label="Conversation with Dr. NOVA">
+    <header class="convo__head">
+      <div class="orb orb--small" data-orb data-state="idle" aria-hidden="true"></div>
+      <div>
+        <h1 class="convo__title">Dr. NOVA</h1>
+        <p class="convo__state"><span data-state-label>Ready</span> <span class="bars" data-bars aria-hidden="true"><i></i><i></i><i></i><i></i></span></p>
+      </div>
+      <span class="engine" data-engine hidden></span>
+      <div class="convo__tools">
+        <button class="pill pill--ghost pill--small" type="button" data-stop hidden>{{ icon("volume-x") }}Stop talking</button>
+        <button class="pill pill--ghost pill--small" type="button" data-new>New consultation</button>
+      </div>
+    </header>
+
+    <ol class="messages" data-messages aria-live="polite">
+      {% for turn in turns %}
+      <li class="msg msg--{{ turn.role }}">{{ turn.content }}</li>
+      {% else %}
+      <li class="msg msg--assistant">Hi {{ callsign }}. I've looked at your latest numbers. Ask me anything about how you're doing, or tap the microphone and talk.</li>
+      {% endfor %}
+    </ol>
+    <p class="caption-live" data-caption aria-live="polite"></p>
+
+    <div class="suggestions" role="group" aria-label="Suggested questions">
+      <button class="pill pill--ghost pill--small" type="button" data-suggest>Review my week</button>
+      <button class="pill pill--ghost pill--small" type="button" data-suggest>I feel stressed</button>
+      <button class="pill pill--ghost pill--small" type="button" data-suggest>Help me sleep better</button>
+    </div>
+    <form class="composer" data-composer>
+      <label class="visually-hidden" for="ask-input">Ask Dr. NOVA</label>
+      <input id="ask-input" class="composer__input" name="message" autocomplete="off" maxlength="2000"
+             placeholder="Ask anything, or tap the mic and talk">
+      <button class="composer__send" type="submit" aria-label="Send">{{ icon("send") }}</button>
+      <button class="composer__mic" type="button" data-mic aria-pressed="false" aria-label="Talk to Dr. NOVA">{{ icon("mic") }}</button>
+    </form>
+    <p class="card__meta" data-voice-note>
+      {% if mode == "live" %}Voice by OpenHome.{% elif mode == "mock" %}Voice runs on this computer in practice mode: answers come from offline rules.{% elif mode == "needs_keys" %}OpenHome isn't set up yet, so answers come from offline rules and are read aloud by your browser.{% else %}Voice is switched off.{% endif %}
+      Say "Dr. Nova, how am I doing?"
+    </p>
+  </section>
+
+  <aside class="sees card" aria-labelledby="sees-title">
+    <h2 class="card__title" id="sees-title">What Dr. NOVA sees</h2>
+    <p class="card__meta">Your latest numbers, shared securely</p>
+    <ul class="rows sees__rows">
+      {% for item in sees %}
+      <li class="row">
+        <span class="row__label"><span class="dot{% if item.status %} is-{{ item.status.key }}{% endif %}" aria-hidden="true"></span>{{ item.short }}</span>
+        <span class="row__value">{{ item.value or "–" }} {{ item.unit if item.value and item.unit not in ("/100",) }}<span class="visually-hidden">, {{ item.status.label if item.status else "no reading" }}</span></span>
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="sees__foot">Voice AI by OpenHome (cloud). It sees only the numbers above, plus your recent trends and check-in summaries, never your name or transcripts. Dr. NOVA never makes up numbers or prescribes medicine. Messages to Earth take {{ mission.comms_delay_text }}.</p>
+  </aside>
+</div>
+{% endblock %}
+{% block page_scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/app/doctor_chat.js') }}"></script>
+{% endblock %}
