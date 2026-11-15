@@ -10,6 +10,7 @@ const root = document.querySelector('[data-mind]');
 const $ = (selector) => root.querySelector(selector);
 const TARGET_S = Number(root.dataset.target) * 60;
 const MAX_S = Number(root.dataset.max) * 60;
+const MIN_S = Number(root.dataset.min) || 0;
 const PROMPTS = JSON.parse(root.dataset.prompts);
 const CHUNK_MIN_S = 30;
 const CHUNK_MAX_S = 40;
@@ -79,6 +80,8 @@ function tick() {
   state.elapsed = seconds;
   $('[data-timer]').textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
   $('[data-level]').style.width = `${Math.min(100, state.level * 400)}%`;
+  const hint = $('[data-done-hint]');
+  if (!hint.hidden && seconds >= MIN_S) hint.textContent = "That's enough for a result. Tap I'm done when you're ready.";
   if (seconds >= MAX_S) finishRecording();
 }
 
@@ -123,11 +126,15 @@ async function pollPreview() {
 
 async function startRecording() {
   const error = $('[data-mic-error]');
+  const button = $('[data-record]');
+  if (state.mic || button.disabled) return;
+  button.disabled = true;
   try {
     const reply = await api('/mental/start', { method: 'POST', body: { mode: 'voice' } });
     state.checkin = reply.checkin_id;
     state.mic = await openMicrophone(onBlock);
   } catch (err) {
+    button.disabled = false;
     error.hidden = false;
     error.textContent = err.name === 'NotAllowedError'
       ? 'Microphone permission was refused. Allow it in the address bar, or type your check-in instead.'
@@ -154,6 +161,14 @@ function togglePause() {
 
 async function finishRecording() {
   if (!state.mic) return;
+  // Too short for a result: keep recording and say why, instead of ending and losing it.
+  const left = Math.ceil(MIN_S - elapsedSeconds());
+  if (left > 0 && !$('[data-mood]').value) {
+    const hint = $('[data-done-hint]');
+    hint.hidden = false;
+    hint.textContent = `Keep talking a little longer: ${left} more second${left === 1 ? '' : 's'} for a result.`;
+    return;
+  }
   window.clearInterval(state.timer);
   window.clearInterval(state.promptTimer);
   cancelAnimationFrame(state.raf);
@@ -191,6 +206,11 @@ async function submitText(event) {
   event.preventDefault();
   const text = new FormData(event.currentTarget).get('text');
   const error = $('[data-text-error]');
+  const button = event.currentTarget.querySelector('[type="submit"]');
+  if (button.disabled) return;
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Saving… reading your words';  // the language models can take a few seconds
   try {
     const reply = await api('/mental/text', { method: 'POST', body: { text, ...rating() } });
     error.hidden = true;
@@ -198,6 +218,9 @@ async function submitText(event) {
   } catch (err) {
     error.textContent = err.message;
     error.hidden = false;
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
   }
 }
 
@@ -217,7 +240,9 @@ function renderResults(results) {
     return;
   }
   if (results.too_short) {
-    toast(results.message);
+    const note = $('[data-mic-error]');  // stays on screen, unlike a toast
+    note.hidden = false;
+    note.textContent = results.message;
     show('intro');
     return;
   }
@@ -257,7 +282,14 @@ function renderResults(results) {
     const timeline = results.timeline.map((segment, index) => ({ t: `Part ${index + 1}`,
       v: segment.label === 'positive' ? 1 : segment.label === 'negative' ? -1 : 0,
       status: segment.label === 'negative' ? 'watch' : null }));
-    trendChart($('[data-timeline]'), { points: timeline }, { reference: [0] });
+    const tone = trendChart($('[data-timeline]'), { points: timeline }, { reference: [0] });
+    if (tone) {
+      const words = { 1: 'Positive', 0: 'Neutral', '-1': 'Negative' };
+      Object.assign(tone.options.scales.y, { min: -1.25, max: 1.25 });
+      Object.assign(tone.options.scales.y.ticks, { stepSize: 1, callback: (value) => words[value] ?? '' });
+      tone.options.plugins.tooltip.callbacks.label = (item) => words[item.raw] ?? '';
+      tone.update();
+    }
     trendChart($('[data-trend]'), { points: results.trend }, { unit: '/100', reference: [70, 55] });
   }
   $('[data-emotions-text]').textContent = Object.entries(results.emotions)

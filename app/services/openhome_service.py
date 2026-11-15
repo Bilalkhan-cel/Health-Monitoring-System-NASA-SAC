@@ -35,6 +35,8 @@ USER_AGENT = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHT
               "Chrome/131.0.0.0 Safari/537.36")
 TEXT_TIMEOUT_S = 25
 AUDIO_END_GRACE_S = 1.5  # after the reply, wait this long for audio-end before hanging up
+AUDIO_WAIT_S = 15  # text chat with voice: longest wait for the spoken reply to finish
+AUDIO_START_S = 3  # ...and how long to wait for it to start
 HEALTH_TTL_S = 60
 _health_cache: dict[str, tuple[float, str]] = {}
 
@@ -211,11 +213,13 @@ def _rms(chunk: bytes) -> float:
     return (sum(s * s for s in samples) / len(samples)) ** 0.5 / 32768
 
 
-def text_call(config: Config, message: str, timeout: float = TEXT_TIMEOUT_S) -> str | None:
+def text_call(config: Config, message: str, timeout: float = TEXT_TIMEOUT_S,
+              audio: bytearray | None = None) -> str | None:
     """One text turn with the real Dr. NOVA agent over the voice stream (text-only mode).
 
     Waits for the agent's greeting, sends the message as ``transcribed`` text, and returns
     the next final assistant message. None on any failure (the caller falls back).
+    When ``audio`` is given, the MP3 of the agent's spoken reply is appended to it.
     """
     if mode(config) != "live":
         return None
@@ -235,6 +239,11 @@ def text_call(config: Config, message: str, timeout: float = TEXT_TIMEOUT_S) -> 
             spoken.set()
         elif kind == "audio":
             upstream.send({"type": "ack", "data": "audio-received"})
+            if audio is not None and state["sent"] and isinstance(data, str):
+                try:
+                    audio.extend(base64.b64decode(data))
+                except ValueError:
+                    pass
         elif kind == "error-event":
             done.set()
         elif kind == "message" and isinstance(data, dict) and data.get("role") == "assistant" and data.get("final"):
@@ -256,7 +265,16 @@ def text_call(config: Config, message: str, timeout: float = TEXT_TIMEOUT_S) -> 
                 upstream.send({"type": "transcribed", "data": message})
         threading.Timer(8, nudge).start()
         done.wait(timeout)
-        if state["reply"] is not None and state["speaking"]:
+        if state["reply"] is not None and audio is not None:
+            # Keep the reply's voice: wait for it to start and finish (bounded).
+            start = time.monotonic()
+            while time.monotonic() - start < AUDIO_WAIT_S:
+                if audio and not state["speaking"]:
+                    break  # the whole reply has been spoken
+                if not audio and not state["speaking"] and time.monotonic() - start > AUDIO_START_S:
+                    break  # no voice is coming for this reply
+                time.sleep(0.1)
+        elif state["reply"] is not None and state["speaking"]:
             spoken.wait(AUDIO_END_GRACE_S)  # let the agent finish instead of hanging up mid-sentence
         upstream.close()
     except Exception as error:  # noqa: BLE001 (any failure falls back)
@@ -289,3 +307,4 @@ def health(config: Config) -> str:
 class EngineReply:
     text: str
     engine: str  # OPENHOME | FALLBACK LLM | OFFLINE RULES
+    audio: bytes | None = None  # OpenHome's spoken reply (MP3), when it sent one

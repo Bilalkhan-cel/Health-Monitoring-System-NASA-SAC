@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import threading
 import time
@@ -50,7 +51,10 @@ def chat():
     if len(message) > 2000:
         return jsonify(ok=False, error="too_long", message="Please keep it under 2000 characters."), 400
     answer = services.reply(current_crew(), message, _config(), get_runtime(), since=_since())
-    return jsonify(ok=True, reply=answer.text, engine=answer.engine)
+    body = {"ok": True, "reply": answer.text, "engine": answer.engine}
+    if answer.audio:
+        body["audio"] = base64.b64encode(answer.audio).decode()  # OpenHome's voice for this reply
+    return jsonify(body)
 
 
 @bp.post("/doctor/new")

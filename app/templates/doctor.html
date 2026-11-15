@@ -22,7 +22,7 @@
 
     <ol class="messages" data-messages aria-live="polite">
       {% for turn in turns %}
-      <li class="msg msg--{{ turn.role }}">{{ turn.content }}</li>
+      <li class="msg msg--{{ turn.role }}">{{ turn.content | replace("** ", "") | replace("**", "") }}</li>
       {% else %}
       <li class="msg msg--assistant">Hi {{ callsign }}. I've looked at your latest numbers. Ask me anything about how you're doing, or tap the microphone and talk.</li>
       {% endfor %}

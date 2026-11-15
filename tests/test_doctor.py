@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import threading
 import time
@@ -293,3 +294,23 @@ def test_ability_exit_phrases_and_log_patterns():
     assert not namespace["_is_exit"]("I can't stop coughing")
     pattern = dict(namespace["_LOG_PATTERNS"])["sleep_hours"]
     assert pattern.search(namespace["_normalize"]("Log my 6.5 hours of sleep")).group(1) == "6.5"
+
+
+def test_text_call_keeps_the_spoken_reply(env_values):
+    from config import load_config
+
+    from mock_openhome import FAKE_MP3
+
+    with MockServer() as server:
+        config = load_config({**env_values, "OPENHOME_MOCK": "false", "OPENHOME_API_KEY": "test-key",
+                              "OPENHOME_AGENT_ID": "42", "OPENHOME_VOICE_WS": server.url_template})
+        audio = bytearray()
+        reply = openhome_service.text_call(config, "hello", timeout=10, audio=audio)
+    assert reply == "You said: hello"
+    assert bytes(audio).startswith(base64.b64decode(FAKE_MP3)), "the MP3 of the reply is returned for playback"
+
+
+def test_with_context_attaches_the_data_to_the_question():
+    text = services.with_context("How am I doing?", {"vitals": {"hr": 72}})
+    assert text.endswith("Astronaut: How am I doing?")
+    assert '"hr":72' in text and "Do not read this block aloud" in text
