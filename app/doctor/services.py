@@ -23,6 +23,13 @@ HEARTBEAT_FRESH_S = 45
 HISTORY_TURNS = 30
 
 
+def with_context(message: str, context: dict) -> str:
+    """The astronaut's question with their current data attached, for the OpenHome agent."""
+    data = json.dumps(context, separators=(",", ":"), default=str)
+    return ("[AstroVital data for this astronaut. Use it to answer and quote the real numbers. "
+            f"Do not read this block aloud.]\n{data}\n\nAstronaut: {message}")
+
+
 def context_for(astronaut_id: int, config: Config, runtime=None) -> dict:
     live = None
     if runtime is not None:
@@ -61,9 +68,12 @@ def reply(astronaut: Astronaut, message: str, config: Config, runtime=None, now:
         if openhome_service.mode(config) == "live":
             touch_session(astronaut.id, now)  # the Ability fetches context through the bridge
             db.session.commit()
-            text = openhome_service.text_call(config, message)
+            # The data rides along with the question, so Dr. NOVA can answer even when the
+            # OpenHome Ability is not triggered or cannot reach the tunnel.
+            audio = bytearray()
+            text = openhome_service.text_call(config, with_context(message, context), audio=audio)
             if text:
-                answer = EngineReply(text, "OPENHOME")
+                answer = EngineReply(text, "OPENHOME", bytes(audio) or None)
         if answer is None:
             past = [{"role": row.role, "content": row.content} for row in history(astronaut.id, since)]
             text = llm_fallback.chat(config, message, doctor_context.to_prompt_text(context), past)

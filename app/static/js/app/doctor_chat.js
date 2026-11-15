@@ -8,7 +8,7 @@ const root = document.querySelector('[data-doctor]');
 const $ = (selector) => root.querySelector(selector);
 const list = $('[data-messages]');
 const ENGINE_TEXT = { OPENHOME: 'OPENHOME', 'FALLBACK LLM': 'FALLBACK LLM', 'OFFLINE RULES': 'OFFLINE RULES' };
-const state = { busy: false, voice: null, speaking: false };
+const state = { busy: false, voice: null, speaking: false, player: null };
 
 function setOrb(mode, label) {
   $('[data-orb]').dataset.state = mode;
@@ -19,6 +19,10 @@ function setOrb(mode, label) {
 
 function render(role, text) {
   const item = h('li', { class: `msg msg--${role}` });
+  if (role === 'assistant') {
+    // The agent answers in Markdown: drop bold markers and put numbered steps on their own lines.
+    text = text.replace(/\*\*\s*/g, '').replace(/([.:!?])\s+(?=\d\.\s+[A-Z])/g, '$1\n');
+  }
   if (role === 'assistant' && /\n\d+\. /.test(text)) {
     const [intro, ...rest] = text.split(/\n\n|\n(?=\d+\. )/);
     item.append(h('p', {}, intro));
@@ -42,6 +46,18 @@ function speakAloud(text) {
   window.speechSynthesis.speak(utterance);
 }
 
+// OpenHome's own voice for a typed question (MP3); the browser voice if it cannot play.
+function playReply(base64, text) {
+  window.speechSynthesis?.cancel();
+  state.player?.pause();
+  const player = new Audio(`data:audio/mpeg;base64,${base64}`);
+  state.player = player;
+  player.onplay = () => setOrb('speaking', 'Speaking');
+  player.onended = () => setOrb('idle', 'Ready');
+  player.onerror = () => speakAloud(text);
+  player.play().catch(() => speakAloud(text));
+}
+
 async function ask(message) {
   if (state.busy || !message.trim()) return;
   state.busy = true;
@@ -55,7 +71,10 @@ async function ask(message) {
     engine.textContent = ENGINE_TEXT[reply.engine] || reply.engine;
     engine.dataset.engine = reply.engine;
     setOrb('idle', 'Ready');
-    if (reply.engine !== 'OPENHOME' && state.voice === null && root.dataset.speak === '1') speakAloud(reply.reply);
+    if (state.voice === null) {
+      if (reply.audio) playReply(reply.audio, reply.reply);
+      else if (root.dataset.speak === '1') speakAloud(reply.reply);
+    }
   } catch (error) {
     render('assistant', `I couldn't answer just now: ${error.message}`);
     setOrb('idle', 'Ready');
@@ -80,6 +99,7 @@ function setup() {
   });
   $('[data-stop]').addEventListener('click', () => {
     window.speechSynthesis?.cancel();
+    state.player?.pause();
     state.voice?.interrupt();
     setOrb('idle', 'Ready');
   });
