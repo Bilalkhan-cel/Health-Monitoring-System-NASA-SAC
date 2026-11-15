@@ -9,7 +9,7 @@
   <h1 class="page-title">How are you, <span class="headline__second">really?</span></h1>
 {% endblock %}
 {% block content %}
-<div class="check" data-mind data-target="{{ target_min }}" data-max="{{ max_min }}" data-prompts='{{ prompts|tojson }}'>
+<div class="check" data-mind data-target="{{ target_min }}" data-max="{{ max_min }}" data-min="{{ min_seconds }}" data-prompts='{{ prompts|tojson }}'>
 
   <section class="step" data-step="intro">
     <div class="overview">
@@ -60,6 +60,7 @@
       <button class="pill pill--ghost" type="button" data-pause>Pause</button>
       <button class="pill pill--primary" type="button" data-done>I'm done</button>
     </div>
+    <p class="card__meta listen__hint" data-done-hint role="status" hidden></p>
     <p class="card__meta listen__foot">Private · audio is deleted once it's read · this is support, not a diagnosis</p>
   </section>
 
@@ -116,6 +117,10 @@
       <button class="pill pill--ghost pill--small" type="button" data-delete-transcript>{{ icon("trash-2") }}Delete transcript</button>
     </details>
     <p class="card__meta">This reflects your words today. It is not a diagnosis.</p>
+    <div class="panel__actions">
+      <a class="pill pill--primary" href="{{ url_for('dashboard.index') }}">Back to Today</a>
+      <a class="pill pill--ghost" href="{{ url_for('mental.index') }}">New check-in</a>
+    </div>
   </section>
 </div>
 

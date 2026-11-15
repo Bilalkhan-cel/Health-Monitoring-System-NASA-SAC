@@ -121,7 +121,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   letter-spacing: .02em;
   color: var(--text-3);
 }
-.reading {
+/* Hero-sized number. Not `.reading`: that name is the Today page's reading rows. */
+.reading-hero {
   font-size: var(--size-reading);
   font-weight: 200;
   line-height: .9;
