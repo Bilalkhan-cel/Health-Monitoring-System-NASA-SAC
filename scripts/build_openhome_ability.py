@@ -103,7 +103,8 @@ def build(public_url: str, token: str) -> list[str]:
     shutil.copy(SOURCE / "README.md", OUT_DIR / "README.md")
     with zipfile.ZipFile(ZIP_PATH, "w", zipfile.ZIP_DEFLATED) as archive:
         for name in ("main.py", "__init__.py", "README.md"):
-            archive.write(OUT_DIR / name, name)
+            # OpenHome expects one top-level folder inside the zip.
+            archive.write(OUT_DIR / name, f"{ZIP_PATH.stem}/{name}")
     return []
 
 
