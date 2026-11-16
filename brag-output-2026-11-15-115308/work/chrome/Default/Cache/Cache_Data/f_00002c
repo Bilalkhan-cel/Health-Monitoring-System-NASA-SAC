@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="ImEzM2M5ZTEyNjg3MGI0YjlhNmVhZTUxMmQwM2JlZWQ5MzViYTIzNTQi.avlZOg.8_DEAArE0oOS35mGjp8pQKUpQZM">
+  <meta name="static-root" content="/static/">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>Notifications · AstroVital</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/vendor/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  
+  <link rel="stylesheet" href="/static/css/app.css">
+  <meta name="astro-temp-unit" content="C">
+  
+  <link rel="stylesheet" href="/static/css/notifications.css">
+
+
+</head>
+<body class="app">
+  <a class="skip-link" href="#main">Skip to content</a>
+  
+
+<div class="shell" data-sprite="/static/vendor/lucide/sprite.svg">
+  <nav class="rail" id="rail" aria-label="Main">
+    <button class="rail__item rail__toggle" type="button" aria-expanded="false" aria-controls="rail" data-rail-toggle>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#menu"></use></svg><span class="rail__label">Collapse menu</span>
+      <span class="visually-hidden" data-rail-toggle-text>Show menu labels</span>
+    </button>
+    <ul class="rail__list">
+      
+      <li>
+        <a class="rail__item" href="/dashboard">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#layout-grid"></use></svg><span class="rail__label">Today</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/cardio">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#heart"></use></svg><span class="rail__label">Heart</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/musculoskeletal">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bone"></use></svg><span class="rail__label">Body</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/mental">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#mic"></use></svg><span class="rail__label">Mind</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/doctor">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#stethoscope"></use></svg><span class="rail__label">Dr. NOVA</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/history">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#history"></use></svg><span class="rail__label">History</span>
+        </a>
+      </li>
+      
+    </ul>
+    <form class="rail__bottom" method="post" action="/logout">
+      <input type="hidden" name="csrf_token" value="ImEzM2M5ZTEyNjg3MGI0YjlhNmVhZTUxMmQwM2JlZWQ5MzViYTIzNTQi.avlZOg.8_DEAArE0oOS35mGjp8pQKUpQZM">
+      <button class="rail__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg><span class="rail__label">Log out</span></button>
+    </form>
+  </nav>
+
+  <div class="shell__main">
+    <header class="topbar">
+      <div class="topbar__title">
+  <h1 class="page-title">Notifications. <span class="headline__second">7 new.</span></h1>
+</div>
+      <div class="topbar__tools">
+        
+        <button class="chip" type="button" data-open-dialog="env-dialog" aria-haspopup="dialog">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#orbit"></use></svg><span>Day 160 · Space Station</span>
+        </button>
+        
+        
+        <a class="icon-button" href="/notifications" data-bell aria-label="Notifications">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg><span class="icon-button__badge" data-bell-count hidden></span>
+        </a>
+        
+        <details class="menu">
+          <summary class="menu__trigger" aria-label="Account menu for Cmdr. Sara Whitman">
+            <span class="menu__name">Cmdr. Sara Whitman</span>
+            <span class="avatar" aria-hidden="true">SW</span>
+          </summary>
+          <div class="menu__panel">
+            <p class="menu__who">Commander · Falcon</p>
+            
+            <a class="menu__item" href="/settings"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#settings"></use></svg>Settings</a>
+            <a class="menu__item" href="/notifications"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg>Notifications</a>
+            
+            <form method="post" action="/logout">
+              <input type="hidden" name="csrf_token" value="ImEzM2M5ZTEyNjg3MGI0YjlhNmVhZTUxMmQwM2JlZWQ5MzViYTIzNTQi.avlZOg.8_DEAArE0oOS35mGjp8pQKUpQZM">
+              <button class="menu__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg>Log out</button>
+            </form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <div class="alertbar" data-alertbar role="alert" hidden>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#octagon-alert"></use></svg>
+      <p class="alertbar__text" data-alertbar-text></p>
+      <div class="alertbar__actions">
+        <a class="pill pill--light" href="/doctor">Ask Dr. NOVA</a>
+        <button class="pill pill--on-alert" type="button" data-open-dialog="protocol-dialog">View protocol</button>
+      </div>
+    </div>
+
+    <main id="main" class="page">
+      
+<div class="notes-page" data-notes-page>
+  <div class="notes-page__bar">
+    <nav class="segmented" aria-label="Show">
+      <a class="segmented__item" href="/notifications" aria-current="page">All</a>
+      <a class="segmented__item" href="/notifications?show=unread">Unread</a>
+    </nav>
+    <button class="pill pill--ghost pill--small" type="button" data-read-all><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#check"></use></svg>Mark all read</button>
+  </div>
+
+  
+  <ul class="notes-list">
+    
+    <li class="note card is-unread is-alert" data-note="14">
+      <span class="note__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#octagon-alert"></use></svg></span>
+      <div class="note__body">
+        <p class="note__title"><span class="visually-hidden">New: </span>Get help now: blood pressure</p>
+        <p class="note__text">Your blood pressure reads 186/118 mmHg. Tell your crew medical officer now and follow the onboard protocol.</p>
+        <p class="note__meta"><span class="dot is-alert" aria-hidden="true"></span>Get help now · <time datetime="2026-11-14T18:06:43.717867Z" data-local-time>2026-11-14 18:06 UTC</time></p>
+      </div>
+      <div class="note__actions">
+        <a class="pill pill--small pill--primary" href="/dashboard" data-open-note>Open</a>
+        <button class="icon-button" type="button" data-mark-read aria-label="Mark “Get help now: blood pressure” as read"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#check"></use></svg></button>
+      </div>
+    </li>
+    
+    <li class="note card is-unread is-watch" data-note="12">
+      <span class="note__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#triangle-alert"></use></svg></span>
+      <div class="note__body">
+        <p class="note__title"><span class="visually-hidden">New: </span>Needs attention: mood</p>
+        <p class="note__text">Your mood reads 48. Open Today to see what to do.</p>
+        <p class="note__meta"><span class="dot is-watch" aria-hidden="true"></span>Needs attention · <time datetime="2026-11-14T14:40:40.351458Z" data-local-time>2026-11-14 14:40 UTC</time></p>
+      </div>
+      <div class="note__actions">
+        <a class="pill pill--small pill--ghost" href="/dashboard" data-open-note>Open</a>
+        <button class="icon-button" type="button" data-mark-read aria-label="Mark “Needs attention: mood” as read"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#check"></use></svg></button>
+      </div>
+    </li>
+    
+    <li class="note card is-unread is-okay" data-note="13">
+      <span class="note__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#timer"></use></svg></span>
+      <div class="note__body">
+        <p class="note__title"><span class="visually-hidden">New: </span>Drink some water</p>
+        <p class="note__text">You&#39;re not at today&#39;s water goal yet.</p>
+        <p class="note__meta"><span class="dot is-okay" aria-hidden="true"></span>Okay · <time datetime="2026-11-14T14:00:00Z" data-local-time>2026-11-14 14:00 UTC</time></p>
+      </div>
+      <div class="note__actions">
+        <a class="pill pill--small pill--ghost" href="/dashboard" data-open-note>Open</a>
+        <button class="icon-button" type="button" data-mark-read aria-label="Mark “Drink some water” as read"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#check"></use></svg></button>
+      </div>
+    </li>
+    
+    <li class="note card is-unread is-good" data-note="4">
+      <span class="note__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#award"></use></svg></span>
+      <div class="note__body">
+        <p class="note__title"><span class="visually-hidden">New: </span>Badge unlocked: Titanium Bones</p>
+        <p class="note__text">Exercise on 5 days in a week. Nice work.</p>
+        <p class="note__meta"><span class="dot is-good" aria-hidden="true"></span>Good · <time datetime="2026-11-14T12:55:17.878126Z" data-local-time>2026-11-14 12:55 UTC</time></p>
+      </div>
+      <div class="note__actions">
+        <a class="pill pill--small pill--ghost" href="/settings" data-open-note>Open</a>
+        <button class="icon-button" type="button" data-mark-read aria-label="Mark “Badge unlocked: Titanium Bones” as read"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#check"></use></svg></button>
+      </div>
+    </li>
+    
+    <li class="note card is-unread is-good" data-note="3">
+      <span class="note__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#award"></use></svg></span>
+      <div class="note__body">
+        <p class="note__title"><span class="visually-hidden">New: </span>Badge unlocked: 7-Day Streak</p>
+        <p class="note__text">3 or more tasks a day for 7 days. Nice work.</p>
+        <p class="note__meta"><span class="dot is-good" aria-hidden="true"></span>Good · <time datetime="2026-11-14T12:55:17.878126Z" data-local-time>2026-11-14 12:55 UTC</time></p>
+      </div>
+      <div class="note__actions">
+        <a class="pill pill--small pill--ghost" href="/settings" data-open-note>Open</a>
+        <button class="icon-button" type="button" data-mark-read aria-label="Mark “Badge unlocked: 7-Day Streak” as read"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#check"></use></svg></button>
+      </div>
+    </li>
+    
+    <li class="note card is-unread is-good" data-note="2">
+      <span class="note__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#award"></use></svg></span>
+      <div class="note__body">
+        <p class="note__title"><span class="visually-hidden">New: </span>Badge unlocked: Steady Mind</p>
+        <p class="note__text">7 voice check-ins in 10 days. Nice work.</p>
+        <p class="note__meta"><span class="dot is-good" aria-hidden="true"></span>Good · <time datetime="2026-11-14T12:55:17.878126Z" data-local-time>2026-11-14 12:55 UTC</time></p>
+      </div>
+      <div class="note__actions">
+        <a class="pill pill--small pill--ghost" href="/settings" data-open-note>Open</a>
+        <button class="icon-button" type="button" data-mark-read aria-label="Mark “Badge unlocked: Steady Mind” as read"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#check"></use></svg></button>
+      </div>
+    </li>
+    
+    <li class="note card is-unread is-good" data-note="1">
+      <span class="note__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#award"></use></svg></span>
+      <div class="note__body">
+        <p class="note__title"><span class="visually-hidden">New: </span>Badge unlocked: Iron Heart</p>
+        <p class="note__text">7 heart checks in 7 days. Nice work.</p>
+        <p class="note__meta"><span class="dot is-good" aria-hidden="true"></span>Good · <time datetime="2026-11-14T12:55:17.878126Z" data-local-time>2026-11-14 12:55 UTC</time></p>
+      </div>
+      <div class="note__actions">
+        <a class="pill pill--small pill--ghost" href="/settings" data-open-note>Open</a>
+        <button class="icon-button" type="button" data-mark-read aria-label="Mark “Badge unlocked: Iron Heart” as read"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#check"></use></svg></button>
+      </div>
+    </li>
+    
+  </ul>
+  
+  <p class="card__meta">Reminder times are set in <a href="/settings#reminders">Settings</a>.</p>
+</div>
+
+    </main>
+    <footer class="site-foot">Prototype for educational purposes. Not a certified medical device.</footer>
+  </div>
+</div>
+
+
+<dialog class="dialog" id="env-dialog" aria-labelledby="env-title">
+  <form class="dialog__body" data-env-form>
+    <h2 class="dialog__title" id="env-title">Where is the crew?</h2>
+    <p class="dialog__lede">This changes gravity, the delay to Earth and the exercises on offer. It never changes the health ranges.</p>
+    <fieldset class="choice-list">
+      <legend class="visually-hidden">Mission environment</legend>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Spacecraft">
+        <span class="choice__label">Spacecraft</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Space Station" checked>
+        <span class="choice__label">Space Station</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Rover">
+        <span class="choice__label">Rover</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Lunar Base">
+        <span class="choice__label">Lunar Base</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Mars Base">
+        <span class="choice__label">Mars Base</span>
+      </label>
+      
+    </fieldset>
+    <p class="form-error" data-env-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save location</button>
+    </div>
+  </form>
+</dialog>
+
+
+<dialog class="dialog" id="protocol-dialog" aria-labelledby="protocol-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="protocol-title">What to do now</h2>
+    <ol class="steps" data-protocol-steps></ol>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+<div class="toasts" data-toasts aria-live="polite"></div>
+
+  
+  <script type="module" src="/static/js/app/shell.js"></script>
+  
+  <script type="module" src="/static/js/app/notifications.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="ImZlOGJjMTg1ZmY3YTEwYWE1ZTlkYmVlMTcwMzgzNGVhYzM1MTgwMDEi.avlZrQ.WWZ6-bNfTm1yvq87LWZbAeBQ0jE">
+  <meta name="static-root" content="/static/">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>Dr. NOVA · AstroVital</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/vendor/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  
+  <link rel="stylesheet" href="/static/css/app.css">
+  <meta name="astro-temp-unit" content="C">
+  
+  <link rel="stylesheet" href="/static/css/doctor.css">
+
+
+</head>
+<body class="app">
+  <a class="skip-link" href="#main">Skip to content</a>
+  
+
+<div class="shell" data-sprite="/static/vendor/lucide/sprite.svg">
+  <nav class="rail" id="rail" aria-label="Main">
+    <button class="rail__item rail__toggle" type="button" aria-expanded="false" aria-controls="rail" data-rail-toggle>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#menu"></use></svg><span class="rail__label">Collapse menu</span>
+      <span class="visually-hidden" data-rail-toggle-text>Show menu labels</span>
+    </button>
+    <ul class="rail__list">
+      
+      <li>
+        <a class="rail__item" href="/dashboard">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#layout-grid"></use></svg><span class="rail__label">Today</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/cardio">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#heart"></use></svg><span class="rail__label">Heart</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/musculoskeletal">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bone"></use></svg><span class="rail__label">Body</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/mental">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#mic"></use></svg><span class="rail__label">Mind</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item is-active" href="/doctor" aria-current="page">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#stethoscope"></use></svg><span class="rail__label">Dr. NOVA</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/history">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#history"></use></svg><span class="rail__label">History</span>
+        </a>
+      </li>
+      
+    </ul>
+    <form class="rail__bottom" method="post" action="/logout">
+      <input type="hidden" name="csrf_token" value="ImZlOGJjMTg1ZmY3YTEwYWE1ZTlkYmVlMTcwMzgzNGVhYzM1MTgwMDEi.avlZrQ.WWZ6-bNfTm1yvq87LWZbAeBQ0jE">
+      <button class="rail__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg><span class="rail__label">Log out</span></button>
+    </form>
+  </nav>
+
+  <div class="shell__main">
+    <header class="topbar">
+      <div class="topbar__title"></div>
+      <div class="topbar__tools">
+        
+        <button class="chip" type="button" data-open-dialog="env-dialog" aria-haspopup="dialog">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#orbit"></use></svg><span>Day 160 · Space Station</span>
+        </button>
+        
+        
+        <a class="icon-button" href="/notifications" data-bell aria-label="Notifications">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg><span class="icon-button__badge" data-bell-count hidden></span>
+        </a>
+        
+        <details class="menu">
+          <summary class="menu__trigger" aria-label="Account menu for Cmdr. Sara Whitman">
+            <span class="menu__name">Cmdr. Sara Whitman</span>
+            <span class="avatar" aria-hidden="true">SW</span>
+          </summary>
+          <div class="menu__panel">
+            <p class="menu__who">Commander · Falcon</p>
+            
+            <a class="menu__item" href="/settings"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#settings"></use></svg>Settings</a>
+            <a class="menu__item" href="/notifications"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg>Notifications</a>
+            
+            <form method="post" action="/logout">
+              <input type="hidden" name="csrf_token" value="ImZlOGJjMTg1ZmY3YTEwYWE1ZTlkYmVlMTcwMzgzNGVhYzM1MTgwMDEi.avlZrQ.WWZ6-bNfTm1yvq87LWZbAeBQ0jE">
+              <button class="menu__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg>Log out</button>
+            </form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <div class="alertbar" data-alertbar role="alert" hidden>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#octagon-alert"></use></svg>
+      <p class="alertbar__text" data-alertbar-text></p>
+      <div class="alertbar__actions">
+        <a class="pill pill--light" href="/doctor">Ask Dr. NOVA</a>
+        <button class="pill pill--on-alert" type="button" data-open-dialog="protocol-dialog">View protocol</button>
+      </div>
+    </div>
+
+    <main id="main" class="page">
+      
+<div class="doctor" data-doctor data-mode="live" data-ask="" data-callsign="Falcon" data-speak="0">
+  <section class="convo" aria-label="Conversation with Dr. NOVA">
+    <header class="convo__head">
+      <div class="orb orb--small" data-orb data-state="idle" aria-hidden="true"></div>
+      <div>
+        <h1 class="convo__title">Dr. NOVA</h1>
+        <p class="convo__state"><span data-state-label>Ready</span> <span class="bars" data-bars aria-hidden="true"><i></i><i></i><i></i><i></i></span></p>
+      </div>
+      <span class="engine" data-engine hidden></span>
+      <div class="convo__tools">
+        <button class="pill pill--ghost pill--small" type="button" data-stop hidden><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#volume-x"></use></svg>Stop talking</button>
+        <button class="pill pill--ghost pill--small" type="button" data-new>New consultation</button>
+      </div>
+    </header>
+
+    <ol class="messages" data-messages aria-live="polite">
+      
+      <li class="msg msg--user">Review my week</li>
+      
+      <li class="msg msg--assistant">Over the last two weeks, your heart rate is up, your blood pressure is steady, your oxygen is steady, your temperature is steady. You&#39;ve kept a 30-day streak of daily checks. Nice work.</li>
+      
+      <li class="msg msg--user">Review my week</li>
+      
+      <li class="msg msg--assistant">Over the last two weeks, your heart rate is up, your blood pressure is down, your oxygen is steady, your temperature is steady. You&#39;ve kept a 30-day streak of daily checks. Nice work.</li>
+      
+      <li class="msg msg--user">Review my week</li>
+      
+      <li class="msg msg--assistant">Over the last two weeks, your heart rate is up, your blood pressure is down, your oxygen is steady, your temperature is steady. You&#39;ve kept a 30-day streak of daily checks. Nice work.</li>
+      
+      <li class="msg msg--user">How am I doing today?</li>
+      
+      <li class="msg msg--assistant">A couple of things need attention, Falcon. Your heart rate is 104 bpm, and your usual is 76. Your sleep is 5 hours 24 minutes too.
+
+Here&#39;s what I&#39;d do:
+1. Drink a glass of water now and sit quietly for five minutes.
+2. Take ten slow breaths, in for four counts and out for six.
+3. Check your heart again in two hours. If it is still high, ask Dr. NOVA.</li>
+      
+      <li class="msg msg--user">How am I doing today?</li>
+      
+      <li class="msg msg--assistant">I don’t have a current AstroVital health context or recent readings for today, so I can’t safely assess how you’re doing. First, tell me how you feel right now. Second, re- measure your heart rate and oxygen if available. Third, alert the crew medical officer now for chest pain, severe breathlessness, fainting, confusion, or thoughts of self- harm. </li>
+      
+      <li class="msg msg--user">How am I doing today?</li>
+      
+      <li class="msg msg--assistant">Astro, I don’t have a current AstroVital health context or today’s readings, so I can’t safely assess how you’re doing. 1. Tell me how you feel right now. 2. Take fresh heart- rate and oxygen readings if available. 3. Alert the crew medical officer now for chest pain, severe breathlessness, fainting, confusion, or thoughts of self- harm. How do you feel right now? </li>
+      
+      <li class="msg msg--user">How am I doing today?</li>
+      
+      <li class="msg msg--assistant">Falcon, today’s picture is mostly stable, with a few areas needing attention. 1. Readiness: 78 — Needs attention. 2. Good today: blood pressure 119/77 mmHg, glucose 79 mg/dL, breathing 14/min, and temperature 36. 4°C. 3. Heart rate: 104 bpmon November 14, compared with your usual 76 bpm. This is not a live reading; your wearable is offline. Rest, then re- measure. 4. Sleep: 5. 4 hours, about two hours below your usual. 5. Wellbeing: 48/100, below your usual 76. Recent mood was low, with homesickness noted. 6. Oxygen: 99%on November 14. It was good, but not current. First, rest and take fresh heart- rate and oxygen readings when the sensor is working. Second, prioritize hydration, food, and recovery sleep today. Third, connect with a crewmate or behavioral- health support about homesickness. If you have chest pain, severe breathlessness, fainting, confusion, or sudden severe headache, alert the crew medical officer now and follow onboard protocol. The ground flight surgeon should also be contacted; the one- way communications delay is 760 seconds. Recap: Your current basic readings look good, but elevated heart rate, short sleep, and low wellbeing need attention. How do you feel right now? </li>
+      
+      <li class="msg msg--user">Thanks, what should I do first?</li>
+      
+      <li class="msg msg--assistant">Falcon, first, stop strenuous activity and rest. Your heart rate was 104 bpm yesterday, above your usual 76, and your wearable is currently offline, so it is not a live reading. 1. Sit quietly, hydrate, and restore the sensor. 2. Re- measure heart rate and oxygen when available. 3. Prioritize food and recovery sleep before further exercise. If you have chest pain, severe breathlessness, fainting, or confusion, alert the crew medical officer now and follow onboard protocol. How do you feel right now? </li>
+      
+      <li class="msg msg--user">How am I doing today?</li>
+      
+      <li class="msg msg--assistant">Falcon, you’re stable overall, but today’s readiness is 78 — Needs attention. 1. Good: blood pressure 119/77 mmHg, glucose 79 mg/dL, breathing 14/min, and temperature 36. 4°C. 2. Needs attention: heart rate was 104 bpm on November 14, versus your usual 76 bpm. Your wearable is offline, so this is not current. Sleep was 5. 4 hours, below your usual 7 hours 9 minutes. 3. Wellbeing was 48/100, below your usual 76, with low mood and homesickness noted. Your 30- day streak and loading index (83/100) are positives. First, rest, hydrate, eat, and restore the sensor. Second, re- measure heart rate and oxygen. Third, plan recovery sleep and connect with a crewmate or behavioral- health support. In Mars’s isolated, low- gravity environment, fatigue and stress can accumulate quickly. If you have chest pain, severe shortness of breath, fainting, confusion, or sudden severe headache, alert the crew medical officer now and follow onboard protocol. The ground flight surgeon should be contacted; one- way delay is 760 seconds. Recap: stable basic readings, but elevated heart rate, short sleep, and low wellbeing need attention. </li>
+      
+      <li class="msg msg--user">hey</li>
+      
+      <li class="msg msg--assistant">Hey, Falcon. I’m here. What do you need? </li>
+      
+      <li class="msg msg--user">Review my week</li>
+      
+      <li class="msg msg--assistant">I can&#39;t reach the AstroVital health records right now. I can still give general guidance, but please re-measure on board. </li>
+      
+      <li class="msg msg--user">summary</li>
+      
+      <li class="msg msg--assistant">I can&#39;t reach the AstroVital health records right now. I can still give general guidance, but please re-measure on board. </li>
+      
+      <li class="msg msg--user">How am I doing today?</li>
+      
+      <li class="msg msg--assistant">Falcon, you’re stable overall, but today’s readiness is 77 — Needs attention. 1. Good/current readings: blood pressure 120/79 mmHg( Okay) , glucose 80 mg/dL, breathing 14/min, and temperature 36. 4°C. 2. Heart rate: 104 bpm on November 14, compared with your usual 76 bpm. Your wearable is offline, so this is not a current reading. Oxygen was 99%on November 14, also not current. 3. Recovery: you slept 5. 4 hours, about 2 hours belowyour usual 7 hours 9 minutes. 4. Wellbeing: 48/100, below your usual 76, with low mood and homesickness noted. Your 30- day streakand loading index of 83/100are positives. 5. Why it matters: microgravity, disrupted sleep, isolation, and workload can compound fatigue and cardiovascular strain. First, rest, hydrate, eat, and restore the sensor. Second, re- measure heart rate and oxygen when available. Third, prioritize recovery sleep and connect with a crewmate or behavioral- health support. If you have chest pain, severe shortness of breath, fainting, confusion, sudden severe headache, or vision loss, alert the crew medical officer now and follow onboard protocol. The ground flight surgeon should be contacted; the one- way communications delay is 2 seconds. Recap: stable basic readings, with elevated heart rate needing confirmation, insufficient sleep, and low wellbeing requiring attention. </li>
+      
+      <li class="msg msg--user">what should i do today</li>
+      
+      <li class="msg msg--assistant">Falcon, make today a recovery- and- confirmation day. Your readiness is 77 — Needs attention; the main concerns are an older heart rate of 104 bpmversus your baseline 76, only 5. 4 hours of sleep, and wellbeing 48/100. 1. Now: Rest, hydrate, eat, and avoid strenuous exercise until your wearable is working. It is currently offline, so the heart- rate and oxygen readings are not live. 2. Later: Restore the sensor and re- measure heart rate and oxygen after quiet rest. Your current readings— blood pressure 120/79, glucose 80 mg/dL, and respiration 14/min— are reassuring. 3. Recovery: Protect an early sleep window and spend time with a crewmate or behavioral- health support about homesickness. Microgravity, isolation, and short sleep can compound fatigue. Alert the crew medical officer immediately for chest pain, severe shortness of breath, fainting, confusion, sudden severe headache, or vision loss. Ground flight- surgeon contact should follow protocol; the communications delay is 2 seconds. </li>
+      
+      <li class="msg msg--user">Help me sleep better</li>
+      
+      <li class="msg msg--assistant">Falcon, your main sleep target is recovery: you slept 5. 4 hours, compared with your usual 7 hours 9 minutes. Your wellbeing has improved to 100/100, and your readiness is 79 — Needs attention. 1. Today: Keep activity light to moderate; avoid a hard workout late in the day. Your wearable is offline, so don’t use heart rate to guide intensity until it reconnects. 2. Before bed: Begin a quiet wind- down 60–90 minutes beforehand. Dim the station lighting, limit stimulating work, and use slow breathing or gentle stretching. 3. Sleep window: Protect enough time for at least your usual 7 hours 9 minutes. Keep the cabin cool, dark, and quiet; if homesickness returns, schedule crew contact earlier rather than during lights- out. Microgravity, station noise, isolation, and schedule demands can disrupt sleep even when mood improves. If poor sleep continues, notify the crew medical officer and flight surgeon. </li>
+      
+    </ol>
+    <p class="caption-live" data-caption aria-live="polite"></p>
+
+    <div class="suggestions" role="group" aria-label="Suggested questions">
+      <button class="pill pill--ghost pill--small" type="button" data-suggest>Review my week</button>
+      <button class="pill pill--ghost pill--small" type="button" data-suggest>I feel stressed</button>
+      <button class="pill pill--ghost pill--small" type="button" data-suggest>Help me sleep better</button>
+    </div>
+    <form class="composer" data-composer>
+      <label class="visually-hidden" for="ask-input">Ask Dr. NOVA</label>
+      <input id="ask-input" class="composer__input" name="message" autocomplete="off" maxlength="2000"
+             placeholder="Ask anything, or tap the mic and talk">
+      <button class="composer__send" type="submit" aria-label="Send"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#send"></use></svg></button>
+      <button class="composer__mic" type="button" data-mic aria-pressed="false" aria-label="Talk to Dr. NOVA"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#mic"></use></svg></button>
+    </form>
+    <p class="card__meta" data-voice-note>
+      Voice by OpenHome.
+      Say "Dr. Nova, how am I doing?"
+    </p>
+  </section>
+
+  <aside class="sees card" aria-labelledby="sees-title">
+    <h2 class="card__title" id="sees-title">What Dr. NOVA sees</h2>
+    <p class="card__meta">Your latest numbers, shared securely</p>
+    <ul class="rows sees__rows">
+      
+      <li class="row">
+        <span class="row__label"><span class="dot is-watch" aria-hidden="true"></span>Heart rate</span>
+        <span class="row__value">104 bpm<span class="visually-hidden">, Needs attention</span></span>
+      </li>
+      
+      <li class="row">
+        <span class="row__label"><span class="dot is-good" aria-hidden="true"></span>Blood pressure</span>
+        <span class="row__value">119/78 mmHg<span class="visually-hidden">, Good</span></span>
+      </li>
+      
+      <li class="row">
+        <span class="row__label"><span class="dot is-watch" aria-hidden="true"></span>Sleep</span>
+        <span class="row__value">5 h 24 min <span class="visually-hidden">, Needs attention</span></span>
+      </li>
+      
+      <li class="row">
+        <span class="row__label"><span class="dot is-good" aria-hidden="true"></span>Mood</span>
+        <span class="row__value">94 <span class="visually-hidden">, Good</span></span>
+      </li>
+      
+      <li class="row">
+        <span class="row__label"><span class="dot is-good" aria-hidden="true"></span>Exercise load</span>
+        <span class="row__value">83 <span class="visually-hidden">, Good</span></span>
+      </li>
+      
+    </ul>
+    <p class="sees__foot">Voice AI by OpenHome (cloud). It sees only the numbers above, plus your recent trends and check-in summaries, never your name or transcripts. Dr. NOVA never makes up numbers or prescribes medicine. Messages to Earth take 2 s.</p>
+  </aside>
+</div>
+
+    </main>
+    <footer class="site-foot">Prototype for educational purposes. Not a certified medical device.</footer>
+  </div>
+</div>
+
+
+<dialog class="dialog" id="env-dialog" aria-labelledby="env-title">
+  <form class="dialog__body" data-env-form>
+    <h2 class="dialog__title" id="env-title">Where is the crew?</h2>
+    <p class="dialog__lede">This changes gravity, the delay to Earth and the exercises on offer. It never changes the health ranges.</p>
+    <fieldset class="choice-list">
+      <legend class="visually-hidden">Mission environment</legend>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Spacecraft">
+        <span class="choice__label">Spacecraft</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Space Station" checked>
+        <span class="choice__label">Space Station</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Rover">
+        <span class="choice__label">Rover</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Lunar Base">
+        <span class="choice__label">Lunar Base</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Mars Base">
+        <span class="choice__label">Mars Base</span>
+      </label>
+      
+    </fieldset>
+    <p class="form-error" data-env-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save location</button>
+    </div>
+  </form>
+</dialog>
+
+
+<dialog class="dialog" id="protocol-dialog" aria-labelledby="protocol-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="protocol-title">What to do now</h2>
+    <ol class="steps" data-protocol-steps></ol>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+<div class="toasts" data-toasts aria-live="polite"></div>
+
+  
+  <script type="module" src="/static/js/app/shell.js"></script>
+  
+  <script type="module" src="/static/js/app/doctor_chat.js"></script>
+
+
+</body>
+</html>

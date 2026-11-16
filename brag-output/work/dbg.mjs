@@ -1,0 +1,16 @@
+import { readFileSync } from 'node:fs';
+import { launch } from './cdp.mjs';
+const BASE='http://127.0.0.1:5001';
+const b = await launch({ userDir: process.cwd() + '/chrome' });
+await b.goto(`${BASE}/?q=high`, 500);
+await b.waitFor('document.documentElement.dataset.sceneReady === "1" && !!window.__astroHero');
+await new Promise(r=>setTimeout(r,2500));
+console.log(await b.eval(`JSON.stringify([...document.querySelectorAll('.hero__copy, .hero__copy .headline, .hero__copy .tag')].map(e=>[e.className, e.getAttribute('style'), getComputedStyle(e).opacity, getComputedStyle(e).visibility]))`));
+await b.send('Network.clearBrowserCookies');
+await b.goto(`${BASE}/login`, 600);
+await b.eval(`(() => { const i = document.querySelector('input[name=astro_id]'); i.value = 'AST-1001'; i.form.submit(); return true; })()`);
+await new Promise(r=>setTimeout(r,2500));
+await b.goto(`${BASE}/doctor`, 2500);
+console.log(await b.eval(`JSON.stringify(['.convo','[data-messages]','.suggestions','.composer','.sees','.convo__head','.app-main, main'].map(s=>{const e=document.querySelector(s); if(!e) return s; const r=e.getBoundingClientRect(); return [s, Math.round(r.left),Math.round(r.top),Math.round(r.width),Math.round(r.height)]}))`));
+console.log(await b.eval(`JSON.stringify([document.body.scrollHeight, getComputedStyle(document.body).height, document.querySelector('[data-messages]') && getComputedStyle(document.querySelector('[data-messages]')).overflowY])`));
+await b.close();

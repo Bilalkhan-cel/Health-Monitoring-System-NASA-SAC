@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="IjUyNzZjZDcyYWQ3ZTg4ODYzZGI1YjU2Zjc0MzEyMTZlMTQwZjU1NzYi.avlR0A.0WltTulXxBg4ENlcSx8FA8TkJJM">
+  <meta name="static-root" content="/static/">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>Heart · AstroVital</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/vendor/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  
+  <link rel="stylesheet" href="/static/css/app.css">
+  <meta name="astro-temp-unit" content="C">
+  
+  <link rel="stylesheet" href="/static/css/check.css">
+
+
+</head>
+<body class="app">
+  <a class="skip-link" href="#main">Skip to content</a>
+  
+
+<div class="shell" data-sprite="/static/vendor/lucide/sprite.svg">
+  <nav class="rail" id="rail" aria-label="Main">
+    <button class="rail__item rail__toggle" type="button" aria-expanded="false" aria-controls="rail" data-rail-toggle>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#menu"></use></svg><span class="rail__label">Collapse menu</span>
+      <span class="visually-hidden" data-rail-toggle-text>Show menu labels</span>
+    </button>
+    <ul class="rail__list">
+      
+      <li>
+        <a class="rail__item" href="/dashboard">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#layout-grid"></use></svg><span class="rail__label">Today</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item is-active" href="/cardio" aria-current="page">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#heart"></use></svg><span class="rail__label">Heart</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/musculoskeletal">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bone"></use></svg><span class="rail__label">Body</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/mental">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#mic"></use></svg><span class="rail__label">Mind</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/doctor">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#stethoscope"></use></svg><span class="rail__label">Dr. NOVA</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/history">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#history"></use></svg><span class="rail__label">History</span>
+        </a>
+      </li>
+      
+    </ul>
+    <form class="rail__bottom" method="post" action="/logout">
+      <input type="hidden" name="csrf_token" value="IjUyNzZjZDcyYWQ3ZTg4ODYzZGI1YjU2Zjc0MzEyMTZlMTQwZjU1NzYi.avlR0A.0WltTulXxBg4ENlcSx8FA8TkJJM">
+      <button class="rail__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg><span class="rail__label">Log out</span></button>
+    </form>
+  </nav>
+
+  <div class="shell__main">
+    <header class="topbar">
+      <div class="topbar__title">
+  <h1 class="page-title">Heart check. <span class="headline__second">Seven quiet minutes.</span></h1>
+</div>
+      <div class="topbar__tools">
+        
+        <button class="chip" type="button" data-open-dialog="env-dialog" aria-haspopup="dialog">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#orbit"></use></svg><span>Day 160 · Space Station</span>
+        </button>
+        
+        
+        <a class="icon-button" href="/notifications" data-bell aria-label="Notifications">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg><span class="icon-button__badge" data-bell-count hidden></span>
+        </a>
+        
+        <details class="menu">
+          <summary class="menu__trigger" aria-label="Account menu for Cmdr. Sara Whitman">
+            <span class="menu__name">Cmdr. Sara Whitman</span>
+            <span class="avatar" aria-hidden="true">SW</span>
+          </summary>
+          <div class="menu__panel">
+            <p class="menu__who">Commander · Falcon</p>
+            
+            <a class="menu__item" href="/settings"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#settings"></use></svg>Settings</a>
+            <a class="menu__item" href="/notifications"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg>Notifications</a>
+            
+            <form method="post" action="/logout">
+              <input type="hidden" name="csrf_token" value="IjUyNzZjZDcyYWQ3ZTg4ODYzZGI1YjU2Zjc0MzEyMTZlMTQwZjU1NzYi.avlR0A.0WltTulXxBg4ENlcSx8FA8TkJJM">
+              <button class="menu__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg>Log out</button>
+            </form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <div class="alertbar" data-alertbar role="alert" hidden>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#octagon-alert"></use></svg>
+      <p class="alertbar__text" data-alertbar-text></p>
+      <div class="alertbar__actions">
+        <a class="pill pill--light" href="/doctor">Ask Dr. NOVA</a>
+        <button class="pill pill--on-alert" type="button" data-open-dialog="protocol-dialog">View protocol</button>
+      </div>
+    </div>
+
+    <main id="main" class="page">
+      
+<div class="check" data-cardio data-rest="300" data-duration="90" data-demo="1" data-usual="76">
+
+  <!-- Overview -->
+  <section class="step" data-step="overview">
+    <div class="overview">
+      <div class="overview__main">
+        <p class="lede">Rest for five minutes, then hold still for 90 seconds while the wearable reads your pulse and oxygen. You'll get a plain answer and what to do next.</p>
+        <p class="wear-line" data-wear-line aria-live="polite">Checking the wearable…</p>
+        <div class="overview__actions">
+          <button class="pill pill--primary" type="button" data-go="precheck"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#play"></use></svg>Start assessment</button>
+          <p class="card__meta">Last check Nov 14, 10:55</p>
+        </div>
+      </div>
+      <ul class="rows overview__latest" aria-label="Latest heart readings">
+        
+        <li class="row">
+          <span class="row__label">Heart rate</span>
+          <span class="row__right"><span class="row__value">104 bpm</span>
+            <span class="verdict is-watch">A bit high</span></span>
+        </li>
+        
+        <li class="row">
+          <span class="row__label">Blood pressure</span>
+          <span class="row__right"><span class="row__value">117/76 mmHg</span>
+            <span class="verdict is-good">Good</span></span>
+        </li>
+        
+        <li class="row">
+          <span class="row__label">Oxygen</span>
+          <span class="row__right"><span class="row__value">99 %</span>
+            <span class="verdict is-good">Good</span></span>
+        </li>
+        
+        <li class="row">
+          <span class="row__label">Blood sugar</span>
+          <span class="row__right"><span class="row__value">81 mg/dL</span>
+            <span class="verdict is-good">Good</span></span>
+        </li>
+        
+        <li class="row">
+          <span class="row__label">Breathing</span>
+          <span class="row__right"><span class="row__value">13 br/min</span>
+            <span class="verdict is-good">Good</span></span>
+        </li>
+        
+        <li class="row">
+          <span class="row__label">Temperature</span>
+          <span class="row__right"><span class="row__value">36.4 °C</span>
+            <span class="verdict is-good">Good</span></span>
+        </li>
+        
+      </ul>
+    </div>
+    <div class="card trend">
+      <div class="card__head">
+        <h2 class="card__title">Last 30 days</h2>
+        <div class="segmented" role="group" aria-label="Chart">
+          <button type="button" class="segmented__item" data-trend="heart_rate" aria-pressed="true">Heart rate</button>
+          <button type="button" class="segmented__item" data-trend="blood_pressure" aria-pressed="false">Blood pressure</button>
+          <button type="button" class="segmented__item" data-trend="spo2" aria-pressed="false">Oxygen</button>
+        </div>
+      </div>
+      <div class="trend__canvas"><canvas data-trend-canvas aria-describedby="trend-summary" role="img"></canvas></div>
+      <p class="visually-hidden" id="trend-summary" data-trend-summary></p>
+    </div>
+  </section>
+
+  <!-- Pre-check -->
+  <section class="step" data-step="precheck" hidden>
+    <div class="precheck">
+      <div class="card">
+        <h2 class="card__title">Before you start</h2>
+        <ol class="steps steps--roomy">
+          <li><strong>Sit still for five minutes.</strong> Feet anchored (in zero gravity, hook them under a rail), arm resting at heart level.</li>
+          <li><strong>Rest one fingertip lightly on the pulse sensor.</strong> Keep the hand still and relaxed. Pressing hard spoils the reading.</li>
+          <li><strong>Put the temperature probe under your arm</strong> and keep the arm down, ideally ten minutes before the check.</li>
+          <li><strong>Have a cuff or glucometer?</strong> You can type their readings during the check.</li>
+        </ol>
+        <p class="why"><strong>Why it matters in space.</strong> Without gravity, fluid shifts toward your head and the heart gets lazier. That shows up as a higher resting pulse, blood-pressure changes and dizziness on landing. Radiation also adds long-term heart risk.</p>
+      </div>
+      <form class="card" data-precheck-form>
+        <fieldset class="choice-list">
+          <legend class="card__title">When did you last eat?</legend>
+          <label class="choice"><input type="radio" name="glucose_context" value="fasting"><span>More than 8 hours ago</span></label>
+          <label class="choice"><input type="radio" name="glucose_context" value="post_meal"><span>About 2 hours ago</span></label>
+          <label class="choice"><input type="radio" name="glucose_context" value="random" checked><span>Something else / not sure</span></label>
+        </fieldset>
+        <fieldset class="choice-list symptoms">
+          <legend class="card__title">Do you have any of these right now?</legend>
+          
+          <label class="choice"><input type="checkbox" name="symptoms" value="chest_pain"><span>Chest pain</span></label>
+          
+          <label class="choice"><input type="checkbox" name="symptoms" value="severe_headache"><span>A severe headache</span></label>
+          
+          <label class="choice"><input type="checkbox" name="symptoms" value="vision_changes"><span>Vision changes</span></label>
+          
+          <label class="choice"><input type="checkbox" name="symptoms" value="short_of_breath"><span>Severe shortness of breath</span></label>
+          
+          <label class="choice"><input type="checkbox" name="symptoms" value="fainting"><span>Fainting</span></label>
+          
+          <p class="card__meta">Any tick means "Get help now", whatever the numbers say.</p>
+        </fieldset>
+        <p class="form-error" data-precheck-error hidden></p>
+        <div class="panel__actions">
+          <button class="pill pill--ghost" type="button" data-go="overview">Back</button>
+          <button class="pill pill--primary" type="submit">Start the rest</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Rest countdown + handshake -->
+  <section class="step rest" data-step="rest" hidden>
+    <div class="ring" role="timer" aria-live="off">
+      <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring__track" cx="60" cy="60" r="54"/><circle class="ring__fill" data-ring cx="60" cy="60" r="54"/></svg>
+      <div class="ring__label"><span class="ring__time" data-rest-time>5:00</span><span class="card__meta">Rest and breathe normally</span></div>
+    </div>
+    <ul class="handshake" data-handshake aria-live="polite"></ul>
+    <div class="panel__actions">
+      <button class="pill pill--ghost" type="button" data-cancel>Cancel</button>
+      <button class="pill pill--ghost" type="button" data-skip-rest>Skip the rest (demo)</button>
+      <button class="pill pill--primary" type="button" data-start-measure disabled>Start measuring</button>
+    </div>
+    <details class="strap">
+      <summary>Use a Bluetooth chest strap or type readings instead</summary>
+      <div class="strap__body">
+        <button class="pill pill--ghost pill--small" type="button" data-ble hidden><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bluetooth"></use></svg>Connect chest strap</button>
+        <p class="card__meta" data-ble-note></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- Live session -->
+  <section class="step live" data-step="live" hidden>
+    <div class="live__head">
+      <p class="live__status"><span class="dot is-alert" aria-hidden="true"></span><span data-live-status>Heart check in progress</span></p>
+      <p class="live__left" data-time-left aria-live="off"></p>
+    </div>
+    <div class="bpm">
+      <svg class="bpm__heart" data-heart aria-hidden="true" viewBox="0 0 24 24"><use href="/static/vendor/lucide/sprite.svg#heart"></use></svg>
+      <p class="bpm__value"><span data-bpm>–</span><span class="bpm__unit">bpm</span></p>
+    </div>
+    <p class="bpm__verdict" data-bpm-verdict></p>
+    <p class="bpm__note" data-bpm-note>Stay still and breathe normally.</p>
+    <div class="wave" aria-label="Heartbeat waveform" role="img"><canvas data-wave></canvas></div>
+    <ul class="vitals" data-vitals></ul>
+    <form class="manual" data-manual-form>
+      <p class="card__meta">Have a cuff, glucometer or oximeter? Type a reading:</p>
+      <select class="field__input" name="metric" aria-label="Which reading">
+        <option value="blood_pressure">Blood pressure</option>
+        <option value="glucose">Blood sugar</option>
+        <option value="spo2">Oxygen</option>
+        <option value="temperature_c">Temperature</option>
+        <option value="heart_rate">Heart rate</option>
+        <option value="respiration">Breathing rate</option>
+      </select>
+      <input class="field__input" name="value" inputmode="decimal" aria-label="Value" placeholder="Value" required>
+      <input class="field__input" name="value2" inputmode="decimal" aria-label="Lower blood pressure number" placeholder="Lower number">
+      <button class="pill pill--ghost" type="submit">Save reading</button>
+      <p class="form-error" data-manual-message hidden></p>
+    </form>
+    <div class="panel__actions live__actions">
+      <button class="pill pill--ghost" type="button" data-pause>Pause</button>
+      <button class="pill pill--primary" type="button" data-finish>Finish check</button>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="step results" data-step="results" hidden>
+    <div class="results__head">
+      <span data-result-status></span>
+      <h2 class="headline" data-result-title></h2>
+      <p class="lede" data-result-text></p>
+      <p class="form-error" data-result-symptoms hidden></p>
+      <p class="card__meta" data-result-rest></p>
+    </div>
+    <div class="results__grid">
+      <div class="card">
+        <h3 class="card__title">Your numbers</h3>
+        <ul class="rows" data-result-rows></ul>
+        <ul class="notes" data-result-messages></ul>
+      </div>
+      <div class="card">
+        <h3 class="card__title">What to do</h3>
+        <ol class="steps steps--roomy" data-result-actions></ol>
+        <p class="card__meta" data-result-remeasure></p>
+        <div class="panel__actions">
+          <a class="pill pill--primary" href="/dashboard">Back to Today</a>
+          <a class="pill pill--ghost" href="/doctor">Ask Dr. NOVA</a>
+        </div>
+      </div>
+      <div class="card results__chart">
+        <h3 class="card__title">Compared with your last checks</h3>
+        <div class="trend__canvas"><canvas data-result-chart role="img" aria-describedby="result-chart-text"></canvas></div>
+        <p class="visually-hidden" id="result-chart-text" data-result-chart-text></p>
+      </div>
+    </div>
+  </section>
+</div>
+
+    </main>
+    <footer class="site-foot">Prototype for educational purposes. Not a certified medical device.</footer>
+  </div>
+</div>
+
+
+<dialog class="dialog" id="env-dialog" aria-labelledby="env-title">
+  <form class="dialog__body" data-env-form>
+    <h2 class="dialog__title" id="env-title">Where is the crew?</h2>
+    <p class="dialog__lede">This changes gravity, the delay to Earth and the exercises on offer. It never changes the health ranges.</p>
+    <fieldset class="choice-list">
+      <legend class="visually-hidden">Mission environment</legend>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Spacecraft">
+        <span class="choice__label">Spacecraft</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Space Station" checked>
+        <span class="choice__label">Space Station</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Rover">
+        <span class="choice__label">Rover</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Lunar Base">
+        <span class="choice__label">Lunar Base</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Mars Base">
+        <span class="choice__label">Mars Base</span>
+      </label>
+      
+    </fieldset>
+    <p class="form-error" data-env-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save location</button>
+    </div>
+  </form>
+</dialog>
+
+
+<dialog class="dialog" id="protocol-dialog" aria-labelledby="protocol-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="protocol-title">What to do now</h2>
+    <ol class="steps" data-protocol-steps></ol>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+<div class="toasts" data-toasts aria-live="polite"></div>
+
+  
+  <script type="module" src="/static/js/app/shell.js"></script>
+  
+  <script src="/static/vendor/chartjs/chart.umd.min.js"></script>
+  <script src="/static/vendor/chartjs/chartjs-plugin-annotation.min.js"></script>
+  <script type="module" src="/static/js/app/cardio.js"></script>
+
+
+</body>
+</html>

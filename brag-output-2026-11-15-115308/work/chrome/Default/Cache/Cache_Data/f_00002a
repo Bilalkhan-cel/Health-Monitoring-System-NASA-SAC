@@ -1,0 +1,1804 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="IjRiOGRlODcyNGFjNTQwNDliNDI1NGRhMDMyNGY3OGRiZmUwYjQ3NzYi.avlZKQ.j5PQOrqsr4Oqs0onZFa7ruOfTog">
+  <meta name="static-root" content="/static/">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>History · AstroVital</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/vendor/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  
+  <link rel="stylesheet" href="/static/css/app.css">
+  <meta name="astro-temp-unit" content="C">
+  
+  <link rel="stylesheet" href="/static/css/history.css">
+
+
+</head>
+<body class="app">
+  <a class="skip-link" href="#main">Skip to content</a>
+  
+
+<div class="shell" data-sprite="/static/vendor/lucide/sprite.svg">
+  <nav class="rail" id="rail" aria-label="Main">
+    <button class="rail__item rail__toggle" type="button" aria-expanded="false" aria-controls="rail" data-rail-toggle>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#menu"></use></svg><span class="rail__label">Collapse menu</span>
+      <span class="visually-hidden" data-rail-toggle-text>Show menu labels</span>
+    </button>
+    <ul class="rail__list">
+      
+      <li>
+        <a class="rail__item" href="/dashboard">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#layout-grid"></use></svg><span class="rail__label">Today</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/cardio">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#heart"></use></svg><span class="rail__label">Heart</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/musculoskeletal">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bone"></use></svg><span class="rail__label">Body</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/mental">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#mic"></use></svg><span class="rail__label">Mind</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/doctor">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#stethoscope"></use></svg><span class="rail__label">Dr. NOVA</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item is-active" href="/history" aria-current="page">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#history"></use></svg><span class="rail__label">History</span>
+        </a>
+      </li>
+      
+    </ul>
+    <form class="rail__bottom" method="post" action="/logout">
+      <input type="hidden" name="csrf_token" value="IjRiOGRlODcyNGFjNTQwNDliNDI1NGRhMDMyNGY3OGRiZmUwYjQ3NzYi.avlZKQ.j5PQOrqsr4Oqs0onZFa7ruOfTog">
+      <button class="rail__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg><span class="rail__label">Log out</span></button>
+    </form>
+  </nav>
+
+  <div class="shell__main">
+    <header class="topbar">
+      <div class="topbar__title">
+  <h1 class="page-title">Your history. <span class="headline__second">Every check, every day.</span></h1>
+</div>
+      <div class="topbar__tools">
+        
+        <button class="chip" type="button" data-open-dialog="env-dialog" aria-haspopup="dialog">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#orbit"></use></svg><span>Day 160 · Space Station</span>
+        </button>
+        
+        
+        <a class="icon-button" href="/notifications" data-bell aria-label="Notifications">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg><span class="icon-button__badge" data-bell-count hidden></span>
+        </a>
+        
+        <details class="menu">
+          <summary class="menu__trigger" aria-label="Account menu for Cmdr. Sara Whitman">
+            <span class="menu__name">Cmdr. Sara Whitman</span>
+            <span class="avatar" aria-hidden="true">SW</span>
+          </summary>
+          <div class="menu__panel">
+            <p class="menu__who">Commander · Falcon</p>
+            
+            <a class="menu__item" href="/settings"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#settings"></use></svg>Settings</a>
+            <a class="menu__item" href="/notifications"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg>Notifications</a>
+            
+            <form method="post" action="/logout">
+              <input type="hidden" name="csrf_token" value="IjRiOGRlODcyNGFjNTQwNDliNDI1NGRhMDMyNGY3OGRiZmUwYjQ3NzYi.avlZKQ.j5PQOrqsr4Oqs0onZFa7ruOfTog">
+              <button class="menu__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg>Log out</button>
+            </form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <div class="alertbar" data-alertbar role="alert" hidden>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#octagon-alert"></use></svg>
+      <p class="alertbar__text" data-alertbar-text></p>
+      <div class="alertbar__actions">
+        <a class="pill pill--light" href="/doctor">Ask Dr. NOVA</a>
+        <button class="pill pill--on-alert" type="button" data-open-dialog="protocol-dialog">View protocol</button>
+      </div>
+    </div>
+
+    <main id="main" class="page">
+      
+<div class="history" data-history>
+  <form class="filters card" method="get" action="/history" aria-label="Filter history">
+    <label class="field"><span class="field__label">System</span>
+      <select class="field__input" name="system">
+        <option value="all" selected>All</option><option value="cardio">Heart</option><option value="bones">Bones &amp; muscle</option><option value="mental">Mind</option><option value="sleep">Sleep</option>
+      </select></label>
+    <label class="field"><span class="field__label">Type</span>
+      <select class="field__input" name="kind">
+        <option value="all" selected>All types</option><option value="heart_check">Heart checks</option><option value="exercise">Exercise</option><option value="checkin">Check-ins</option><option value="sleep">Sleep logs</option>
+      </select></label>
+    <label class="field"><span class="field__label">Status</span>
+      <select class="field__input" name="status">
+        <option value="all" selected>Any status</option><option value="good">Good</option><option value="okay">Okay</option><option value="watch">Needs attention</option><option value="alert">Get help now</option>
+      </select></label>
+    <label class="field"><span class="field__label">From</span>
+      <input class="field__input" type="date" name="from" value="2026-10-17"></label>
+    <label class="field"><span class="field__label">To</span>
+      <input class="field__input" type="date" name="to" value="2026-11-15"></label>
+    <div class="filters__actions">
+      <button class="pill pill--primary pill--small" type="submit">Show</button>
+      <a class="pill pill--ghost pill--small" href="/history">Reset</a>
+    </div>
+  </form>
+
+  <div class="history__grid">
+    <section class="card heat" aria-labelledby="heat-title">
+      <div class="card__head">
+        <h2 class="card__title" id="heat-title">Readiness by day</h2>
+        <span class="card__meta">17 Oct – 15 Nov</span>
+      </div>
+      <div class="heat__labels" aria-hidden="true"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span>Sun</span></div>
+      <div class="heat__grid" role="grid" aria-label="Readiness calendar. Choose a day to see its details.">
+        <span class="heat__pad" aria-hidden="true"></span><span class="heat__pad" aria-hidden="true"></span><span class="heat__pad" aria-hidden="true"></span><span class="heat__pad" aria-hidden="true"></span><span class="heat__pad" aria-hidden="true"></span>
+        
+        <button class="heat__day is-watch" type="button"
+                data-day="2026-10-17" role="gridcell"
+                aria-label="2026-10-17: readiness 79"
+                title="2026-10-17 · 79"></button>
+        
+        <button class="heat__day is-watch" type="button"
+                data-day="2026-10-18" role="gridcell"
+                aria-label="2026-10-18: readiness 79"
+                title="2026-10-18 · 79"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-19" role="gridcell"
+                aria-label="2026-10-19: readiness 96"
+                title="2026-10-19 · 96"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-20" role="gridcell"
+                aria-label="2026-10-20: readiness 96"
+                title="2026-10-20 · 96"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-21" role="gridcell"
+                aria-label="2026-10-21: readiness 99"
+                title="2026-10-21 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-22" role="gridcell"
+                aria-label="2026-10-22: readiness 99"
+                title="2026-10-22 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-23" role="gridcell"
+                aria-label="2026-10-23: readiness 99"
+                title="2026-10-23 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-24" role="gridcell"
+                aria-label="2026-10-24: readiness 99"
+                title="2026-10-24 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-25" role="gridcell"
+                aria-label="2026-10-25: readiness 99"
+                title="2026-10-25 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-26" role="gridcell"
+                aria-label="2026-10-26: readiness 99"
+                title="2026-10-26 · 99"></button>
+        
+        <button class="heat__day is-alert" type="button"
+                data-day="2026-10-27" role="gridcell"
+                aria-label="2026-10-27: readiness 49"
+                title="2026-10-27 · 49"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-28" role="gridcell"
+                aria-label="2026-10-28: readiness 99"
+                title="2026-10-28 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-29" role="gridcell"
+                aria-label="2026-10-29: readiness 96"
+                title="2026-10-29 · 96"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-30" role="gridcell"
+                aria-label="2026-10-30: readiness 99"
+                title="2026-10-30 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-10-31" role="gridcell"
+                aria-label="2026-10-31: readiness 96"
+                title="2026-10-31 · 96"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-01" role="gridcell"
+                aria-label="2026-11-01: readiness 99"
+                title="2026-11-01 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-02" role="gridcell"
+                aria-label="2026-11-02: readiness 99"
+                title="2026-11-02 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-03" role="gridcell"
+                aria-label="2026-11-03: readiness 99"
+                title="2026-11-03 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-04" role="gridcell"
+                aria-label="2026-11-04: readiness 99"
+                title="2026-11-04 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-05" role="gridcell"
+                aria-label="2026-11-05: readiness 99"
+                title="2026-11-05 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-06" role="gridcell"
+                aria-label="2026-11-06: readiness 99"
+                title="2026-11-06 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-07" role="gridcell"
+                aria-label="2026-11-07: readiness 99"
+                title="2026-11-07 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-08" role="gridcell"
+                aria-label="2026-11-08: readiness 99"
+                title="2026-11-08 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-09" role="gridcell"
+                aria-label="2026-11-09: readiness 96"
+                title="2026-11-09 · 96"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-10" role="gridcell"
+                aria-label="2026-11-10: readiness 99"
+                title="2026-11-10 · 99"></button>
+        
+        <button class="heat__day is-okay" type="button"
+                data-day="2026-11-11" role="gridcell"
+                aria-label="2026-11-11: readiness 99"
+                title="2026-11-11 · 99"></button>
+        
+        <button class="heat__day is-watch" type="button"
+                data-day="2026-11-12" role="gridcell"
+                aria-label="2026-11-12: readiness 79"
+                title="2026-11-12 · 79"></button>
+        
+        <button class="heat__day is-watch" type="button"
+                data-day="2026-11-13" role="gridcell"
+                aria-label="2026-11-13: readiness 79"
+                title="2026-11-13 · 79"></button>
+        
+        <button class="heat__day is-alert" type="button"
+                data-day="2026-11-14" role="gridcell"
+                aria-label="2026-11-14: readiness 49"
+                title="2026-11-14 · 49"></button>
+        
+        <button class="heat__day is-watch" type="button"
+                data-day="2026-11-15" role="gridcell"
+                aria-label="2026-11-15: readiness 79"
+                title="2026-11-15 · 79"></button>
+        
+      </div>
+      <ul class="legend" aria-label="Colour key">
+        <li><span class="dot is-good"></span>Good</li><li><span class="dot is-okay"></span>Okay</li>
+        <li><span class="dot is-watch"></span>Needs attention</li><li><span class="dot is-alert"></span>Get help now</li>
+        <li><span class="dot is-empty"></span>No score</li>
+      </ul>
+    </section>
+
+    <section class="card trend-card" aria-labelledby="trend-title">
+      <div class="card__head">
+        <h2 class="card__title" id="trend-title">Trend</h2>
+        <div class="trend-card__controls">
+          <label class="visually-hidden" for="trend-metric">Measure</label>
+          <select class="field__input field__input--small" id="trend-metric" data-trend-metric>
+            <option value="readiness">Readiness</option><option value="heart_rate">Heart rate</option><option value="blood_pressure">Blood pressure</option><option value="spo2">Oxygen</option><option value="temperature_c">Temperature</option><option value="glucose">Blood sugar</option><option value="respiration">Breathing</option><option value="sleep_hours">Sleep</option><option value="wellbeing">Mood</option><option value="loading_index">Exercise load</option>
+          </select>
+          <div class="segmented" role="group" aria-label="Range">
+            <button class="segmented__item" type="button" data-range="7d" aria-pressed="false">7 days</button>
+            <button class="segmented__item" type="button" data-range="30d" aria-pressed="true">30 days</button>
+            <button class="segmented__item" type="button" data-range="mission" aria-pressed="false">Mission</button>
+          </div>
+        </div>
+      </div>
+      <div class="trend-card__canvas"><canvas data-trend-canvas aria-hidden="true"></canvas></div>
+      <p class="card__meta" data-trend-summary aria-live="polite">Loading…</p>
+    </section>
+  </div>
+
+  <section class="exports card" aria-labelledby="export-title">
+    <div>
+      <h2 class="card__title" id="export-title">Send it to the ground</h2>
+      <p class="card__meta">The Downlink Report is one page for your flight surgeon: trends, flags and sessions. Mental-health content is limited to status and trend.</p>
+    </div>
+    <div class="exports__actions">
+      <a class="pill pill--primary" href="/history/report.pdf" download><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#file-text"></use></svg>Downlink Report (PDF)</a>
+      <a class="pill pill--ghost" href="/history/export.csv?system=all&amp;kind=all&amp;status=all&amp;from=2026-10-17&amp;to=2026-11-15" download><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#download"></use></svg>Readings (CSV)</a>
+    </div>
+  </section>
+
+  <section class="timeline" aria-labelledby="timeline-title">
+    <h2 class="section-title" id="timeline-title">Timeline</h2>
+    
+    <ol class="timeline__days">
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-15">
+          <span class="dot is-okay" aria-hidden="true"></span>
+          <span class="day__label">Sun 15 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">06:24</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 94.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">06:19</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 62.</p>
+            </div>
+            <span class="status is-okay"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-dot"></use></svg>Okay</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">06:14</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 77.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">06:09</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 100.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-14">
+          <span class="dot is-watch" aria-hidden="true"></span>
+          <span class="day__label">Sat 14 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">14:40</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 48.</p>
+            </div>
+            <span class="status is-watch"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#triangle-alert"></use></svg>Needs attention</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">14:38</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running: 1 set(s), 175 active minutes this week Exercise load 83.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">10:53</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-watch"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#triangle-alert"></use></svg>Needs attention</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 5.4 hours.</p>
+            </div>
+            <span class="status is-watch"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#triangle-alert"></use></svg>Needs attention</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-13">
+          <span class="dot is-watch" aria-hidden="true"></span>
+          <span class="day__label">Fri 13 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 62.</p>
+            </div>
+            <span class="status is-okay"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-dot"></use></svg>Okay</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-okay"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-dot"></use></svg>Okay</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 5.2 hours.</p>
+            </div>
+            <span class="status is-watch"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#triangle-alert"></use></svg>Needs attention</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-12">
+          <span class="dot is-watch" aria-hidden="true"></span>
+          <span class="day__label">Thu 12 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 66.</p>
+            </div>
+            <span class="status is-okay"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-dot"></use></svg>Okay</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 5.6 hours.</p>
+            </div>
+            <span class="status is-watch"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#triangle-alert"></use></svg>Needs attention</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-11">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Wed 11 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 71.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-10">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Tue 10 Nov</span>
+          <span class="card__meta">3 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 82.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.3 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-09">
+          <span class="dot is-okay" aria-hidden="true"></span>
+          <span class="day__label">Mon 9 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 77.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 6.9 hours.</p>
+            </div>
+            <span class="status is-okay"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-dot"></use></svg>Okay</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-08">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Sun 8 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 77.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.7 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-07">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Sat 7 Nov</span>
+          <span class="card__meta">3 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 81.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-06">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Fri 6 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 76.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.9 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-05">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Thu 5 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 76.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-04">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Wed 4 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 76.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.2 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-03">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Tue 3 Nov</span>
+          <span class="card__meta">3 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 82.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.3 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-02">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Mon 2 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 79.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.2 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-11-01">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Sun 1 Nov</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 73.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.7 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-31">
+          <span class="dot is-okay" aria-hidden="true"></span>
+          <span class="day__label">Sat 31 Oct</span>
+          <span class="card__meta">3 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 78.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 6.9 hours.</p>
+            </div>
+            <span class="status is-okay"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-dot"></use></svg>Okay</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-30">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Fri 30 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 75.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.1 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-29">
+          <span class="dot is-okay" aria-hidden="true"></span>
+          <span class="day__label">Thu 29 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 80.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 6.9 hours.</p>
+            </div>
+            <span class="status is-okay"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-dot"></use></svg>Okay</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-28">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Wed 28 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 77.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.2 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-27">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Tue 27 Oct</span>
+          <span class="card__meta">3 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 77.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.1 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-26">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Mon 26 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 78.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.9 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-25">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Sun 25 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 75.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.1 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-24">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Sat 24 Oct</span>
+          <span class="card__meta">3 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 75.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.1 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-23">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Fri 23 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 75.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-22">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Thu 22 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 77.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.7 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-21">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Wed 21 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 78.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.5 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-20">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Tue 20 Oct</span>
+          <span class="card__meta">3 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 83.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.4 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-19">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Mon 19 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 74.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.8 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-18">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Sun 18 Oct</span>
+          <span class="card__meta">4 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 79.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">17:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Exercise session</p>
+              <p class="entry__text">Running and push-ups</p>
+            </div>
+            
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.6 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+      <li class="day card">
+        <button class="day__head" type="button" data-day="2026-10-17">
+          <span class="dot is-good" aria-hidden="true"></span>
+          <span class="day__label">Sat 17 Oct</span>
+          <span class="card__meta">3 entries</span>
+          <svg class="icon day__go" aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#arrow-right"></use></svg>
+        </button>
+        <ul class="day__entries">
+          
+          <li class="entry">
+            <span class="entry__time">21:00</span>
+            <div class="entry__body">
+              <p class="entry__title">Voice check-in</p>
+              <p class="entry__text">Wellbeing 79.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time">08:08</span>
+            <div class="entry__body">
+              <p class="entry__title">Heart check</p>
+              <p class="entry__text">Morning heart check</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+          <li class="entry">
+            <span class="entry__time"></span>
+            <div class="entry__body">
+              <p class="entry__title">Sleep log</p>
+              <p class="entry__text">Slept 7.6 hours.</p>
+            </div>
+            <span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#circle-check"></use></svg>Good</span>
+          </li>
+          
+        </ul>
+      </li>
+      
+    </ol>
+    
+  </section>
+</div>
+
+<dialog class="dialog dialog--wide" id="day-dialog" aria-labelledby="day-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="day-title" data-day-title>Day</h2>
+    <p class="dialog__lede" data-day-readiness></p>
+    <div data-day-body><p class="card__meta">Loading…</p></div>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+
+    </main>
+    <footer class="site-foot">Prototype for educational purposes. Not a certified medical device.</footer>
+  </div>
+</div>
+
+
+<dialog class="dialog" id="env-dialog" aria-labelledby="env-title">
+  <form class="dialog__body" data-env-form>
+    <h2 class="dialog__title" id="env-title">Where is the crew?</h2>
+    <p class="dialog__lede">This changes gravity, the delay to Earth and the exercises on offer. It never changes the health ranges.</p>
+    <fieldset class="choice-list">
+      <legend class="visually-hidden">Mission environment</legend>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Spacecraft">
+        <span class="choice__label">Spacecraft</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Space Station" checked>
+        <span class="choice__label">Space Station</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Rover">
+        <span class="choice__label">Rover</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Lunar Base">
+        <span class="choice__label">Lunar Base</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Mars Base">
+        <span class="choice__label">Mars Base</span>
+      </label>
+      
+    </fieldset>
+    <p class="form-error" data-env-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save location</button>
+    </div>
+  </form>
+</dialog>
+
+
+<dialog class="dialog" id="protocol-dialog" aria-labelledby="protocol-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="protocol-title">What to do now</h2>
+    <ol class="steps" data-protocol-steps></ol>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+<div class="toasts" data-toasts aria-live="polite"></div>
+
+  
+  <script type="module" src="/static/js/app/shell.js"></script>
+  
+  <script src="/static/vendor/chartjs/chart.umd.min.js"></script>
+  <script src="/static/vendor/chartjs/chartjs-plugin-annotation.min.js"></script>
+  <script type="module" src="/static/js/app/history.js"></script>
+
+
+</body>
+</html>

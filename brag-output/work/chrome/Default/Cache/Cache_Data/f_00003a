@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="ImZmY2Y0MGYxZjU1OGE4ZTIyZDAyZTliNjNiMDRlODFjMTZkZmM5ZGMi.avlWUw.KRpojGiVuR6ZaoO38Lyn-1H8QHc">
+  <meta name="static-root" content="/static/">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>Settings · AstroVital</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/vendor/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  
+  <link rel="stylesheet" href="/static/css/app.css">
+  <meta name="astro-temp-unit" content="C">
+  
+  <link rel="stylesheet" href="/static/css/settings.css">
+
+
+</head>
+<body class="app">
+  <a class="skip-link" href="#main">Skip to content</a>
+  
+
+<div class="shell" data-sprite="/static/vendor/lucide/sprite.svg">
+  <nav class="rail" id="rail" aria-label="Main">
+    <button class="rail__item rail__toggle" type="button" aria-expanded="false" aria-controls="rail" data-rail-toggle>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#menu"></use></svg><span class="rail__label">Collapse menu</span>
+      <span class="visually-hidden" data-rail-toggle-text>Show menu labels</span>
+    </button>
+    <ul class="rail__list">
+      
+      <li>
+        <a class="rail__item" href="/dashboard">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#layout-grid"></use></svg><span class="rail__label">Today</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/cardio">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#heart"></use></svg><span class="rail__label">Heart</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/musculoskeletal">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bone"></use></svg><span class="rail__label">Body</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/mental">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#mic"></use></svg><span class="rail__label">Mind</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/doctor">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#stethoscope"></use></svg><span class="rail__label">Dr. NOVA</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/history">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#history"></use></svg><span class="rail__label">History</span>
+        </a>
+      </li>
+      
+    </ul>
+    <form class="rail__bottom" method="post" action="/logout">
+      <input type="hidden" name="csrf_token" value="ImZmY2Y0MGYxZjU1OGE4ZTIyZDAyZTliNjNiMDRlODFjMTZkZmM5ZGMi.avlWUw.KRpojGiVuR6ZaoO38Lyn-1H8QHc">
+      <button class="rail__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg><span class="rail__label">Log out</span></button>
+    </form>
+  </nav>
+
+  <div class="shell__main">
+    <header class="topbar">
+      <div class="topbar__title">
+  <h1 class="page-title">Settings. <span class="headline__second">Make it yours.</span></h1>
+</div>
+      <div class="topbar__tools">
+        
+        <button class="chip" type="button" data-open-dialog="env-dialog" aria-haspopup="dialog">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#orbit"></use></svg><span>Day 160 · Space Station</span>
+        </button>
+        
+        
+        <a class="icon-button" href="/notifications" data-bell aria-label="Notifications">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg><span class="icon-button__badge" data-bell-count hidden></span>
+        </a>
+        
+        <details class="menu">
+          <summary class="menu__trigger" aria-label="Account menu for Cmdr. Sara Whitman">
+            <span class="menu__name">Cmdr. Sara Whitman</span>
+            <span class="avatar" aria-hidden="true">SW</span>
+          </summary>
+          <div class="menu__panel">
+            <p class="menu__who">Commander · Falcon</p>
+            
+            <a class="menu__item" href="/settings"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#settings"></use></svg>Settings</a>
+            <a class="menu__item" href="/notifications"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg>Notifications</a>
+            
+            <form method="post" action="/logout">
+              <input type="hidden" name="csrf_token" value="ImZmY2Y0MGYxZjU1OGE4ZTIyZDAyZTliNjNiMDRlODFjMTZkZmM5ZGMi.avlWUw.KRpojGiVuR6ZaoO38Lyn-1H8QHc">
+              <button class="menu__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg>Log out</button>
+            </form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <div class="alertbar" data-alertbar role="alert" hidden>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#octagon-alert"></use></svg>
+      <p class="alertbar__text" data-alertbar-text></p>
+      <div class="alertbar__actions">
+        <a class="pill pill--light" href="/doctor">Ask Dr. NOVA</a>
+        <button class="pill pill--on-alert" type="button" data-open-dialog="protocol-dialog">View protocol</button>
+      </div>
+    </div>
+
+    <main id="main" class="page">
+      
+<div class="settings" data-settings>
+  <nav class="settings__toc" aria-label="Settings sections">
+    <a href="#display">Display</a><a href="#reminders">Reminders</a><a href="#wearable">Wearable</a>
+    <a href="#privacy">Privacy</a><a href="#badges">Badges</a><a href="#about">About</a>
+    <a href="#demo">Demo</a>
+  </nav>
+
+  <div class="settings__body">
+    <section class="card set" id="display" aria-labelledby="display-title">
+      <h2 class="card__title" id="display-title">Display and sound</h2>
+      <form class="set__rows" data-prefs-form>
+        <div class="set__row">
+          <span class="set__label" id="temp-label">Temperature</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="temp-label">
+            
+            <label class="segmented__item segmented__radio"><input type="radio" name="temp_unit" value="C" checked>°C</label>
+            
+            <label class="segmented__item segmented__radio"><input type="radio" name="temp_unit" value="F">°F</label>
+            
+          </div>
+        </div>
+        <div class="set__row">
+          <span class="set__label" id="glucose-label">Blood sugar</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="glucose-label">
+            
+            <label class="segmented__item segmented__radio"><input type="radio" name="glucose_unit" value="mg/dL" checked>mg/dL</label>
+            
+            <label class="segmented__item segmented__radio"><input type="radio" name="glucose_unit" value="mmol/L">mmol/L</label>
+            
+          </div>
+        </div>
+        <label class="set__row switch">
+          <span><span class="set__label">Voice cues</span><span class="set__hint">Spoken counts and prompts during exercise and checks.</span></span>
+          <input type="checkbox" role="switch" name="voice_cues" checked>
+        </label>
+        <label class="set__row switch">
+          <span><span class="set__label">Reduce motion</span><span class="set__hint">Calmer animations everywhere, even if your computer doesn't ask for it.</span></span>
+          <input type="checkbox" role="switch" name="reduced_motion">
+        </label>
+        <p class="set__saved" data-saved="prefs" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="card set" id="reminders" aria-labelledby="reminders-title">
+      <h2 class="card__title" id="reminders-title">Daily reminders</h2>
+      <p class="card__meta">Mission time (UTC). Leave a time empty to turn that reminder off. A reminder only fires while the task is still open.</p>
+      <form class="set__rows" data-reminders-form>
+        
+        <label class="set__row">
+          <span class="set__label">Log last night&#39;s sleep</span>
+          <input class="field__input field__input--time" type="time" name="sleep_log" value="07:30">
+        </label>
+        
+        <label class="set__row">
+          <span class="set__label">Heart check</span>
+          <input class="field__input field__input--time" type="time" name="cardio" value="08:00">
+        </label>
+        
+        <label class="set__row">
+          <span class="set__label">Exercise session</span>
+          <input class="field__input field__input--time" type="time" name="exercise" value="10:00">
+        </label>
+        
+        <label class="set__row">
+          <span class="set__label">Drink water</span>
+          <input class="field__input field__input--time" type="time" name="hydration" value="14:00">
+        </label>
+        
+        <label class="set__row">
+          <span class="set__label">Voice check-in: how are you feeling?</span>
+          <input class="field__input field__input--time" type="time" name="mental" value="19:00">
+        </label>
+        
+        <div class="set__actions">
+          <button class="pill pill--primary pill--small" type="submit">Save reminders</button>
+          <p class="set__saved" data-saved="reminders" aria-live="polite"></p>
+        </div>
+      </form>
+    </section>
+
+    <section class="card set" id="wearable" aria-labelledby="wearable-title" data-wearable>
+      <h2 class="card__title" id="wearable-title">Wearable</h2>
+      
+      <ul class="rows">
+        <li class="row"><span class="row__label">Connection</span>
+          <span class="row__value"><span class="status is-good"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#wifi"></use></svg>Online</span></span></li>
+        <li class="row"><span class="row__label">Last seen</span>
+          <span class="row__value" data-last-seen="1">1 s ago</span></li>
+        <li class="row"><span class="row__label">Device</span><span class="row__value">Wrist wearable · AV-ESP32-01</span></li>
+        <li class="row"><span class="row__label">Firmware</span><span class="row__value">1.0.0</span></li>
+        <li class="row"><span class="row__label">Wi-Fi signal</span>
+          <span class="row__value">-57 dBm · strong</span></li>
+      </ul>
+      <form class="set__rows" data-device-form>
+        <label class="set__row switch">
+          <span><span class="set__label">I'm wearing it</span><span class="set__hint">Readings from this wearable go to you.</span></span>
+          <input type="checkbox" role="switch" name="wearing" checked>
+        </label>
+        
+        <label class="set__row">
+          <span class="set__label">Temperature probe</span>
+          <select class="field__input field__input--auto" name="temp_site">
+            <option value="axilla" selected>Under the arm (recommended)</option><option value="skin">On the skin</option>
+          </select>
+        </label>
+        
+        <p class="set__saved" data-saved="device" aria-live="polite"></p>
+      </form>
+      
+      <form class="calibrate" data-calibrate-form>
+        <h3 class="set__sub">Calibrate temperature</h3>
+        <p class="card__meta">Keep the probe under your arm until it has settled, take a reading with a reference thermometer and type it here. The difference (at most 2 °C) replaces the default offset. Current offset: <strong>+0.60 °C</strong>.
+          Probe now: <strong data-probe-state>settled</strong>.</p>
+        <div class="calibrate__row">
+          <label class="field"><span class="field__label">Thermometer reading (°C)</span>
+            <input class="field__input" name="reference_c" inputmode="decimal" required></label>
+          <button class="pill pill--ghost pill--small" type="submit">Calibrate</button>
+        </div>
+        
+        <p class="form-error" data-calibrate-message hidden></p>
+      </form>
+      
+      
+    </section>
+
+    <section class="card set" id="privacy" aria-labelledby="privacy-title">
+      <h2 class="card__title" id="privacy-title">Privacy</h2>
+      <form class="set__rows" data-privacy-form>
+        <label class="set__row switch">
+          <span><span class="set__label">Keep voice check-in transcripts</span><span class="set__hint">Off by default. When off, only your scores and a short summary are kept.</span></span>
+          <input type="checkbox" role="switch" name="store_transcripts">
+        </label>
+        <p class="set__saved" data-saved="privacy" aria-live="polite"></p>
+      </form>
+      <div class="danger">
+        <div>
+          <h3 class="set__sub">Delete my mental-health data</h3>
+          <p class="card__meta">Removes every voice check-in, your Dr. NOVA conversations and your wellbeing scores, then recalculates readiness. This cannot be undone.</p>
+        </div>
+        <button class="pill pill--danger pill--small" type="button" data-open-dialog="delete-dialog"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#trash-2"></use></svg>Delete…</button>
+      </div>
+    </section>
+
+    <section class="card set" id="badges" aria-labelledby="badges-title">
+      <div class="card__head">
+        <h2 class="card__title" id="badges-title">Badges</h2>
+        <span class="card__meta">Level 9 · 3300 XP · 30-day streak</span>
+      </div>
+      <p class="card__meta">XP comes from finishing tasks, never from your numbers, so there's nothing to gain from a "good" reading.</p>
+      <ul class="badges">
+        
+        <li class="badge is-earned">
+          <span class="badge__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#award"></use></svg></span>
+          <span class="badge__name">Iron Heart</span>
+          <span class="badge__rule">7 heart checks in 7 days</span>
+          <span class="visually-hidden">Earned</span>
+          <span class="badge__date">2026-11-14</span>
+        </li>
+        
+        <li class="badge is-earned">
+          <span class="badge__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#award"></use></svg></span>
+          <span class="badge__name">Titanium Bones</span>
+          <span class="badge__rule">Exercise on 5 days in a week</span>
+          <span class="visually-hidden">Earned</span>
+          <span class="badge__date">2026-11-14</span>
+        </li>
+        
+        <li class="badge is-earned">
+          <span class="badge__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#award"></use></svg></span>
+          <span class="badge__name">Steady Mind</span>
+          <span class="badge__rule">7 voice check-ins in 10 days</span>
+          <span class="visually-hidden">Earned</span>
+          <span class="badge__date">2026-11-14</span>
+        </li>
+        
+        <li class="badge is-earned">
+          <span class="badge__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#award"></use></svg></span>
+          <span class="badge__name">7-Day Streak</span>
+          <span class="badge__rule">3 or more tasks a day for 7 days</span>
+          <span class="visually-hidden">Earned</span>
+          <span class="badge__date">2026-11-14</span>
+        </li>
+        
+        <li class="badge">
+          <span class="badge__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#lock"></use></svg></span>
+          <span class="badge__name">Night Owl Reformed</span>
+          <span class="badge__rule">3 nights of 7 h or more after 3 short nights</span>
+          <span class="visually-hidden">Not earned yet</span>
+          
+        </li>
+        
+        <li class="badge">
+          <span class="badge__icon" aria-hidden="true"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#lock"></use></svg></span>
+          <span class="badge__name">Full Systems Go</span>
+          <span class="badge__rule">Readiness 85 or higher for 3 days</span>
+          <span class="visually-hidden">Not earned yet</span>
+          
+        </li>
+        
+      </ul>
+    </section>
+
+    <section class="card set" id="about" aria-labelledby="about-title">
+      <h2 class="card__title" id="about-title">About this prototype</h2>
+      <p class="about">Heart rate, SpO₂ and temperature come from the connected wearable when it is present. Blood pressure, glucose, respiration and the ECG-style trace are generated for demonstration because no sensor for them is attached. This is a prototype, not a medical device.</p>
+      <p class="card__meta">Alert rules are cautious placeholders: the counts, quality levels and time windows need calibration on the real hardware and clinical review. An alert, or the absence of one, is never medical advice. Inspired by NASA's Human Research Program.</p>
+    </section>
+
+    
+    <section class="card set demo" id="demo" aria-labelledby="demo-title">
+      <h2 class="card__title" id="demo-title">Demo panel</h2>
+      <p class="card__meta">For demonstrations. Every change here is written to the audit log.</p>
+
+      <div class="demo__block">
+        <h3 class="set__sub">Wearable mode</h3>
+        <div class="segmented" role="radiogroup" aria-label="Wearable mode" data-sensor-mode>
+          <label class="segmented__item segmented__radio"><input type="radio" name="mode" value="device" checked>Real wearable</label>
+          <label class="segmented__item segmented__radio"><input type="radio" name="mode" value="demo">Demo data</label>
+        </div>
+        <p class="card__meta">Changes only when you switch it here. A wearable going offline never switches it.</p>
+        <p class="set__saved" data-saved="mode" aria-live="polite"></p>
+      </div>
+
+      <div class="demo__block">
+        <h3 class="set__sub">Judge Mode scenarios</h3>
+        <ul class="scenarios">
+          
+          <li class="scenario">
+            <div><p class="scenario__title">Day 142, Mars transit</p><p class="card__meta">Three short nights push the heart rate up and the mood down.</p></div>
+            <button class="pill pill--ghost pill--small" type="button" data-scenario="mars_transit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#play"></use></svg>Run</button>
+          </li>
+          
+          <li class="scenario">
+            <div><p class="scenario__title">Lunar base</p><p class="card__meta">No exercise for four days, so the exercise load needs attention.</p></div>
+            <button class="pill pill--ghost pill--small" type="button" data-scenario="lunar_base"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#play"></use></svg>Run</button>
+          </li>
+          
+          <li class="scenario">
+            <div><p class="scenario__title">Critical BP event, 14-min comms delay</p><p class="card__meta">Blood pressure 186/118 with a 14-minute delay to Earth.</p></div>
+            <button class="pill pill--ghost pill--small" type="button" data-scenario="critical_bp"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#play"></use></svg>Run</button>
+          </li>
+          
+        </ul>
+      </div>
+
+      <form class="demo__block" data-force-form>
+        <h3 class="set__sub">Force a status</h3>
+        <div class="demo__row">
+          <label class="field"><span class="field__label">Measure</span>
+            <select class="field__input" name="metric">
+              <option value="blood_pressure">Blood pressure</option><option value="glucose">Blood sugar</option><option value="respiration">Breathing rate</option><option value="heart_rate" disabled>Heart rate (switch to Demo data)</option><option value="spo2" disabled>Oxygen (switch to Demo data)</option><option value="temperature_c" disabled>Temperature (switch to Demo data)</option>
+            </select></label>
+          <label class="field"><span class="field__label">Status</span>
+            <select class="field__input" name="status">
+              <option value="good">Good</option><option value="okay">Okay</option>
+              <option value="watch">Needs attention</option><option value="alert">Get help now</option>
+            </select></label>
+          <button class="pill pill--ghost pill--small" type="submit">Apply</button>
+        </div>
+        <p class="set__saved" data-saved="force" aria-live="polite"></p>
+      </form>
+
+      <form class="demo__block" data-day-form>
+        <h3 class="set__sub">Mission day</h3>
+        <div class="demo__row">
+          <label class="field"><span class="field__label">Show day</span>
+            <input class="field__input" type="number" name="day" min="1" max="2000" value="160"></label>
+          <button class="pill pill--ghost pill--small" type="submit">Jump</button>
+          
+        </div>
+        <p class="set__saved" data-saved="day" aria-live="polite"></p>
+      </form>
+    </section>
+    
+  </div>
+</div>
+
+<dialog class="dialog" id="delete-dialog" aria-labelledby="delete-title">
+  <form class="dialog__body" data-delete-form>
+    <h2 class="dialog__title" id="delete-title">Delete your mental-health data?</h2>
+    <p class="dialog__lede">Every voice check-in, Dr. NOVA conversation and wellbeing score is removed for good, and readiness is recalculated without them. Your heart, exercise and sleep data stay.</p>
+    <label class="field"><span class="field__label">Type DELETE to confirm</span>
+      <input class="field__input" name="confirm" autocomplete="off" required pattern="[Dd][Ee][Ll][Ee][Tt][Ee]"></label>
+    <p class="form-error" data-delete-message hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--danger" type="submit">Delete for good</button>
+    </div>
+  </form>
+</dialog>
+
+    </main>
+    <footer class="site-foot">Prototype for educational purposes. Not a certified medical device.</footer>
+  </div>
+</div>
+
+
+<dialog class="dialog" id="env-dialog" aria-labelledby="env-title">
+  <form class="dialog__body" data-env-form>
+    <h2 class="dialog__title" id="env-title">Where is the crew?</h2>
+    <p class="dialog__lede">This changes gravity, the delay to Earth and the exercises on offer. It never changes the health ranges.</p>
+    <fieldset class="choice-list">
+      <legend class="visually-hidden">Mission environment</legend>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Spacecraft">
+        <span class="choice__label">Spacecraft</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Space Station" checked>
+        <span class="choice__label">Space Station</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Rover">
+        <span class="choice__label">Rover</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Lunar Base">
+        <span class="choice__label">Lunar Base</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Mars Base">
+        <span class="choice__label">Mars Base</span>
+      </label>
+      
+    </fieldset>
+    <p class="form-error" data-env-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save location</button>
+    </div>
+  </form>
+</dialog>
+
+
+<dialog class="dialog" id="protocol-dialog" aria-labelledby="protocol-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="protocol-title">What to do now</h2>
+    <ol class="steps" data-protocol-steps></ol>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+<div class="toasts" data-toasts aria-live="polite"></div>
+
+  
+  <script type="module" src="/static/js/app/shell.js"></script>
+  
+  <script type="module" src="/static/js/app/settings.js"></script>
+
+
+</body>
+</html>

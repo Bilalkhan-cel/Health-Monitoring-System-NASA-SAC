@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="ImZlOGJjMTg1ZmY3YTEwYWE1ZTlkYmVlMTcwMzgzNGVhYzM1MTgwMDEi.avlZqg.1Mgz1W7iGX6cZ-QXmzQ7QyvNYp0">
+  <meta name="static-root" content="/static/">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>Today · AstroVital</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/vendor/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  
+  <link rel="stylesheet" href="/static/css/app.css">
+  <meta name="astro-temp-unit" content="C">
+  
+  <link rel="stylesheet" href="/static/css/today.css">
+
+
+</head>
+<body class="app">
+  <a class="skip-link" href="#main">Skip to content</a>
+  
+
+<div class="shell" data-sprite="/static/vendor/lucide/sprite.svg">
+  <nav class="rail" id="rail" aria-label="Main">
+    <button class="rail__item rail__toggle" type="button" aria-expanded="false" aria-controls="rail" data-rail-toggle>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#menu"></use></svg><span class="rail__label">Collapse menu</span>
+      <span class="visually-hidden" data-rail-toggle-text>Show menu labels</span>
+    </button>
+    <ul class="rail__list">
+      
+      <li>
+        <a class="rail__item is-active" href="/dashboard" aria-current="page">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#layout-grid"></use></svg><span class="rail__label">Today</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/cardio">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#heart"></use></svg><span class="rail__label">Heart</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/musculoskeletal">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bone"></use></svg><span class="rail__label">Body</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/mental">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#mic"></use></svg><span class="rail__label">Mind</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/doctor">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#stethoscope"></use></svg><span class="rail__label">Dr. NOVA</span>
+        </a>
+      </li>
+      
+      <li>
+        <a class="rail__item" href="/history">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#history"></use></svg><span class="rail__label">History</span>
+        </a>
+      </li>
+      
+    </ul>
+    <form class="rail__bottom" method="post" action="/logout">
+      <input type="hidden" name="csrf_token" value="ImZlOGJjMTg1ZmY3YTEwYWE1ZTlkYmVlMTcwMzgzNGVhYzM1MTgwMDEi.avlZqg.1Mgz1W7iGX6cZ-QXmzQ7QyvNYp0">
+      <button class="rail__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg><span class="rail__label">Log out</span></button>
+    </form>
+  </nav>
+
+  <div class="shell__main">
+    <header class="topbar">
+      <div class="topbar__title">
+  <h1 class="greeting">Good morning, Sara</h1>
+  <p class="greeting__date">Sunday, 15 November · Day 160 of your mission</p>
+</div>
+      <div class="topbar__tools">
+        
+        <button class="chip" type="button" data-open-dialog="env-dialog" aria-haspopup="dialog">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#orbit"></use></svg><span>Day 160 · Space Station</span>
+        </button>
+        
+        
+        <a class="icon-button" href="/notifications" data-bell aria-label="Notifications">
+          <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg><span class="icon-button__badge" data-bell-count hidden></span>
+        </a>
+        
+        <details class="menu">
+          <summary class="menu__trigger" aria-label="Account menu for Cmdr. Sara Whitman">
+            <span class="menu__name">Cmdr. Sara Whitman</span>
+            <span class="avatar" aria-hidden="true">SW</span>
+          </summary>
+          <div class="menu__panel">
+            <p class="menu__who">Commander · Falcon</p>
+            
+            <a class="menu__item" href="/settings"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#settings"></use></svg>Settings</a>
+            <a class="menu__item" href="/notifications"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bell"></use></svg>Notifications</a>
+            
+            <form method="post" action="/logout">
+              <input type="hidden" name="csrf_token" value="ImZlOGJjMTg1ZmY3YTEwYWE1ZTlkYmVlMTcwMzgzNGVhYzM1MTgwMDEi.avlZqg.1Mgz1W7iGX6cZ-QXmzQ7QyvNYp0">
+              <button class="menu__item" type="submit"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#log-out"></use></svg>Log out</button>
+            </form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <div class="alertbar" data-alertbar role="alert" hidden>
+      <svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#octagon-alert"></use></svg>
+      <p class="alertbar__text" data-alertbar-text></p>
+      <div class="alertbar__actions">
+        <a class="pill pill--light" href="/doctor">Ask Dr. NOVA</a>
+        <button class="pill pill--on-alert" type="button" data-open-dialog="protocol-dialog">View protocol</button>
+      </div>
+    </div>
+
+    <main id="main" class="page">
+      
+<p class="today-lede" data-readiness-sentence>Two things need attention: your heart rate is higher than your usual, and your sleep is lower than your usual.</p>
+
+<div class="today">
+  <div class="today__main">
+  <section class="scores" aria-label="Health scores">
+    
+    <button class="score" type="button" data-score="heart" aria-pressed="false">
+      <span class="score__label"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#heart"></use></svg>Heart</span>
+      <span class="score__value"><span data-score-number>–</span><span class="score__max">/100</span></span>
+      <span class="meter" aria-hidden="true"><span class="meter__fill" data-score-meter></span></span>
+      <span data-score-status></span>
+    </button>
+    
+    <button class="score" type="button" data-score="mind" aria-pressed="false">
+      <span class="score__label"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#brain"></use></svg>Mind</span>
+      <span class="score__value"><span data-score-number>–</span><span class="score__max">/100</span></span>
+      <span class="meter" aria-hidden="true"><span class="meter__fill" data-score-meter></span></span>
+      <span data-score-status></span>
+    </button>
+    
+    <button class="score" type="button" data-score="bones" aria-pressed="false">
+      <span class="score__label"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#bone"></use></svg>Bones &amp; muscle</span>
+      <span class="score__value"><span data-score-number>–</span><span class="score__max">/100</span></span>
+      <span class="meter" aria-hidden="true"><span class="meter__fill" data-score-meter></span></span>
+      <span data-score-status></span>
+    </button>
+    
+    <div class="score score--overall" data-score="overall">
+      <span class="score__label"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#activity"></use></svg>Overall</span>
+      <span class="score__value"><span data-score-number>–</span><span class="score__max">/100</span></span>
+      <span class="meter" aria-hidden="true"><span class="meter__fill" data-score-meter></span></span>
+      <span data-score-status></span>
+      <span class="score__caption">Wellness estimate · not a fitness-for-duty decision</span>
+    </div>
+  </section>
+
+
+  <div class="today__row">
+  <section class="card tasks" aria-labelledby="tasks-title">
+    <div class="card__head">
+      <h2 class="card__title" id="tasks-title">Today's tasks</h2>
+      <p class="card__meta" data-tasks-count></p>
+    </div>
+    <span class="meter meter--wide" aria-hidden="true"><span class="meter__fill" data-tasks-meter></span></span>
+    <ul class="task-list" data-task-list></ul>
+    <p class="tasks__streak" data-streak></p>
+  </section>
+  
+  <section class="card nova-card" aria-labelledby="nova-title">
+    <div class="orb" aria-hidden="true"></div>
+    <h2 class="nova-card__title" id="nova-title">Dr. NOVA</h2>
+    <p class="nova-card__sub">Your AI doctor</p>
+    <p class="nova-card__text">Get a short, simple summary of how you are doing today and what to do next.</p>
+    <a class="pill pill--primary" href="/doctor?ask=summary">Get today's summary</a>
+  </section>
+  
+  </div>
+
+  <section class="readings" aria-labelledby="readings-title">
+    <div class="readings__head">
+      <h2 class="card__title" id="readings-title">All readings</h2>
+      <p class="card__meta">Every number with a plain answer. Tap <span class="info-hint"><svg class="icon " aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/sprite.svg#info"></use></svg></span> to learn what it means.</p>
+    </div>
+    <ul class="reading-list" data-readings></ul>
+  </section>
+  </div>
+
+  <section class="body-col" aria-labelledby="body-title">
+    <div class="stage twin-stage">
+      <div class="twin-stage__head">
+        <h2 class="card__title" id="body-title">Your body</h2>
+        <p class="card__meta">Drag to turn · tap a glowing point</p>
+      </div>
+      <div class="twin" data-twin></div>
+      <div class="system-pills" role="group" aria-label="Body systems">
+        
+        <button class="system-pill" type="button" data-system-pill="mind" aria-pressed="false">
+          <span class="dot" data-pill-dot></span>Mind
+        </button>
+        
+        <button class="system-pill" type="button" data-system-pill="heart" aria-pressed="false">
+          <span class="dot" data-pill-dot></span>Heart
+        </button>
+        
+        <button class="system-pill" type="button" data-system-pill="bones" aria-pressed="false">
+          <span class="dot" data-pill-dot></span>Bones &amp; muscle
+        </button>
+        
+      </div>
+    </div>
+    <article class="card panel" data-panel aria-live="polite">
+      <div class="panel__live" data-live-strip hidden></div>
+      <div class="card__head">
+        <h3 class="card__title" data-panel-title></h3>
+        <span data-panel-status></span>
+      </div>
+      <p class="panel__headline" data-panel-headline></p>
+      <ul class="rows" data-panel-rows></ul>
+      <h4 class="panel__subtitle">What to do</h4>
+      <ol class="steps" data-panel-steps></ol>
+      <div class="panel__actions">
+        <a class="pill pill--primary" data-panel-start hidden>Start check</a>
+        <a class="pill pill--ghost" href="/doctor">Ask Dr. NOVA</a>
+      </div>
+      <p class="panel__foot" data-panel-foot></p>
+    </article>
+  </section>
+</div>
+
+<dialog class="dialog" id="sleep-dialog" aria-labelledby="sleep-title">
+  <form class="dialog__body" data-sleep-form>
+    <h2 class="dialog__title" id="sleep-title">How long did you sleep?</h2>
+    <div class="field-row">
+      <label class="field"><span class="field__label">Hours</span>
+        <input class="field__input" type="number" name="hours" min="0" max="16" step="1" value="7" required></label>
+      <label class="field"><span class="field__label">Minutes</span>
+        <input class="field__input" type="number" name="minutes" min="0" max="59" step="5" value="0" required></label>
+    </div>
+    <label class="field"><span class="field__label">How well did you sleep?</span>
+      <select class="field__input" name="quality">
+        <option value="">Skip</option><option value="1">Very badly</option><option value="2">Badly</option>
+        <option value="3">Okay</option><option value="4">Well</option><option value="5">Very well</option>
+      </select></label>
+    <p class="form-error" data-sleep-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save sleep</button>
+    </div>
+  </form>
+</dialog>
+
+<noscript><p class="noscript">Turn on JavaScript to see your readings and today's tasks.</p></noscript>
+<script type="application/json" id="summary-data">{"alerts": [], "astronaut": {"callsign": "Falcon", "first_name": "Sara", "initials": "SW", "name": "Cmdr. Sara Whitman", "role": "Commander"}, "generated_at": "2026-11-15T07:05:14Z", "greeting": "Good morning", "hydration": {"glass_ml": 250, "goal_ml": 2500, "ml": 0}, "metrics": [{"age_s": 315, "info": {"do": "Sit still for five minutes before measuring. If it stays high, cut back on salt, drink water and tell your crew medical officer.", "range": "Ideal is 90 to 119 over 60 to 79.", "what": "The force of blood against your artery walls, shown as two numbers (heart beating / heart resting).", "why": "Without gravity, fluid shifts toward your head and your heart and vessels adapt. Radiation also adds long-term heart risk."}, "key": "blood_pressure", "label": "Blood pressure", "note": null, "short": "Blood pressure", "spark": [117.0, 118.0, 117.0, 117.0, 118.0, 119.0, 119.0], "status": {"icon": "circle-check", "key": "good", "label": "Good", "verdict": "Good"}, "system": "heart", "unit": "mmHg", "updated": "Updated 5 min ago", "usual": "Close to your usual (123)", "value": "119/78"}, {"age_s": 72597, "info": {"do": "Drink water, take ten slow breaths, rest for five minutes and measure again.", "range": "Ideal at rest is 60 to 90 beats a minute.", "what": "How many times your heart beats in a minute while you are resting.", "why": "Poor sleep, stress, dehydration and a deconditioned heart all push it up. It is an early sign that your body is working harder."}, "key": "heart_rate", "label": "Resting heart rate", "note": null, "short": "Heart rate", "spark": [70.0, 73.0, 88.0, 91.0, 96.0, 99.0, 104.0], "status": {"icon": "triangle-alert", "key": "watch", "label": "Needs attention", "verdict": "A bit high"}, "system": "heart", "unit": "bpm", "updated": "Updated 20 h ago", "usual": "28 above your usual (76)", "value": "104"}, {"age_s": 15, "info": {"do": "Warm your hand, keep still and measure again. If you feel short of breath, tell your crew medical officer now.", "range": "Ideal is 96 % or higher.", "what": "How much oxygen your blood is carrying.", "why": "Cabin air is recycled, so carbon dioxide can build up, and a pressure change affects how well you take in oxygen."}, "key": "spo2", "label": "Blood oxygen", "note": null, "short": "Oxygen", "spark": [98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0], "status": {"icon": "circle-check", "key": "good", "label": "Good", "verdict": "Good"}, "system": "heart", "unit": "%", "updated": "Updated just now", "usual": "Close to your usual (98)", "value": "98"}, {"age_s": 315, "info": {"do": "Eat at regular times. If it is low, have a snack now. If it stays high, tell your crew medical officer.", "range": "Ideal is 70 to 99 before eating and under 140 two hours after a meal.", "what": "The amount of sugar in your blood, your body\u0027s main fuel.", "why": "Spaceflight changes how your body handles sugar, and meal times drift on a busy mission."}, "key": "glucose", "label": "Blood sugar", "note": null, "short": "Blood sugar", "spark": [81.0, 81.0, 81.0, 81.0, 81.0, 81.0, 80.0], "status": {"icon": "circle-check", "key": "good", "label": "Good", "verdict": "Good"}, "system": "heart", "unit": "mg/dL", "updated": "Updated 5 min ago", "usual": "Close to your usual (80)", "value": "80"}, {"age_s": 315, "info": {"do": "Breathe in slowly for four counts and out for six, for two minutes. Measure again while resting.", "range": "Ideal at rest is 12 to 18 breaths a minute.", "what": "How many breaths you take in a minute while resting.", "why": "Breathing speeds up with stress, fever or stale cabin air."}, "key": "respiration", "label": "Breathing rate", "note": null, "short": "Breathing", "spark": [13.0, 14.0, 13.0, 13.0, 14.0, 14.0, 13.0], "status": {"icon": "circle-check", "key": "good", "label": "Good", "verdict": "Good"}, "system": "heart", "unit": "br/min", "updated": "Updated 5 min ago", "usual": "Close to your usual (13)", "value": "13"}, {"age_s": 15, "info": {"do": "If it is high, rest and drink water, then measure again in an hour. A fever needs your crew medical officer.", "range": "Ideal is 36.1 to 37.2 \u00b0C.", "what": "How warm your body is.", "why": "In a closed cabin infections spread easily, and your body does not shed heat the way it does on Earth."}, "key": "temperature_c", "label": "Body temperature", "note": null, "short": "Temperature", "spark": [36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0], "status": {"icon": "circle-dot", "key": "okay", "label": "Okay", "verdict": "Okay"}, "system": "heart", "unit": "\u00b0C", "updated": "Updated just now", "usual": "0.7 below your usual (36.7)", "value": "36.0"}, {"age_s": 2425, "info": {"do": "Talk to a crewmate, plan a call home and protect your sleep.", "range": "70 or above is good. This is support, not a diagnosis.", "what": "A score from your voice check-in that reflects how you sounded and how you rated your own mood.", "why": "Isolation, distance from family and a heavy workload wear people down slowly. Catching a dip early helps."}, "key": "wellbeing", "label": "Mood score", "note": null, "short": "Mood", "spark": [66.0, 62.0, 48.2, 99.7, 76.7, 62.2, 93.7], "status": {"icon": "circle-check", "key": "good", "label": "Good", "verdict": "Good"}, "system": "mind", "unit": "/100", "updated": "Updated 40 min ago", "usual": "17 above your usual (76)", "value": "94"}, {"age_s": 73797, "info": {"do": "Dim the lights an hour before bed, keep the same bedtime and skip caffeine after midday.", "range": "Ideal is 7 to 9 hours.", "what": "How long you slept last night.", "why": "There is no natural day and night on a mission, so sleep slips easily. Short sleep raises your heart rate and lowers your mood."}, "key": "sleep_hours", "label": "Sleep last night", "note": null, "short": "Sleep", "spark": [7.7, 6.9, 7.3, 7.0, 5.6, 5.2, 5.4], "status": {"icon": "triangle-alert", "key": "watch", "label": "Needs attention", "verdict": "A bit low"}, "system": "mind", "unit": "", "updated": "Updated 20 h ago", "usual": "1 h 45 min below your usual (7 h 09 min)", "value": "5 h 24 min"}, {"age_s": 59126, "info": {"do": "Do today\u0027s exercise session. Short sessions on most days beat one long one.", "range": "75 or above is good.", "what": "A score for how much bone-and-muscle loading exercise you did over the last seven days.", "why": "In low gravity you can lose 1 to 1.5 % of bone a month. Loading exercise is what slows it. A camera cannot measure bone density."}, "key": "loading_index", "label": "Exercise load", "note": null, "short": "Exercise load", "spark": [88.0, 88.0, 88.0, 88.0, 88.0, 88.0, 83.0], "status": {"icon": "circle-check", "key": "good", "label": "Good", "verdict": "Good"}, "system": "bones", "unit": "/100", "updated": "Updated 16 h ago", "usual": "Close to your usual (88)", "value": "83"}, {"age_s": null, "info": {"do": "Log a glass each time you drink.", "range": "Aim for about 2.5 litres a day.", "what": "How much water you have logged today.", "why": "Thirst is weaker in space, and being dry raises your heart rate and the risk of kidney stones."}, "key": "hydration_ml", "label": "Water today", "note": null, "short": "Water", "spark": [], "status": null, "system": "heart", "unit": "L", "updated": "Goal 2.5 L", "usual": null, "value": "0.0"}], "mission": {"comms_delay_s": 2, "comms_delay_text": "2 s", "date_text": "Sunday, 15 November", "day": 160, "environment": "Space Station", "gravity_g": 0.0, "name": "ARES-SURFACE-01"}, "protocol": ["Stop what you are doing and sit down somewhere safe.", "Tell your crew medical officer now, and tell them the reading you see here.", "Follow the onboard medical checklist for this problem.", "Re-measure in five minutes if you are able to.", "Contact the ground flight surgeon. Messages to Earth take 2 s."], "readiness": {"caption": "Wellness estimate \u00b7 not a fitness-for-duty decision", "score": 79, "sentence": "Two things need attention: your heart rate is higher than your usual, and your sleep is lower than your usual.", "status": {"icon": "triangle-alert", "key": "watch", "label": "Needs attention", "verdict": "Needs attention"}}, "systems": {"bones": {"do": null, "headline": "Your bones and muscles are getting the load they need.", "icon": "bone", "id": "bones", "label": "Bones \u0026 muscle", "metrics": ["loading_index"], "score": 100, "start_url": "/musculoskeletal", "status": {"icon": "circle-check", "key": "good", "label": "Good", "verdict": "Good"}, "steps": ["Keep up your exercise sessions.", "Mix in strength work, not only cardio.", "In microgravity your body sheds bone and muscle quickly. Keep to the daily exercise block."], "title": "Bones and muscle"}, "heart": {"do": "Drink water, take ten slow breaths, rest for five minutes and measure again.", "headline": "Your heart rate is 104 bpm. Your usual is 76.", "icon": "heart", "id": "heart", "label": "Heart", "metrics": ["heart_rate", "temperature_c", "blood_pressure"], "score": 79, "start_url": "/cardio", "status": {"icon": "triangle-alert", "key": "watch", "label": "Needs attention", "verdict": "Needs attention"}, "steps": ["Drink a glass of water now and sit quietly for five minutes.", "Take ten slow breaths, in for four counts and out for six.", "Check your heart again in two hours. If it is still high, ask Dr. NOVA."], "title": "Heart health"}, "mind": {"do": "Dim the lights an hour before bed, keep the same bedtime and skip caffeine after midday.", "headline": "Your sleep is 5 h 24 min. Your usual is 7 h 09 min.", "icon": "brain", "id": "mind", "label": "Mind", "metrics": ["sleep_hours", "wellbeing"], "score": 79, "start_url": "/mental", "status": {"icon": "triangle-alert", "key": "watch", "label": "Needs attention", "verdict": "Needs attention"}, "steps": ["Dim the lights an hour before bed and skip caffeine after midday.", "Talk to a crewmate or plan a call home today.", "Try a two-minute breathing exercise before your next shift."], "title": "Mind and sleep"}}, "tasks": {"done": 1, "items": [{"action": null, "code": "cardio", "detail": "About 7 minutes", "label": "Heart check", "state": "due", "url": "/cardio"}, {"action": null, "code": "exercise", "detail": "About 20 minutes", "label": "Exercise session", "state": "due", "url": "/musculoskeletal"}, {"action": null, "code": "mental", "detail": "Done at 06:09", "label": "Voice check-in: how are you feeling?", "state": "done", "url": "/mental"}, {"action": "sleep", "code": "sleep_log", "detail": "Takes 10 seconds", "label": "Log last night\u0027s sleep", "state": "due", "url": null}, {"action": "water", "code": "hydration", "detail": "0.0 of 2.5 litres", "label": "Drink water", "state": "due", "url": null}], "streak": 30, "total": 5}}</script>
+
+    </main>
+    <footer class="site-foot">Prototype for educational purposes. Not a certified medical device.</footer>
+  </div>
+</div>
+
+
+<dialog class="dialog" id="env-dialog" aria-labelledby="env-title">
+  <form class="dialog__body" data-env-form>
+    <h2 class="dialog__title" id="env-title">Where is the crew?</h2>
+    <p class="dialog__lede">This changes gravity, the delay to Earth and the exercises on offer. It never changes the health ranges.</p>
+    <fieldset class="choice-list">
+      <legend class="visually-hidden">Mission environment</legend>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Spacecraft">
+        <span class="choice__label">Spacecraft</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Space Station" checked>
+        <span class="choice__label">Space Station</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Rover">
+        <span class="choice__label">Rover</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Lunar Base">
+        <span class="choice__label">Lunar Base</span>
+      </label>
+      
+      <label class="choice">
+        <input type="radio" name="environment" value="Mars Base">
+        <span class="choice__label">Mars Base</span>
+      </label>
+      
+    </fieldset>
+    <p class="form-error" data-env-error hidden></p>
+    <div class="dialog__actions">
+      <button class="pill pill--ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="pill pill--primary" type="submit">Save location</button>
+    </div>
+  </form>
+</dialog>
+
+
+<dialog class="dialog" id="protocol-dialog" aria-labelledby="protocol-title">
+  <div class="dialog__body">
+    <h2 class="dialog__title" id="protocol-title">What to do now</h2>
+    <ol class="steps" data-protocol-steps></ol>
+    <div class="dialog__actions">
+      <button class="pill pill--primary" type="button" data-close-dialog>Close</button>
+    </div>
+  </div>
+</dialog>
+<div class="toasts" data-toasts aria-live="polite"></div>
+
+  
+  <script type="module" src="/static/js/app/shell.js"></script>
+  
+  <script type="module" src="/static/js/app/today.js"></script>
+
+
+</body>
+</html>
